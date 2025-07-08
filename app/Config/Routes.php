@@ -49,11 +49,13 @@ $routes->post('/setup', 'LandingPage::selectVillage',  ['filter' => 'role:admin'
 
 $routes->post('api/message/send', 'Api\Notification::sendMessage');
 
-$routes->get('/mail', 'LandingPage::mail');
+$routes->get('/mailWithPHPMailer', 'LandingPage::mailWithPHPMailer');
 
 $routes->get('authgoogle/login', 'AuthGoogle::login');
 $routes->get('authgoogle/callback', 'AuthGoogle::callback');
 $routes->get('authgoogle/register', 'AuthGoogle::register');
+
+$routes->post('LandingPage/sendMail', 'LandingPage::sendMail');
 
 // Upload files
 $routes->group('upload', ['namespace' => 'App\Controllers\Web\Upload'], function ($routes) {

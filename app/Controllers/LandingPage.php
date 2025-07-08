@@ -45,24 +45,6 @@ class LandingPage extends BaseController
         return view('landing_page', $data);
     }
 
-    public function mail()
-    {
-        ini_set('max_execution_time', 120);
-        $email = \Config\Services::email();
-        $email->clear();
-
-        $email->setTo('nightbaron.369@gmail.com'); // Ganti dengan email penerima
-        $email->setSubject('Tes Email dari CodeIgniter 4');
-        $email->setMessage('<h1>Halo!</h1><p>Ini adalah pesan uji coba.</p>');
-
-        if ($email->send()) {
-            echo 'Email berhasil dikirim.';
-        } else {
-            echo 'Gagal mengirim email.<br>';
-            echo $email->printDebugger(['headers', 'subject', 'body']);
-        }
-    }
-
     public function addVillage()
     {
         $data = [
@@ -184,5 +166,21 @@ class LandingPage extends BaseController
             return redirect()->back()->withInput();
         }
         // dd($update);
+    }
+
+
+    public function mailWithPHPMailer()
+    {
+        helper('PHPMailerHelper'); // Load the helper
+
+        $to = 'nightbaron.369@gmail.com'; // Replace with recipient email
+        $subject = 'Test Email from PHPMailer in CodeIgniter';
+        $body = '<h1>Hello!</h1><p>This is a test email sent using PHPMailer in CodeIgniter.</p>';
+
+        if (sendEmailWithPHPMailer($to, $subject, $body)) {
+            echo 'Email successfully sent.';
+        } else {
+            echo 'Failed to send email.';
+        }
     }
 }

@@ -17,14 +17,15 @@ class Email extends BaseConfig
     //--------------------------------------------------------------------
     // SMTP Settings
 
-    public string $SMTPHost = 'sandbox.smtp.mailtrap.io';
-    public string $SMTPUser = 'a94646f83ec0e1';
-    public string $SMTPPass = '199ef19887a082'; // BUKAN password utama akun Google
-    public int $SMTPPort = 587;
-    public int $SMTPTimeout = 60;
+    public string $SMTPHost = 'smtp.gmail.com'; // Updated to Gmail's SMTP server
+    public string $SMTPUser = 'lukmanjunedd@gmail.com'; // Updated to Gmail user
+    public string $SMTPPass = 'hnsr foae fquk yixw'; // Updated to Gmail app password
+    public int $SMTPPort = 587; // Gmail SMTP port
+    public int $SMTPTimeout = 300; // Increase timeout to 300 seconds
     public bool $SMTPKeepAlive = true;
-    public string $SMTPCrypto = ''; // 'tls' atau 'ssl'
-    public bool $SMTPAutoTLS = false;
+    public string $SMTPCrypto = 'tls'; // Ensure 'tls' is used for Gmail
+    public bool $SMTPAutoTLS = true;   // Enabled AutoTLS for secure connection
+    public bool $SMTPDebug = false;    // Disable debugging for production
 
     //--------------------------------------------------------------------
     // Pengaturan tambahan opsional
