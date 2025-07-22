@@ -62,18 +62,17 @@
                                 <i class="bi bi-shield-lock"></i>
                             </div>
                         </div>
-                        <button class="btn btn-primary btn-block shadow mt-5" type="submit">
+                        <button class="btn btn-primary btn-block shadow mt-4" type="submit">
                             <?= lang('Auth.register') ?>
                         </button>
                     </form>
 
                     <div class="text-center mt-3">
                         <p>Or Sign Up with:</p>
-                        <a href="<?= base_url('authgoogle/login') ?>" class="btn btn-light border">
-                            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" width="20" class="me-2">
-                            Register with Google
+                        <a href="<?= base_url('authgoogle/login') ?>" class="btn btn-light shadow btn-block">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google sign-in" width="20" class="me-2">
+                            Sign Up with Google
                         </a>
-
                     </div>
 
                     <div class="text-center mt-4 text-lg">

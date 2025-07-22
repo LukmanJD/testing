@@ -23,6 +23,7 @@ class Filters extends BaseConfig
     public $aliases = [
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
+        'tawkto'        => \App\Filters\TawkToFilter::class,
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
@@ -40,14 +41,14 @@ class Filters extends BaseConfig
     public $globals = [
         'before' => [
             // 'honeypot',
-//             'csrf' => ['except' => ['api']],
-            // 'invalidchars',
-//            'login'
+            'csrf' => ['except' => ['api/*', 'web/payment/dokuNotification']],
+            // 'invalidchars'
         ],
         'after' => [
             'toolbar',
             // 'honeypot',
             // 'secureheaders',
+            'tawkto',
         ],
     ];
 

@@ -77,13 +77,6 @@ class HomestayCertification extends ResourcePresenter
 
         $deleteS = $this->homestayCertificationModel->del_hc($request['homestay_id'], $certification_id);
         if ($deleteS) {
-            $response = [
-                'status' => 200,
-                'message' => [
-                    "Success delete certification"
-                ]
-            ];
-            return $this->respondDeleted($response);
         } else {
             $response = [
                 'status' => 404,

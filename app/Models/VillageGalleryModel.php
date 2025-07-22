@@ -11,7 +11,7 @@ class VillageGalleryModel extends Model
     protected $table            = 'village_gallery';
     protected $primaryKey       = 'id';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['id', 'village_id', 'url'];
+    protected $allowedFields    = ['id', 'village_id', 'url', 'description'];
 
     // Dates
     protected $useTimestamps = true;
@@ -41,7 +41,7 @@ class VillageGalleryModel extends Model
     public function get_gallery_api($village_id = null)
     {
         $query = $this->db->table($this->table)
-            ->select('url')
+            ->select('url, description')
             ->orderBy('id', 'ASC')
             ->where('village_id', $village_id)
             ->get();

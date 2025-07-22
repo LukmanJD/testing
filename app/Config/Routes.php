@@ -47,6 +47,13 @@ $routes->get('/register', 'Web\Profile\Profile::register');
 $routes->get('/setup', 'LandingPage::setup',  ['filter' => 'role:admin']);
 $routes->post('/setup', 'LandingPage::selectVillage',  ['filter' => 'role:admin']);
 
+// In app/Config/Routes.php
+$routes->post('register', 'Register::attemptRegister', ['as' => 'register']);
+$routes->get('register/activateAccount/(:segment)', 'Register::activateAccount/$1');
+$routes->get('register/resend', 'Register::showResend', ['as' => 'resend-activation']);
+$routes->post('register/resend', 'Register::attemptResend', ['as' => 'resend-activate-account']);
+
+
 $routes->post('api/message/send', 'Api\Notification::sendMessage');
 
 $routes->get('/mailWithPHPMailer', 'LandingPage::mailWithPHPMailer');
@@ -144,8 +151,14 @@ $routes->group('web', ['namespace' => 'App\Controllers\Web'], function ($routes)
     $routes->get('packageService/(:segment)/(:segment)', 'PackageService::getService/$1/$2',  ['filter' => 'role:user']);
     $routes->presenter('packageService',  ['filter' => 'role:user']);
     $routes->delete('packageService/delete/(:segment)/(:segment)/(:segment)', 'PackageService::delete/$1/$2/$3',  ['filter' => 'role:user']);
-    $routes->get('payment', 'PaymentController::createTransaction');
-    $routes->get('payment/(:segment)', 'PaymentController::checkPaymentStatus/$1');
+
+    // Unified Checkout Routes
+    $routes->get('checkout/(:segment)/(:any)', 'PaymentController::unifiedCheckout/$1/$2', ['filter' => 'role:user']);
+    $routes->post('payment/dokuCheckout', 'PaymentController::dokuCheckout');
+    $routes->post('payment/dokuNotification', 'PaymentController::dokuNotification');
+    $routes->post('payment/paypalCreateOrder', 'PaymentController::paypalCreateOrder');
+    $routes->post('payment/paypalCaptureOrder', 'PaymentController::paypalCaptureOrder');
+
     $routes->post('saveToken', 'ReservationController::saveToken');
     $routes->post('reservationRefund', 'Reservation::addAccountRefund', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('allObject', 'TouristArea::allObject');

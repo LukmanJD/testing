@@ -9,6 +9,9 @@ use Myth\Auth\Entities\User;
 use Myth\Auth\Models\UserModel;
 use App\Models\VillageModel;
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 class AuthController extends Controller
 {
 	protected $villageModel;
@@ -113,6 +116,21 @@ class AuthController extends Controller
 		}
 		// dd(in_groups('admin'));
 
+		// --- Send Login Notification Email ---
+		// Load the helper that contains the sendEmailWithPHPMailer function.
+		// The helper() function isn't loading the file due to naming conventions. Using require_once is a direct fix.
+		require_once APPPATH . 'Helpers/PHPMailerHelper.php';
+		// Get the logged-in user
+		$user = $this->auth->user();
+
+		// Prepare email content
+		$subject = 'User Login Notification';
+		$body    = "<h1>Login Notification</h1><p>User '{$user->username}' (Email: {$user->email}) logged in to the system on " . date('Y-m-d H:i:s') . ".</p>";
+
+		// Send the email (this will not block the user from logging in)
+		sendEmailWithPHPMailer('nightbaron.369@gmail.com', $subject, $body);
+
+		// --- End of Email Sending ---
 		return redirect()->to($redirectURL)->withCookies()->with('message', lang('Auth.loginSuccess'));
 	}
 

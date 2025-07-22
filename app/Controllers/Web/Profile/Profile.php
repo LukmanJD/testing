@@ -150,15 +150,27 @@ class Profile extends BaseController
             }
         }
 
+        // Get the current user's raw avatar filename to check for an old avatar
+        $oldAvatar = user()->attributes['avatar'] ?? null;
+
         if (($request['avatar']) != 'default.jpg') {
             $folder = $request['avatar'];
             $filepath = WRITEPATH . 'uploads/' . $folder;
             $filenames = get_filenames($filepath);
-            $avatar = new File($filepath . '/' . $filenames[0]);
-            $avatar->move(FCPATH . 'media/photos');
-            $requestData['avatar'] = $avatar->getFilename();
-            delete_files($filepath);
-            rmdir($filepath);
+            if (!empty($filenames)) {
+                $avatar = new File($filepath . '/' . $filenames[0]);
+                $avatar->move(FCPATH . 'media/photos');
+                $requestData['avatar'] = $avatar->getFilename();
+
+                // If the old avatar was not the default and not a URL, delete the old one.
+                if ($oldAvatar && $oldAvatar !== 'default.jpg' && !filter_var($oldAvatar, FILTER_VALIDATE_URL)) {
+                    // Use @ to suppress errors if the file doesn't exist
+                    @unlink(FCPATH . 'media/photos/' . $oldAvatar);
+                }
+
+                delete_files($filepath);
+                rmdir($filepath);
+            }
         } else {
             $requestData['avatar'] = 'default.jpg';
         }
@@ -182,8 +194,7 @@ class Profile extends BaseController
         foreach ($coin_use as $coin) {
             if (($coin['canceled_at'] == null) && (($coin['is_rejected'] == '0') || ($coin['is_rejected'] == null))) {
                 $id = $this->reservationHomestayUnitDetailModel->get_hs_by_id($coin['id'])->getRowArray();
-            }
-            else {
+            } else {
                 $id = $this->reservationHomestayUnitDetailBackUpModel->get_hs_by_id($coin['id'])->getRowArray();
             }
             // dd($id);

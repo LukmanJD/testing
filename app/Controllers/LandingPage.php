@@ -35,11 +35,7 @@ class LandingPage extends BaseController
             $data['village']['phone'] = $user_phone['phone'];
 
             $list_gallery = $this->villageGalleryModel->get_gallery_api($checkVillage['id'])->getResultArray();
-            $galleries = array();
-            foreach ($list_gallery as $gallery) {
-                $galleries[] = $gallery['url'];
-            }
-            $data['gallery'] = $galleries;
+            $data['gallery'] = $list_gallery;
         }
 
         return view('landing_page', $data);

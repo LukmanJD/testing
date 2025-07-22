@@ -9,11 +9,10 @@
                     <div class="col-12 alert alert-success alert-dismissible show fade">
                         <?= esc($data) ?>
                         <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="alert"
-                                aria-label="Close"
-                        ></button>
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close"></button>
                     </div>
                 <?php endforeach ?>
                 <div class="col">
@@ -55,7 +54,7 @@
                 <div class="col-md-6 col-12 order-md-last order-first mb-5">
                     <p class="mb-2">Profile Picture</p>
                     <div class="text-md-start text-center" id="avatar-container">
-                        <img src="<?= base_url('media/photos'); ?>/<?= user()->avatar; ?>" alt="avatar" class="img-fluid img-thumbnail rounded-circle">
+                        <img src="<?= user()->avatar; ?>" alt="avatar" class="img-fluid img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                     </div>
                 </div>
             </div>

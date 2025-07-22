@@ -11,7 +11,7 @@ class ReservationModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'reservation';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_pepole', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status'];
+    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use'];
 
     // Dates
     protected $useTimestamps = true;
@@ -40,10 +40,7 @@ class ReservationModel extends Model
     public function add_reservation_api($reservation = null)
     {
         $reservation['request_date'] = Time::now('Asia/Jakarta', 'en_US');
-
-        $insert = $this->db->table($this->table)
-            ->insert($reservation);
-        return $insert;
+        return $this->insert($reservation);
     }
     public function get_list_reservation_by_cus_id($customer_id = null)
     {
@@ -250,22 +247,6 @@ class ReservationModel extends Model
         return $query;
     }
 
-    public function saveDepositSnapToken($reservation_id = null, $snapToken = null)
-    {
-        $query = $this->db->table($this->table)
-            ->set('deposit_snap_token', $snapToken)
-            ->where('id', $reservation_id)
-            ->update();
-        return $query;
-    }
-    public function savePayFullSnapToken($reservation_id = null, $snapToken = null)
-    {
-        $query = $this->db->table($this->table)
-            ->set('pay_full_snap_token', $snapToken)
-            ->where('id', $reservation_id)
-            ->update();
-        return $query;
-    }
     public function update_status($reservation_id = null, $status = null)
     {
         $query = $this->db->table($this->table)
@@ -287,15 +268,6 @@ class ReservationModel extends Model
     public function add_reservation_event_api($reservation = null)
     {
         $reservation['request_date'] = Time::now('Asia/Jakarta', 'en_US');
-
-        $insert = $this->db->table($this->table)
-            ->insert($reservation);
-
-        // $update = $this->db->table($this->table)
-        //     ->set('status', '0')
-        //     ->where('id', $reservation['id'])
-        //     ->update();
-
-        return $insert;
+        return $this->insert($reservation);
     }
 }

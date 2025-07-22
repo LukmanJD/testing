@@ -21,7 +21,7 @@
                                         <div class="card-body py-3 px-4">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar avatar-lg me-0">
-                                                    <img src="<?= base_url('media/photos'); ?>/<?= user()->avatar; ?>" alt="Face 1" />
+                                                    <img src="<?= user()->avatar; ?>" alt="Face 1" />
                                                 </div>
                                             </div>
                                         </div>
@@ -45,28 +45,28 @@
     setBaseUrl("<?= base_url(); ?>");
 </script>
 <script>
-        window.onload = function() {
-            // Get the current title
-            let title = document.title;
+    window.onload = function() {
+        // Get the current title
+        let title = document.title;
 
-            const villageName = document.getElementById("villageName");
-            // Split the title based on the ' - ' separator
-            let parts = title.split(" - ");
+        const villageName = document.getElementById("villageName");
+        // Split the title based on the ' - ' separator
+        let parts = title.split(" - ");
 
-            $.ajax({
-                url: baseUrl + "/api/touristVillage/",
-                dataType: "json",
-                success: function(response) {
-                    let data = response.data;
-                    let name = data.name;
+        $.ajax({
+            url: baseUrl + "/api/touristVillage/",
+            dataType: "json",
+            success: function(response) {
+                let data = response.data;
+                let name = data.name;
 
-                    parts[1] = name;
-                    document.title = parts.join(" - ");
+                parts[1] = name;
+                document.title = parts.join(" - ");
 
-                    villageName.innerText = name;
+                villageName.innerText = name;
 
 
-                },
-            });
-        };
-    </script>
+            },
+        });
+    };
+</script>

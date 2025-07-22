@@ -472,21 +472,9 @@ class Attraction extends ResourcePresenter
     {
         $deleteS = $this->attractionFacilityModel->delete(['id' => $id]);
         if ($deleteS) {
-            $response = [
-                'status' => 200,
-                'message' => [
-                    "Success delete Attraction Facility"
-                ]
-            ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted(['id' => $id], 'Success delete Attraction Facility');
         } else {
-            $response = [
-                'status' => 404,
-                'message' => [
-                    "Attraction Facility not found"
-                ]
-            ];
-            return $this->failNotFound($response);
+            return $this->failNotFound('Attraction Facility not found');
         }
     }
     public function addNewTicket()
@@ -539,21 +527,9 @@ class Attraction extends ResourcePresenter
     {
         $deleteS = $this->attractionTicketPriceModel->delete(['id' => $id]);
         if ($deleteS) {
-            $response = [
-                'status' => 200,
-                'message' => [
-                    "Success delete Attraction Ticket"
-                ]
-            ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted(['id' => $id], 'Success delete Attraction Ticket');
         } else {
-            $response = [
-                'status' => 404,
-                'message' => [
-                    "Attraction Ticket not found"
-                ]
-            ];
-            return $this->failNotFound($response);
+            return $this->failNotFound('Attraction Ticket not found');
         }
     }
 

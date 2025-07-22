@@ -144,21 +144,9 @@ class ExclusiveActivity extends ResourcePresenter
     {
         $deleteS = $this->homestayExclusiveActivityModel->del_activity($homestay_id, $id);
         if ($deleteS) {
-            $response = [
-                'status' => 200,
-                'message' => [
-                    "Success delete Activity"
-                ]
-            ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted(['id' => $id], 'Success delete Activity');
         } else {
-            $response = [
-                'status' => 404,
-                'message' => [
-                    "Activity not found"
-                ]
-            ];
-            return $this->failNotFound($response);
+            return $this->failNotFound('Activity not found');
         }
     }
     public function getListActivity($homestay_id = null)

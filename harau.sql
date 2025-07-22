@@ -2463,6 +2463,7 @@ CREATE TABLE `users` (
   `reset_at` datetime DEFAULT NULL,
   `reset_expires` datetime DEFAULT NULL,
   `activate_hash` varchar(255) DEFAULT NULL,
+  `activate_expires` datetime DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
   `status_message` varchar(255) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0',

@@ -533,7 +533,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a class="btn icon btn-primary btn-sm mb-1 mt-3" id="pay-button">
+                                            <a href="<?= site_url('web/checkout/' . esc($reservation['id']) . '/deposit') ?>" class="btn icon btn-primary btn-sm mb-1 mt-3">
                                                 Pay Deposit
                                             </a>
                                         </td>
@@ -548,7 +548,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a class="btn icon btn-primary btn-sm mb-1 mt-3" id="pay-button">
+                                            <a href="<?= site_url('web/checkout/' . esc($reservation['id']) . '/full') ?>" class="btn icon btn-primary btn-sm mb-1 mt-3">
                                                 Pay Full Price
                                             </a>
                                         </td>
@@ -851,49 +851,6 @@
 <script src="https://cdn.jsdelivr.net/npm/filepond-plugin-media-preview@1.0.11/dist/filepond-plugin-media-preview.min.js"></script>
 <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
 <script src="<?= base_url('assets/js/extensions/form-element-select.js'); ?>"></script>
-<?php
-$cancelDeadline = date("d F Y, H:i", strtotime($reservation['check_in'] . ' - 1 days'));
-
-if (strtotime(date("d F Y, H:i")) < strtotime($cancelDeadline)) {
-    $text = "You will get back 50% of the deposit you have paid!";
-} else {
-    $text = "Cancellation after 1 day before checking in, you will not get a refund!";
-}
-
-?>
-<?php if (isset($snapToken)) : ?>
-    <script type="text/javascript">
-        var payButton = document.getElementById('pay-button');
-
-        payButton.addEventListener('click', function() {
-
-            console.log('<?= $snapToken; ?>');
-            snap.pay('<?= $snapToken; ?>', {
-                // Optional callback after payment success
-                onSuccess: function(result) {
-                    console.log('Payment Success:', result);
-                    // Refresh the page after success
-                    location.reload();
-                },
-                // Optional callback when payment is pending
-                onPending: function(result) {
-                    console.log('Payment Pending:', result);
-                    // Refresh the page for pending status as well
-                    location.reload();
-                },
-                // Optional callback when payment fails
-                onError: function(result) {
-                    console.log('Payment Error:', result);
-                    alert('Payment failed. Please try again.');
-                },
-                // Optional callback when user closes the payment window
-                onClose: function() {
-                    alert('You closed the payment window without finishing the payment.');
-                }
-            }); // Use the Snap token from the controller
-        });
-    </script>
-<?php endif; ?>
 <script>
     function confirmCancelReservation(reservation_id) {
         Swal.fire({
