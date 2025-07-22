@@ -2,16 +2,31 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
+use Myth\Auth\Models\UserModel as MythModel;
 
-class UserModel extends Model
+class UserModel extends MythModel
 {
-    protected $table = 'users';
-    protected $primaryKey = 'id';
+    protected $returnType = 'App\Entities\User';
+
     protected $allowedFields = [
         'email',
-        'name',
-        'profile_picture',
-        'password_hash', // Add 'profile_picture' if not already present
+        'username',
+        'password_hash',
+        'reset_hash',
+        'reset_at',
+        'reset_expires',
+        'activate_hash',
+        'status',
+        'status_message',
+        'active',
+        'force_pass_reset',
+        'permissions',
+        'deleted_at',
+        'avatar',
+        'first_name',
+        'last_name',
+        'phone',
+        'address',
+        'total_coin'
     ];
 }

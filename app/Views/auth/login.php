@@ -78,27 +78,30 @@
                                 </label>
                             </div>
                         <?php endif; ?>
-                        <button class="btn btn-primary btn-block shadow mt-5" type="submit">
+
+                        <button class="btn btn-primary btn-block shadow mt-4" type="submit">
                             <?= lang('Auth.loginAction') ?>
                         </button>
                     </form>
 
                     <div class="text-center mt-3">
                         <p>Or login with:</p>
-                        <a href="<?= base_url('authgoogle/login') ?>">
-                            <img src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png"
-                                alt="Sign in with Google" />
+                        <a href="<?= base_url('authgoogle/login') ?>" class="btn btn-light shadow btn-block">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google sign-in" width="20" class="me-2">
+                            Sign In with Google
                         </a>
                     </div>
 
-                    <?php if ($config->allowRegistration) : ?>
-                        <div class="text-center mt-4 text-lg">
-                            <p class="text-gray-600">
+                    <div class="text-center mt-4 text-lg">
+                        <p class="text-gray-600">
+                            <?php if ($config->allowRegistration) : ?>
                                 <?= lang('Auth.needAnAccount') ?>
                                 <a href="<?= route_to('register') ?>" class="font-bold"><?= lang('Auth.register') ?></a> <br>
-                            </p>
-                        </div>
-                    <?php endif; ?>
+                            <?php endif; ?>
+                            Forgot to activate?
+                            <a href="<?= route_to('resend-activation') ?>" class="font-bold">Resend Mail</a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

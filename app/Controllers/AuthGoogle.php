@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
-use Myth\Auth\Models\UserModel;
+use App\Models\UserModel; // Use your application's UserModel
 use Google_Client;
 use Google_Service_Oauth2;
 
@@ -13,9 +13,9 @@ class AuthGoogle extends Controller
 
     public function __construct()
     {
-        $this->client = new \Google_Client();
-        $this->client->setClientId('644895794102-ascftgh1gv53snks5n1q7f4u95ab0jae.apps.googleusercontent.com'); // Replace with your actual Client ID
-        $this->client->setClientSecret('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'); // Replace with your actual Client Secret
+        $this->client = new Google_Client();
+        $this->client->setClientId(getenv('google.clientId')); // Get from .env file
+        $this->client->setClientSecret(getenv('google.clientSecret')); // Get from .env file
         $this->client->setRedirectUri(base_url('authgoogle/callback'));
         $this->client->addScope('email');
         $this->client->addScope('profile');
@@ -28,46 +28,60 @@ class AuthGoogle extends Controller
 
     public function callback()
     {
-        $service = new \Google_Service_Oauth2($this->client);
+        $service = new Google_Service_Oauth2($this->client);
 
         if ($code = service('request')->getGet('code')) {
             $token = $this->client->fetchAccessTokenWithAuthCode($code);
             $this->client->setAccessToken($token);
 
             $googleUser = $service->userinfo->get();
-            $email = $googleUser->email;
-            $username = explode('@', $email)[0];
-            $name = $googleUser->name ?? '';
-            $avatar = $googleUser->picture ?? 'default.jpg';
 
             $userModel = new UserModel();
-            $user = $userModel->where('email', $email)->first();
+            $user = $userModel->where('email', $googleUser->email)->first();
 
             helper('auth');
+            helper('text');
 
-            if ($user) {
-                // Update the user's profile with Google data
-                $userModel->update($user->id, [
-                    'name' => $name,
-                    'profile_picture' => $avatar // Assuming you have a 'profile_picture' column
-                ]);
-            } else {
-                $inserted = $userModel->insert([
-                    'email'    => $email,
+            if (!$user) {
+                // --- Username collision handling ---
+                $baseUsername = explode('@', $googleUser->email)[0];
+                $username = $baseUsername;
+                $i = 1;
+                while ($userModel->where('username', $username)->first()) {
+                    $username = $baseUsername . $i++;
+                }
+                // --- End of username collision handling ---
+
+                // Use a secure, random password for social logins.
+                // Myth/Auth's UserModel will hash this automatically.
+                $password = random_string('crypto', 32);
+
+                $userEntity = new \App\Entities\User([ // Use your application's User entity
+                    'email'    => $googleUser->email,
                     'username' => $username,
-                    'name'     => $name,
-                    'profile_picture' => $avatar, // Assuming you have a 'profile_picture' column
-                    'password' => password_hash('google_secret_password', PASSWORD_DEFAULT),
-                    'active'   => 1,
+                    'password' => $password,
+                    'active'   => 1, // Set user as active
+                    'avatar'   => $googleUser->picture, // Save the Google profile picture URL
                 ]);
 
-                if (!$inserted) {
+                if ($userModel->save($userEntity) === false) {
                     // Log the error for debugging
-                    log_message('error', 'Failed to register user: ' . json_encode($userModel->errors()));
-                    return redirect()->to('/login')->with('error', 'Failed to register user.');
+                    log_message('error', 'Failed to register user via Google: ' . json_encode($userModel->errors()));
+                    return redirect()->to('/login')->with('error', lang('Auth.registerFailure'));
                 }
 
-                $user = $userModel->where('email', $email)->first();
+                // More efficient to find the user by their newly created ID.
+                $userId = $userModel->getInsertID();
+                $user = $userModel->find($userId);
+
+                // Add the user to the default 'user' group.
+                // Assumes 'user' group has ID 1.
+                $userModel->addToGroup($user->id, 1);
+            } else {
+                // User exists, update avatar if it has changed.
+                if ($user->avatar !== $googleUser->picture) {
+                    $userModel->update($user->id, ['avatar' => $googleUser->picture]);
+                }
             }
 
             $auth = service('authentication');
@@ -78,34 +92,5 @@ class AuthGoogle extends Controller
         }
 
         return redirect()->to('/login');
-    }
-
-    public function register()
-    {
-        $oauthData = session()->get('oauth_google');
-
-        if (!$oauthData) {
-            return redirect()->to('/login');
-        }
-
-        $userModel = new UserModel();
-
-        $userModel->insert([
-            'email'    => $oauthData['email'],
-            'username' => explode('@', $oauthData['email'])[0],
-            'password' => password_hash('google_secret_password', PASSWORD_DEFAULT),
-            'active'   => 1,
-        ]);
-
-        session()->remove('oauth_google');
-
-        helper('auth');
-        $auth = service('authentication');
-        $auth->attempt([
-            'email'    => $oauthData['email'],
-            'password' => 'google_secret_password',
-        ], false);
-
-        return redirect()->to('/');
     }
 }

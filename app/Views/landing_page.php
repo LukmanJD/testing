@@ -48,8 +48,18 @@
         }
 
         #home {
-            height: 65vh;
-            /* Mengatur tinggi elemen agar sesuai dengan tinggi viewport */
+            /* height: 65vh;
+            /* Height is set by JavaScript to fill the viewport under the navbar */
+        }
+
+        .header-carousel {
+            height: 100%;
+        }
+
+        .header-carousel .owl-stage-outer,
+        .header-carousel .owl-stage,
+        .header-carousel .owl-item {
+            height: 100%;
         }
 
         .card {
@@ -63,17 +73,71 @@
             position: relative;
             width: 100%;
             /* Make sure it takes the full width */
-            height: 620px;
-            /* Set a fixed height or adjust as needed */
+            /* height: 620px;
+            Set a fixed height or adjust as needed */
+            height: 100%;
+            /* Fill the container */
             overflow: hidden;
             /* Hide overflow when the image zooms */
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: cover;
         }
 
-        .owl-carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* This ensures the image covers the entire div without distortion */
+        .image-info-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .image-info-button:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .image-info-overlay {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 40px;
+            transform: translateY(100%);
+            /* Start hidden below */
+            transition: transform 0.4s ease-in-out, visibility 0.4s;
+            visibility: hidden;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: justify;
+            overflow-y: auto;
+        }
+
+        .image-info-overlay.show {
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .back-to-top {
+            /* Position it a bit higher, above the Tawk.to widget */
+            bottom: 110px;
+            z-index: 1000001;
+            /* Make sure it's on top of other elements */
         }
     </style>
 </head>
@@ -117,9 +181,10 @@
     <?php if ($village != null) : ?>
         <!-- Header Start -->
         <div class="container-fluid bg-dark p-0 mb-5" id="home">
-            <div class="row g-0 flex-column-reverse flex-lg-row">
+            <!-- <div class="row g-0 flex-column-reverse flex-lg-row"> -->
+            <div class="row g-0 flex-column-reverse flex-lg-row h-100">
                 <div class="col-lg-6 p-0 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="header-bg h-100 d-flex flex-column justify-content-center p-5" style="background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(media/photos/<?= $gallery[array_rand($gallery)]; ?>) center center no-repeat; background-size: cover;">
+                    <div class="header-bg h-100 d-flex flex-column justify-content-center p-5" style="background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(media/photos/<?= $gallery[array_rand($gallery)]['url']; ?>) center center no-repeat; background-size: cover;">
                         <h2 class="display-6 text-light mb-2">
                             Welcome to
                         </h2>
@@ -135,11 +200,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                <div class="col-lg-6 wow fadeIn h-100" data-wow-delay="0.5s">
                     <div class="owl-carousel header-carousel">
                         <?php foreach ($gallery as $item) : ?>
-                            <div class="owl-carousel-item">
-                                <img class="img-fluid" src="media/photos/<?= $item; ?>" alt="" />
+                            <div class="owl-carousel-item" style="background-image: url('<?= base_url('media/photos/' . $item['url']); ?>')">
+                                <div class="image-info-button" title="About this image">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </div>
+                                <div class="image-info-overlay">
+                                    <div style="max-width: 80%;">
+                                        <p class="mb-0"><?= esc($item['description']); ?></p>
+                                    </div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -223,7 +295,7 @@
                     </div>
                     <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
                         <div class="img-border  ">
-                            <img class="img-fluid" src="media/photos/<?= $gallery[array_rand($gallery)]; ?>" alt="" />
+                            <img class="img-fluid" src="media/photos/<?= $gallery[array_rand($gallery)]['url']; ?>" alt="" />
                         </div>
                     </div>
                 </div>
@@ -413,6 +485,58 @@
             $('#map').hide();
         }
     </script>
+
+    <script>
+        $(document).ready(function() {
+            function setHeroHeight() {
+                const navbarHeight = $('.navbar').outerHeight();
+                const viewportHeight = $(window).height();
+                $('#home').height(viewportHeight - navbarHeight);
+            }
+
+            // Set height on initial load
+            setHeroHeight();
+
+            // Update height on window resize
+            $(window).on('resize', function() {
+                setHeroHeight();
+            });
+
+            $('.image-info-button').on('click', function(e) {
+                e.stopPropagation(); // Prevent the click from bubbling up to the carousel
+                const $overlay = $(this).siblings('.image-info-overlay');
+                const $carousel = $('.header-carousel');
+                const isOpening = !$overlay.hasClass('show');
+
+                // Hide any other open overlays.
+                $('.image-info-overlay').not($overlay).removeClass('show');
+
+                // Toggle the current one.
+                $overlay.toggleClass('show');
+
+                if (isOpening) {
+                    // If we are opening an overlay, stop the carousel.
+                    $carousel.trigger('stop.owl.autoplay');
+                } else {
+                    // If we are closing an overlay, start the carousel.
+                    $carousel.trigger('play.owl.autoplay');
+                }
+            });
+
+            // Hide overlay when clicking anywhere else on the item
+            $('.owl-carousel-item').on('click', function(e) {
+                if (!$(e.target).closest('.image-info-overlay').length && !$(e.target).closest('.image-info-button').length) {
+                    const $overlay = $(this).find('.image-info-overlay');
+                    if ($overlay.hasClass('show')) {
+                        $overlay.removeClass('show');
+                        // Start the carousel again when the overlay is closed.
+                        $('.header-carousel').trigger('play.owl.autoplay');
+                    }
+                }
+            });
+        });
+    </script>
+
     <script>
         function showMap(category = null) {
             if ($('#map').hide()) {
@@ -462,6 +586,7 @@
             })
         }
     </script>
+
 </body>
 
 </html>

@@ -80,9 +80,7 @@ class Users extends ResourcePresenter
      *
      * @return mixed
      */
-    public function create()
-    {
-    }
+    public function create() {}
 
     /**
      * Present a view to edit the properties of a specific resource object
@@ -151,15 +149,27 @@ class Users extends ResourcePresenter
             $updatePassword = $this->accountModel->change_password_user($id, $passwordData);
         }
 
+        // Get the current user data to check for an old avatar
+        $currentUser = $this->accountModel->get_account_by_id_api($id)->getRow();
+        $oldAvatar = $currentUser->avatar;
+
         if (($request['avatar']) != 'default.jpg') {
             $folder = $request['avatar'];
             $filepath = WRITEPATH . 'uploads/' . $folder;
             $filenames = get_filenames($filepath);
-            $avatar = new File($filepath . '/' . $filenames[0]);
-            $avatar->move(FCPATH . 'media/photos');
-            $requestData['avatar'] = $avatar->getFilename();
-            delete_files($filepath);
-            rmdir($filepath);
+            if (!empty($filenames)) {
+                $avatar = new File($filepath . '/' . $filenames[0]);
+                $avatar->move(FCPATH . 'media/photos');
+                $requestData['avatar'] = $avatar->getFilename();
+
+                // If the old avatar was not the default and a new one is uploaded, delete the old one.
+                if ($oldAvatar && $oldAvatar !== 'default.jpg' && $oldAvatar !== $requestData['avatar']) {
+                    @unlink(FCPATH . 'media/photos/' . $oldAvatar);
+                }
+
+                delete_files($filepath);
+                rmdir($filepath);
+            }
         } else {
             $requestData['avatar'] = 'default.jpg';
         }

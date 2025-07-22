@@ -47,6 +47,13 @@ $routes->get('/register', 'Web\Profile\Profile::register');
 $routes->get('/setup', 'LandingPage::setup',  ['filter' => 'role:admin']);
 $routes->post('/setup', 'LandingPage::selectVillage',  ['filter' => 'role:admin']);
 
+// In app/Config/Routes.php
+$routes->post('register', 'Register::attemptRegister', ['as' => 'register']);
+$routes->get('register/activateAccount/(:segment)', 'Register::activateAccount/$1');
+$routes->get('register/resend', 'Register::showResend', ['as' => 'resend-activation']);
+$routes->post('register/resend', 'Register::attemptResend', ['as' => 'resend-activate-account']);
+
+
 $routes->post('api/message/send', 'Api\Notification::sendMessage');
 
 $routes->get('/mailWithPHPMailer', 'LandingPage::mailWithPHPMailer');
