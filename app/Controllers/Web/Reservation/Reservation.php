@@ -7,10 +7,10 @@ use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
 
-use App\Models\Package\PackageModel;
-use App\Models\Package\PackageDayModel;
-use App\Models\Package\PackageDetailModel;
-use App\Models\Package\PackageServiceDetailModel;
+use App\Models\PackageModel;
+use App\Models\PackageDayModel;
+use App\Models\PackageDetailModel;
+use App\Models\PackageServiceDetailModel;
 use App\Models\Homestay\HomestayModel;
 use App\Models\Homestay\HomestayUnitModel;
 use App\Models\Homestay\HomestayUnitGalleryModel;
@@ -23,13 +23,13 @@ use App\Models\Reservation\ReservationHomestayActivityDetailModel;
 use App\Models\Reservation\ReservationHomestayAdditionalAmenitiesDetailModel;
 use App\Models\AccountModel;
 use App\Controllers\Api\Notification;
-use App\Models\Attraction\AttractionModel;
+use App\Models\AttractionModel;
 use App\Models\Culinary\CulinaryPlaceModel;
 use App\Models\Souvenir\SouvenirPlaceModel;
-use App\Models\ServiceProvider\ServiceProviderModel;
+use App\Models\ServiceProviderModel;
 use App\Models\Worship\WorshipPlaceModel;
-use App\Models\Event\EventModel;
-use App\Models\User\UserBankAccountModel;
+use App\Models\EventModel;
+use App\Models\UserBankAccountModel;
 use Myth\Auth\Models\UserModel;
 
 class Reservation extends ResourcePresenter
@@ -59,7 +59,7 @@ class Reservation extends ResourcePresenter
     protected $serviceProviderModel;
     protected $worshipPlaceModel;
     protected $eventModel;
-    protected $userBankAccountModel;
+    protected UserBankAccountModel $userBankAccountModel;
     protected $userModel;
 
     protected $helpers = ['auth', 'url', 'filesystem'];
@@ -621,20 +621,6 @@ class Reservation extends ResourcePresenter
             $checkIsReservationCancel = $this->checkIsReservationCancel($reservation);
         }
 
-                $this->reservationModel->update_status($reservation['id'], 'Full Pay Expired');
-                $messageUser = 'Your full price payment has been expired for the reservation with ID ' . $id . ' at ' . $homestay['name'] . '. Your reservation has been canceled.';
-                $messageOwner = 'Full price payment for reservation with ID ' . $id . ' from @' . $user['username'] . ' has been expired. The reservation has been canceled.';
-                $this->notification->sendMessage($user, $messageUser);
-                $this->notification->sendMessage($owner, $messageOwner);
-                $reservation_detail = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($reservation['id'])->getResultArray();
-
-                foreach ($reservation_detail as $reservationDetail) {
-                    $this->reservationHomestayUnitDetailBackUpModel->add_reservation_detail_api($reservationDetail);
-                }
-                $this->reservationHomestayUnitDetailModel->delete_reserv_det_by_reserv_id($reservation['id']);
-            }
-        }
-
         if ($reservation['status'] == 'Full Pay Successful') {
             $checkIsReservationDone = $this->checkIsReservationDone($reservation);
         }
@@ -722,11 +708,12 @@ class Reservation extends ResourcePresenter
             'reservation_additional_amenities' => $reservation_additional_amenities,
         ];
         // dd($data);
-
         return view('web/reservation_detail', $data);
     }
 
-
+    public function create() {}
+    public function update($id = null) {}
+    public function delete($id = null) {}
 
     public function getPackage($homestay_id = null, $reservation_id = null)
     {
@@ -1520,8 +1507,6 @@ class Reservation extends ResourcePresenter
             return redirect()->back()->withInput();
         }
     }
-    public function create() {}
-    public function update($id = null) {}
     public function checkIsReservationCancel($reservation = null)
     {
         date_default_timezone_set("Asia/Jakarta");
@@ -1582,5 +1567,4 @@ class Reservation extends ResourcePresenter
             $this->reservationModel->update_status($reservation['id'], 'Done');
         }
     }
-
 }

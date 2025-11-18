@@ -5,7 +5,6 @@
 <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/filepond-plugin-media-preview@1.0.11/dist/filepond-plugin-media-preview.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/css/pages/form-element-select.css'); ?>">
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= config('Midtrans')->clientKey; ?>"></script>
 <style>
     .filepond--root {
         width: 100%;
@@ -358,7 +357,7 @@
                                 <!-- <script>
                                     usedCoinText();
                                 </script> -->
-
+                                `
                                 <?php if ((($reservation['status'] == 'Deposit Successful') || ($reservation['status'] == 'Full Pay Pending') || ($reservation['status'] == 'Full Pay Successful')) && ($reservation['canceled_at'] == null)) : ?>
                                     <?php if (($reservation['reservation_type'] == 1 && $reservation['coin_use'] == 0)) : ?>
                                         <tr>

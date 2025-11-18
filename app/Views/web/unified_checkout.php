@@ -19,6 +19,25 @@
                 <p>Total Amount: <strong>Rp <?= number_format($order_amount_idr, 0, ',', '.') ?></strong> (approx. $<?= number_format($amountUSD, 2, '.', '') ?>)</p>
                 <hr>
 
+                <!-- Currency Converter -->
+                <?php if (!empty($rates)) : ?>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="currency-select" class="form-label">See price in another currency:</label>
+                            <select id="currency-select" class="form-select">
+                                <option value="IDR" selected>IDR (Indonesian Rupiah)</option>
+                                <?php foreach ($rates as $currency => $rate) : ?>
+                                    <option value="<?= esc($currency) ?>"><?= esc($currency) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <h5 id="converted-price" class="mb-1"></h5>
+                        </div>
+                    </div>
+                    <hr>
+                <?php endif; ?>
+
                 <!-- Doku Payment Button -->
                 <h5>Pay with Doku (IDR)</h5>
                 <form action="<?= site_url('/web/payment/dokuCheckout') ?>" method="post">
@@ -37,6 +56,42 @@
 
     <!-- PayPal SDK Script -->
     <script src="https://www.paypal.com/sdk/js?client-id=<?= getenv('paypal.clientId') ?>&currency=USD"></script>
+
+    <?php if (!empty($rates)) : ?>
+        <script>
+            const rates = <?= json_encode($rates) ?>;
+            const baseAmountIDR = <?= $order_amount_idr ?>;
+            const currencySelector = document.getElementById('currency-select');
+            const convertedPriceElement = document.getElementById('converted-price');
+
+            function updateConvertedPrice() {
+                const selectedCurrency = currencySelector.value;
+
+                if (selectedCurrency === 'IDR') {
+                    convertedPriceElement.innerText = '';
+                    return;
+                }
+
+                const rate = rates[selectedCurrency];
+                if (rate) {
+                    const convertedAmount = baseAmountIDR * rate;
+
+                    // Format the currency with symbol and appropriate decimal places
+                    const formattedAmount = new Intl.NumberFormat(undefined, {
+                        style: 'currency',
+                        currency: selectedCurrency,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(convertedAmount);
+
+                    convertedPriceElement.innerText = `Approx. ${formattedAmount}`;
+                }
+            }
+
+            // Add event listener
+            currencySelector.addEventListener('change', updateConvertedPrice);
+        </script>
+    <?php endif; ?>
 
     <script>
         paypal.Buttons({

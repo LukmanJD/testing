@@ -44,15 +44,18 @@ class PaymentController extends Controller
     {
         $reservation = $this->reservationModel->find($reservationId);
 
-        if (!$reservation || $reservation->user_id !== user_id()) {
+        if (!$reservation || $reservation['customer_id'] !== user_id()) {
             return redirect()->to('/web/reservation')->with('error', 'Reservation not found.');
         }
 
         $amount = 0;
-        if ($paymentType === 'deposit' && $reservation->status === '1') {
-            $amount = $reservation->deposit_price;
-        } elseif ($paymentType === 'full' && $reservation->status === '2') {
-            $amount = $reservation->total_price - $reservation->deposit_price;
+        // Check if it's time to pay the deposit
+        if ($paymentType === 'deposit' && ($reservation['status'] === '1' || $reservation['status'] === 'Deposit Pending')) {
+            $amount = $reservation['deposit'];
+        }
+        // Check if it's time to pay the full amount
+        elseif ($paymentType === 'full' && ($reservation['status'] === 'Deposit Successful' || $reservation['status'] === 'Full Pay Pending')) {
+            $amount = $reservation['total_price'] - $reservation['deposit'] - $reservation['coin_use'];
         }
 
         if ($amount <= 0) {
@@ -66,11 +69,29 @@ class PaymentController extends Controller
             'order_amount_idr' => $amount,
         ]);
 
+        // --- Fetch Currency Conversion Rates ---
+        $rates = [];
+        $apiKey = getenv('exchangerate.apiKey');
+        if ($apiKey) {
+            try {
+                $response = $this->guzzleClient->get("https://v6.exchangerate-api.com/v6/{$apiKey}/latest/IDR");
+                $body = json_decode($response->getBody()->getContents(), true);
+                if ($body['result'] === 'success') {
+                    $rates = $body['conversion_rates'];
+                }
+            } catch (RequestException $e) {
+                log_message('error', 'ExchangeRate-API Exception: ' . $e->getMessage());
+                // Don't block the user, just won't show the converter
+            }
+        }
+        // --- End Fetch ---
+
         $data = [
             'title' => 'Unified Checkout',
             'reservation_id'   => $reservationId,
             'order_amount_idr' => $amount,
-            'idr_to_usd_rate'  => (float)getenv('IDR_TO_USD_RATE')
+            'idr_to_usd_rate'  => (float)getenv('IDR_TO_USD_RATE'),
+            'rates'            => $rates
         ];
 
         return view('web/unified_checkout', $data);
@@ -283,10 +304,10 @@ class PaymentController extends Controller
 
         // Determine next status based on current status and payment type
         $nextStatus = null;
-        if ($paymentType === 'deposit' && $reservation->status === '1') { // Deposit payment
-            $nextStatus = '2'; // Status for "Deposit Successful"
-        } elseif ($paymentType === 'full' && $reservation->status === '2') { // Full payment
-            $nextStatus = '3'; // Status for "Full Pay Successful"
+        if ($paymentType === 'deposit' && ($reservation['status'] === '1' || $reservation['status'] === 'Deposit Pending')) { // Deposit payment
+            $nextStatus = 'Deposit Successful';
+        } elseif ($paymentType === 'full' && ($reservation['status'] === 'Deposit Successful' || $reservation['status'] === 'Full Pay Pending')) { // Full payment
+            $nextStatus = 'Full Pay Successful';
         }
 
         if ($nextStatus) {

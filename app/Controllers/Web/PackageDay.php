@@ -10,7 +10,7 @@ use App\Models\PackageModel;
 use App\Models\PackageDayModel;
 use App\Models\PackageDetailModel;
 
-use App\Models\ReservationModel;
+use App\Models\Reservation\ReservationModel;
 use App\Models\AttractionModel;
 use App\Models\EventModel;
 
@@ -88,7 +88,7 @@ class PackageDay extends ResourcePresenter
                     "Success delete Package Day"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message']);
         } else {
             $response = [
                 'status' => 404,
@@ -96,7 +96,7 @@ class PackageDay extends ResourcePresenter
                     "Package Day not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 
