@@ -9,8 +9,10 @@ class ReservationModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'reservation';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at'];
+    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at', 'is_rejected'];
 
     // Dates
     protected $useTimestamps = false;
@@ -134,9 +136,6 @@ class ReservationModel extends Model
             $reservation['status'] = '1';
         }
 
-        if (isset($reservation['is_rejected'])) {
-            unset($reservation['is_rejected']);
-        }
         if (isset($reservation['id'])) {
             unset($reservation['id']);
         }

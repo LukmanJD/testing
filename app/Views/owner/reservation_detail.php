@@ -565,7 +565,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="card-body text-dark">
-                            <form class="form form-vertical" action="/dashboard/reservation/confirm/<?= esc($reservation['id']); ?>" method="post" onsubmit="checkRequired(event)" enctype="multipart/form-data">
+                            <form class="form form-vertical" action="/dashboard/reservation/confirm/<?= esc($reservation['id']); ?>" method="post" enctype="multipart/form-data">
+                                <?= csrf_field() ?>
                                 <div class="form-body">
                                     <div class="form-group mb-4">
                                         <label for="name" class="mb-2">Reservation Status</label>

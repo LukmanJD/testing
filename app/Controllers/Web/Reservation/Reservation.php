@@ -1523,14 +1523,17 @@ class Reservation extends ResourcePresenter
             if ($request['is_rejected'] == '0') {
                 $messageUser = 'Your reservation with ID ' . $id . ' at ' . $homestay['name'] . ' has been confirmed by the owner.';
                 $messageOwner = 'You have confirmed a reservation with ID ' . $id . ' from @' . $user['username'] . '.';
+                session()->setFlashdata('success', 'Reservation confirmed successfully.');
             } else {
                 $messageUser = 'Your reservation with ID ' . $id . ' at ' . $homestay['name'] . ' has been rejected by the owner.';
                 $messageOwner = 'You have rejected a reservation with ID ' . $id . ' from @' . $user['username'] . '.';
+                session()->setFlashdata('error', 'Reservation rejected.');
             }
             $this->notification->sendMessage($user, $messageUser);
             $this->notification->sendMessage($owner, $messageOwner);
             return redirect()->to(base_url('dashboard/reservation/detail/' . $id));
         } else {
+            session()->setFlashdata('error', 'Failed to update reservation status.');
             return redirect()->back()->withInput();
         }
     }
