@@ -173,7 +173,11 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form id="reservation-form" class="form form-vertical" action="" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                    <?php if (session()->getFlashdata('error')): ?>
+                        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+                    <?php endif; ?>
+                    <form id="reservation-form" class="form form-vertical" action="<?= base_url('web/reservation/' . $homestay_id); ?>" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                        <?= csrf_field() ?>
                         <div class="form-body">
                             <div class="row">
                                 <div class="col-md-5 col-12" style="border-right: 1px dashed #333;">

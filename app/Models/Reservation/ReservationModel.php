@@ -4,17 +4,16 @@ namespace App\Models\Reservation;
 
 use CodeIgniter\I18n\Time;
 use CodeIgniter\Model;
-use PhpParser\Node\Expr\AssignOp\Mul;
 
 class ReservationModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'reservation';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use'];
+    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -127,15 +126,22 @@ class ReservationModel extends Model
         return $query;
     }
 
-    public function confirm_reservation($reservation = null, $reservation_id = null)
+    public function confirm_reservation($reservation = null, $id = null)
     {
         $confirmed_at = Time::now('Asia/Jakarta', 'en_US');
-        $reservation['status'] = '1';
-        $reservation['confirmed_at'] = $confirmed_at;
-        $query = $this->db->table($this->table)
-            ->where('id', $reservation_id)
-            ->update($reservation);
-        return $query;
+        $reservation['confirmed_at'] = $confirmed_at->toDateTimeString();
+        if (!isset($reservation['is_rejected']) || $reservation['is_rejected'] == '0') {
+            $reservation['status'] = '1';
+        }
+
+        if (isset($reservation['is_rejected'])) {
+            unset($reservation['is_rejected']);
+        }
+        if (isset($reservation['id'])) {
+            unset($reservation['id']);
+        }
+
+        return $this->update($id, $reservation);
     }
     public function set_total_price($total_price = null, $reservation_id = null)
     {

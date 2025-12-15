@@ -121,7 +121,7 @@ $routes->group('web', ['namespace' => 'App\Controllers\Web'], function ($routes)
     $routes->post('reservation/addAmenities', 'Reservation::addAmenities', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->post('reservation/addActivity', 'Reservation::addActivity', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->post('reservation/review/(:segment)', 'Reservation::addReview/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
-    $routes->post('reservation/(:segment)', 'Reservation::createReservation/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
+    $routes->post('reservation/(:segment)', 'Reservation::create/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/unit/(:segment)/(:segment)/(:segment)/(:segment)', 'Reservation::getUnit/$1/$2/$3/$4', ['namespace' => 'App\Controllers\Web\Reservation']);
     $routes->get('reservation/finish/(:segment)/(:segment)/(:segment)/(:segment)', 'Reservation::finishReservation/$1/$2/$3/$4', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/package/price/confirm/(:segment)/(:segment)', 'Reservation::confirmPackagePrice/$1/$2', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);

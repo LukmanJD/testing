@@ -73,7 +73,11 @@
                     </script>
                 <?php endif; ?>
                 <div class="card-body">
-                    <form id="reservation-form" class="form form-vertical" action="" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                    <?php if (session()->getFlashdata('error')): ?>
+                        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+                    <?php endif; ?>
+                    <form id="reservation-form" class="form form-vertical" action="<?= base_url('web/reservationEvent/' . $homestay_id); ?>" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                        <?= csrf_field() ?>
                         <div class="form-body">
                             <div class="row">
                                 <div class="col-md-8 col-12">

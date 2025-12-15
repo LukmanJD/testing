@@ -188,7 +188,7 @@ class Reservation extends ResourcePresenter
         $response = $client->get($url);
 
         if ($response->getStatusCode() === 200) {
-            $result = json_decode($response->getBody(), true);
+            $result = json_decode($response->getBody() ?? '', true);
             if (isset($result['daily'])) {
                 $weatherData = $result['daily'];
                 if (isset($weatherData['weathercode'])) {
@@ -384,62 +384,73 @@ class Reservation extends ResourcePresenter
         return $this->respond($response);
     }
 
-    public function createReservation($homestay_id = null)
+    public function create($homestay_id = null)
     {
         $request = $this->request->getPost();
+        
+        if ($homestay_id === null) {
+            $homestay_id = $request['homestay_id'];
+        }
 
+        // Generate new reservation ID
         $new_id = $this->reservationModel->get_new_id_api();
 
+        // Calculate total price and gather homestay units
         $total_price = 0;
-
-        $homestay_units = array();
-        for ($i = 0; $i < count($request['unit_number']); $i++) {
-            $homestay_unit = $this->homestayUnitModel->get_hu_by_id_api($homestay_id, $request['unit_type'], $request['unit_number'][$i])->getRowArray();
-            $homestay_units[] = $homestay_unit;
-            $total_price = $total_price + $homestay_unit['price'];
-        }
-
-        if ($request['unit_type'] == '3') {
-            $requestData = [
-                'id' => $new_id,
-                'customer_id' => user()->id,
-                'check_in' => $request['check_in'] . ' 06:00',
-                'total_people' => $request['total_people'],
-                'reservation_type' => '1'
-            ];
-        } else {
-            $requestData = [
-                'id' => $new_id,
-                'customer_id' => user()->id,
-                'check_in' => $request['check_in'] . ' 14:00',
-                'total_people' => $request['total_people'],
-                'reservation_type' => '1'
-            ];
-        }
-
-
-        foreach ($requestData as $key => $value) {
-            if (empty($value)) {
-                unset($requestData[$key]);
+        $homestay_units = [];
+        if (isset($request['unit_number']) && is_array($request['unit_number'])) {
+            for ($i = 0; $i < count($request['unit_number']); $i++) {
+                $homestay_unit = $this->homestayUnitModel->get_hu_by_id_api($homestay_id, $request['unit_type'], $request['unit_number'][$i])->getRowArray();
+                if ($homestay_unit) {
+                    $homestay_units[] = $homestay_unit;
+                    $total_price += $homestay_unit['price'];
+                }
             }
         }
 
-        $addReservation = $this->reservationModel->add_reservation_api($requestData);
+        $total_price *= (int)$request['day_of_stay'];
 
-        $date = $request['check_in'];
-        $date_array = array();
-        for ($i = 0; $i < (int) $request['day_of_stay']; $i++) {
-            $date = date('Y-m-d', strtotime($date));
-            $date_array[] = $date;
-            for ($j = 0; $j < count($homestay_units); $j++) {
-                $addReservationDetail = $this->reservationHomestayUnitDetailModel->add_reservation_detail_api($homestay_id, $request['unit_type'], $homestay_units[$j]['unit_number'], $date, $new_id);
-            }
-            $date = date("Y-m-d", strtotime($date . ' + 1 days'));
-        }
+        // Prepare reservation data
+        $check_in_time = ($request['unit_type'] == '3') ? '06:00' : '14:00';
+        $requestData = [
+            'id' => $new_id,
+            'customer_id' => user()->id,
+            'check_in' => $request['check_in'] . ' ' . $check_in_time,
+            'total_people' => $request['total_people'],
+            'reservation_type' => '1',
+            'total_price' => $total_price,
+            'request_date' => Time::now('Asia/Jakarta', 'en_US')
+        ];
+
+        // Insert reservation
+        $addReservation = $this->reservationModel->insert($requestData, false);
 
         if ($addReservation) {
+            $date = $request['check_in'];
+            for ($i = 0; $i < (int)$request['day_of_stay']; $i++) {
+                $current_date = date('Y-m-d', strtotime($date . " +{$i} days"));
+                foreach ($homestay_units as $unit) {
+                    $detailData = [
+                        'reservation_id' => $new_id,
+                        'homestay_id' => $homestay_id,
+                        'unit_type' => $request['unit_type'],
+                        'unit_number' => $unit['unit_number'],
+                        'date' => $current_date
+                    ];
+                    if (!$this->reservationHomestayUnitDetailModel->insert($detailData, false)) {
+                        $error = $this->reservationHomestayUnitDetailModel->errors();
+                        log_message('error', 'Failed to insert reservation detail: ' . print_r($error, true));
+                        session()->setFlashdata('error', 'Failed to create reservation detail. DB Error: ' . json_encode($error));
+                        return redirect()->back()->withInput();
+                    }
+                }
+            }
+            // Redirect to the detail page
             return redirect()->to(base_url('web/reservation/detail/' . $new_id));
         } else {
+            $error = $this->reservationModel->errors();
+            log_message('error', 'Failed to insert reservation: ' . print_r($error, true));
+            session()->setFlashdata('error', 'Failed to create reservation. DB Error: ' . json_encode($error));
             return redirect()->back()->withInput();
         }
     }
@@ -494,35 +505,34 @@ class Reservation extends ResourcePresenter
 
         $addReservation = $this->reservationModel->add_reservation_event_api($requestData);
 
-        $date = $request['check_in'];
-        $date_array = array();
-        for ($i = 0; $i < (int) $request['day_of_stay']; $i++) {
-            $date = date('Y-m-d', strtotime($date));
-            $date_array[] = $date;
-            for ($j = 0; $j < count($homestay_units); $j++) {
-                $addReservationDetail = $this->reservationHomestayUnitDetailModel->add_reservation_detail_api($homestay_id, $homestay_units[$j]['unit_type'], $homestay_units[$j]['unit_number'], $date, $new_id);
-            }
-            $date = date("Y-m-d", strtotime($date . ' + 1 days'));
-        }
-
-        $additionalAmenities = $this->homestayAdditionalAmenitiesModel->get_haa_for_event($homestay_id)->getResultArray();
-        foreach ($additionalAmenities as $item) {
-            $data = [
-                'homestay_id' => $homestay_id,
-                'additional_amenities_id' => $item['additional_amenities_id'],
-                'reservation_id' => $new_id,
-                'day_order' => '0',
-                'person_order' => '0',
-                'room_order' => '0',
-                'total_order' => '1',
-                'total_price' => '0',
-            ];
-            $addAdditionalAmenities = $this->reservationHomestayAdditionalAmenitiesDetailModel->add_detail_haa($data);
-        }
-
         if ($addReservation) {
+            $date = $request['check_in'];
+            for ($i = 0; $i < (int) $request['day_of_stay']; $i++) {
+                $date = date('Y-m-d', strtotime($date));
+                for ($j = 0; $j < count($homestay_units); $j++) {
+                    $this->reservationHomestayUnitDetailModel->add_reservation_detail_api($homestay_id, $homestay_units[$j]['unit_type'], $homestay_units[$j]['unit_number'], $date, $new_id);
+                }
+                $date = date("Y-m-d", strtotime($date . ' + 1 days'));
+            }
+
+            $additionalAmenities = $this->homestayAdditionalAmenitiesModel->get_haa_for_event($homestay_id)->getResultArray();
+            foreach ($additionalAmenities as $item) {
+                $data = [
+                    'homestay_id' => $homestay_id,
+                    'additional_amenities_id' => $item['additional_amenities_id'],
+                    'reservation_id' => $new_id,
+                    'day_order' => '0',
+                    'person_order' => '0',
+                    'room_order' => '0',
+                    'total_order' => '1',
+                    'total_price' => '0',
+                ];
+                $this->reservationHomestayAdditionalAmenitiesDetailModel->add_detail_haa($data);
+            }
             return redirect()->to(base_url('web/reservation/detail/' . $new_id));
         } else {
+            $error = $this->reservationModel->db->error();
+            session()->setFlashdata('error', $error['message']);
             return redirect()->back()->withInput();
         }
     }
@@ -590,39 +600,52 @@ class Reservation extends ResourcePresenter
     public function detailReservation($id = null)
     {
         $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
+        if (empty($reservation)) {
+            die('Debug: Reservation data is not found for id: ' . $id);
+        }
+
         $coin = $this->userModel->get_user_coin_by_id($reservation['customer_id'])->getRowArray();
-        // dd($coin);
-        // $coin = $this->userModel->get_user_coin_by_id($reservation['customer_id']);
-        //         $coinQuery = $this->userModel->get_user_coin_by_id($reservation['customer_id']);
-        // $coin = $coinQuery ? $coinQuery->getRowArray() : null;
+        if (empty($coin)) {
+            $coin = ['total_coin' => 0];
+        }
 
         $user = $this->userModel->get_user_by_id($reservation['customer_id'])->getRowArray();
+        if (empty($user)) {
+            die('Debug: User not found for customer_id: ' . $reservation['customer_id']);
+        }
+
+        $reservation_detail_for_homestay = null;
         if (($reservation['canceled_at'] == null) && (($reservation['is_rejected'] == '0') || ($reservation['is_rejected'] == null))) {
-            $reservation_detail = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($id)->getRowArray();
+            $reservation_detail_for_homestay = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($id)->getRowArray();
         } else {
-            $reservation_detail = $this->reservationHomestayUnitDetailBackUpModel->get_reservation_by_id($id)->getRowArray();
+            $reservation_detail_for_homestay = $this->reservationHomestayUnitDetailBackUpModel->get_reservation_by_id($id)->getRowArray();
         }
 
-        $homestay = $this->homestayModel->get_hs_by_id_api($reservation_detail['homestay_id'])->getRowArray();
-        $owner = $this->userModel->get_user_by_id($homestay['owner'])->getRowArray();
+        if (empty($reservation_detail_for_homestay)) {
+            die('Debug: Reservation detail not found for id: ' . $id);
+        }
+
+        $homestay_data = $this->homestayModel->get_hs_by_id_api($reservation_detail_for_homestay['homestay_id'])->getRowArray();
+        if (empty($homestay_data)) {
+            die('Debug: Homestay data not found for homestay_id: ' . $reservation_detail_for_homestay['homestay_id']);
+        }
+
+        $owner = $this->userModel->get_user_by_id($homestay_data['owner'])->getRowArray();
+        if (empty($owner)) {
+            die('Debug: Owner not found for owner_id: ' . $homestay_data['owner']);
+        }
+
         $roleUser = $this->userModel->get_role_by_id($user['id'])->getRowArray();
-        $user['role'] = $roleUser['name'];
+        $user['role'] = $roleUser['name'] ?? 'User';
         $roleOwner = $this->userModel->get_role_by_id($owner['id'])->getRowArray();
-        $owner['role'] = $roleOwner['name'];
-
-
-
-
-        if (empty($reservation)) {
-            return redirect()->to(base_url('web/reservation'));
-        }
+        $owner['role'] = $roleOwner['name'] ?? 'Owner';
 
         if (($reservation['canceled_at'] == null) && ($reservation['status'] != 'Done')) {
-            $checkIsReservationCancel = $this->checkIsReservationCancel($reservation);
+            $this->checkIsReservationCancel($reservation);
         }
 
         if ($reservation['status'] == 'Full Pay Successful') {
-            $checkIsReservationDone = $this->checkIsReservationDone($reservation);
+            $this->checkIsReservationDone($reservation);
         }
         $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
 
@@ -634,17 +657,16 @@ class Reservation extends ResourcePresenter
         }
 
         $tpac_save = $reservation['total_price'] - $reservation['coin_use'];
-        // dd($tpac_save);
 
         $homestay_id = array();
         $unit_type = array();
         $day_of_stay = array();
         $unit_number = array();
-        for ($i = 0; $i < count($reservation_detail); $i++) {
-            $day_of_stay[] = $reservation_detail[$i]['date'];
-            $unit_number[] = $reservation_detail[$i]['unit_number'];
-            $homestay_id[] = $reservation_detail[$i]['homestay_id'];
-            $unit_type[] = $reservation_detail[$i]['unit_type'];
+        foreach ($reservation_detail as $detail) {
+            $day_of_stay[] = $detail['date'];
+            $unit_number[] = $detail['unit_number'];
+            $homestay_id[] = $detail['homestay_id'];
+            $unit_type[] = $detail['unit_type'];
         }
         $day_of_stay = array_unique($day_of_stay);
         $unit_number = array_values(array_unique($unit_number));
@@ -652,52 +674,63 @@ class Reservation extends ResourcePresenter
         $unit_type = array_unique($unit_type);
 
         $homestay_units = array();
-        for ($j = 0; $j < count($unit_number); $j++) {
-            $homestay_unit = $this->homestayUnitModel->get_hu_by_id_api($homestay_id[0], $unit_type[0], $unit_number[$j])->getRowArray();
-            $homestay_units[] = $homestay_unit;
+        if (!empty($homestay_id) && !empty($unit_type)) {
+            for ($j = 0; $j < count($unit_number); $j++) {
+                $homestay_unit = $this->homestayUnitModel->get_hu_by_id_api($homestay_id[0], $unit_type[0], $unit_number[$j])->getRowArray();
+                $homestay_units[] = $homestay_unit;
+            }
         }
 
         for ($i = 0; $i < count($homestay_units); $i++) {
-            $list_gallery = $this->homestayUnitGalleryModel->get_gallery_api($homestay_id, $homestay_units[$i]['unit_type'], $homestay_units[$i]['unit_number'])->getResultArray();
-            $galleries = array();
-            foreach ($list_gallery as $gallery) {
-                $galleries[] = $gallery['url'];
+            if (isset($homestay_units[$i]['unit_type']) && isset($homestay_units[$i]['unit_number'])) {
+                $list_gallery = $this->homestayUnitGalleryModel->get_gallery_api($homestay_id[0], $homestay_units[$i]['unit_type'], $homestay_units[$i]['unit_number'])->getResultArray();
+                $galleries = array();
+                foreach ($list_gallery as $gallery) {
+                    $galleries[] = $gallery['url'];
+                }
+                $homestay_units[$i]['galleries'] = $galleries;
             }
-            $homestay_units[$i]['galleries'] = $galleries;
         }
 
         $check_out = date("Y-m-d 12:00:00", strtotime($reservation['check_in'] . ' + ' . count($day_of_stay) . ' days'));
         $reservation['check_out'] = $check_out;
-        $homestay_data = $this->homestayModel->get_hs_by_id_api($homestay_id[0])->getRowArray();
 
         $homestay['id'] = $homestay_data['id'];
         $homestay['name'] = $homestay_data['name'];
         $homestay['phone'] = $homestay_data['phone'];
-        if ($unit_type[0] == '1') {
-            $homestay['unit_type'] = "Room";
-        } elseif ($unit_type[0] == '2') {
-            $homestay['unit_type'] = "Villa";
-        } else {
-            $homestay['unit_type'] = "Hall";
+
+        if (!empty($unit_type)) {
+            if ($unit_type[0] == '1') {
+                $homestay['unit_type'] = "Room";
+            } elseif ($unit_type[0] == '2') {
+                $homestay['unit_type'] = "Villa";
+            } else {
+                $homestay['unit_type'] = "Hall";
+            }
         }
 
         $reservation['day_of_stay'] = count($day_of_stay);
 
-        $reservation_additional_amenities = $this->reservationHomestayAdditionalAmenitiesDetailModel->get_haa_by_rid_api($homestay_id[0], $reservation['id'])->getResultArray();
-        for ($i = 0; $i < count($reservation_additional_amenities); $i++) {
-            $amenities = $this->homestayAdditionalAmenitiesModel->get_haa_by_id_api($reservation_additional_amenities[$i]['homestay_id'], $reservation_additional_amenities[$i]['additional_amenities_id'])->getRowArray();
-            $reservation_additional_amenities[$i]['name'] = $amenities['name'];
-            $reservation_additional_amenities[$i]['category'] = $amenities['category'];
-            $reservation_additional_amenities[$i]['price'] = $amenities['price'];
-            $reservation_additional_amenities[$i]['is_order_count_per_day'] = $amenities['is_order_count_per_day'];
-            $reservation_additional_amenities[$i]['is_order_count_per_person'] = $amenities['is_order_count_per_person'];
-            $reservation_additional_amenities[$i]['is_order_count_per_room'] = $amenities['is_order_count_per_room'];
-            $reservation_additional_amenities[$i]['description'] = $amenities['description'];
-            $reservation_additional_amenities[$i]['image_url'] = $amenities['image_url'];
-            $reservation_additional_amenities[$i]['id'] = $reservation_additional_amenities[$i]['additional_amenities_id'];
+        $reservation_additional_amenities = [];
+        if (!empty($homestay_id)) {
+            $reservation_additional_amenities = $this->reservationHomestayAdditionalAmenitiesDetailModel->get_haa_by_rid_api($homestay_id[0], $reservation['id'])->getResultArray();
         }
 
-        // $price_after_coin=$reservation()
+        for ($i = 0; $i < count($reservation_additional_amenities); $i++) {
+            $amenities = $this->homestayAdditionalAmenitiesModel->get_haa_by_id_api($reservation_additional_amenities[$i]['homestay_id'], $reservation_additional_amenities[$i]['additional_amenities_id'])->getRowArray();
+            if ($amenities) {
+                $reservation_additional_amenities[$i]['name'] = $amenities['name'];
+                $reservation_additional_amenities[$i]['category'] = $amenities['category'];
+                $reservation_additional_amenities[$i]['price'] = $amenities['price'];
+                $reservation_additional_amenities[$i]['is_order_count_per_day'] = $amenities['is_order_count_per_day'];
+                $reservation_additional_amenities[$i]['is_order_count_per_person'] = $amenities['is_order_count_per_person'];
+                $reservation_additional_amenities[$i]['is_order_count_per_room'] = $amenities['is_order_count_per_room'];
+                $reservation_additional_amenities[$i]['description'] = $amenities['description'];
+                $reservation_additional_amenities[$i]['image_url'] = $amenities['image_url'];
+                $reservation_additional_amenities[$i]['id'] = $reservation_additional_amenities[$i]['additional_amenities_id'];
+            }
+        }
+
         $data = [
             'title' => 'Reservation',
             'reservation' => $reservation,
@@ -707,11 +740,9 @@ class Reservation extends ResourcePresenter
             'homestay_unit' => $homestay_units,
             'reservation_additional_amenities' => $reservation_additional_amenities,
         ];
-        // dd($data);
         return view('web/reservation_detail', $data);
     }
 
-    public function create() {}
     public function update($id = null) {}
     public function delete($id = null) {}
 
@@ -1352,23 +1383,24 @@ class Reservation extends ResourcePresenter
     {
 
         $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
-        // dd($id) ;
+        if (empty($reservation)) {
+            die('Debug Show: Reservation data is not found for id: ' . $id);
+        }
+
         if ($reservation['customer_id'] == null) {
             $coin['total_coin'] = 0;
         } else {
             $coin = $this->userModel->get_user_coin_by_id($reservation['customer_id'])->getRowArray();
-            // dd($coin);
-        }
-
-        if (empty($reservation)) {
-            return redirect()->to(base_url('dashboard/reservation'));
+            if (empty($coin)) {
+                $coin = ['total_coin' => 0];
+            }
         }
 
         if (($reservation['canceled_at'] == null) && ($reservation['status'] != 'Done')) {
-            $checkIsReservationCancel = $this->checkIsReservationCancel($reservation);
+            $this->checkIsReservationCancel($reservation);
         }
         if ($reservation['status'] == 'Payment Successful') {
-            $checkIsReservationDone = $this->checkIsReservationDone($reservation);
+            $this->checkIsReservationDone($reservation);
         }
         $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
 
@@ -1382,36 +1414,47 @@ class Reservation extends ResourcePresenter
         $unit_type = array();
         $day_of_stay = array();
         $unit_number = array();
-        for ($i = 0; $i < count($reservation_detail); $i++) {
-            $day_of_stay[] = $reservation_detail[$i]['date'];
-            $unit_number[] = $reservation_detail[$i]['unit_number'];
-            $homestay_id[] = $reservation_detail[$i]['homestay_id'];
-            $unit_type[] = $reservation_detail[$i]['unit_type'];
+        foreach ($reservation_detail as $detail) {
+            $day_of_stay[] = $detail['date'];
+            $unit_number[] = $detail['unit_number'];
+            $homestay_id[] = $detail['homestay_id'];
+            $unit_type[] = $detail['unit_type'];
         }
         $day_of_stay = array_unique($day_of_stay);
         $unit_number = array_values(array_unique($unit_number));
         $homestay_id = array_unique($homestay_id);
         $unit_type = array_unique($unit_type);
 
+        if (empty($homestay_id) || empty($unit_type)) {
+            die('Debug Show: Reservation details are incomplete for id: ' . $id);
+        }
+
         $homestay_units = array();
         for ($j = 0; $j < count($unit_number); $j++) {
             $homestay_unit = $this->homestayUnitModel->get_hu_by_id_api($homestay_id[0], $unit_type[0], $unit_number[$j])->getRowArray();
-            $homestay_units[] = $homestay_unit;
+            if ($homestay_unit) {
+                $homestay_units[] = $homestay_unit;
+            }
         }
 
         for ($i = 0; $i < count($homestay_units); $i++) {
-            $list_gallery = $this->homestayUnitGalleryModel->get_gallery_api($homestay_id, $homestay_units[$i]['unit_type'], $homestay_units[$i]['unit_number'])->getResultArray();
-            $galleries = array();
-            foreach ($list_gallery as $gallery) {
-                $galleries[] = $gallery['url'];
+            if (isset($homestay_units[$i]['unit_type']) && isset($homestay_units[$i]['unit_number'])) {
+                $list_gallery = $this->homestayUnitGalleryModel->get_gallery_api($homestay_id[0], $homestay_units[$i]['unit_type'], $homestay_units[$i]['unit_number'])->getResultArray();
+                $galleries = array();
+                foreach ($list_gallery as $gallery) {
+                    $galleries[] = $gallery['url'];
+                }
+                $homestay_units[$i]['galleries'] = $galleries;
             }
-            $homestay_units[$i]['galleries'] = $galleries;
         }
 
         $check_out = date("Y-m-d 12:00:00", strtotime($reservation['check_in'] . ' + ' . count($day_of_stay) . ' days'));
         $reservation['check_out'] = $check_out;
 
         $homestay_data = $this->homestayModel->get_hs_by_id_api($homestay_id[0])->getRowArray();
+        if (empty($homestay_data)) {
+            die('Debug Show: Homestay data not found for homestay_id: ' . $homestay_id[0]);
+        }
 
         $homestay['id'] = $homestay_data['id'];
         $homestay['name'] = $homestay_data['name'];
@@ -1429,15 +1472,17 @@ class Reservation extends ResourcePresenter
         $reservation_additional_amenities = $this->reservationHomestayAdditionalAmenitiesDetailModel->get_haa_by_rid_api($homestay_id[0], $reservation['id'])->getResultArray();
         for ($i = 0; $i < count($reservation_additional_amenities); $i++) {
             $amenities = $this->homestayAdditionalAmenitiesModel->get_haa_by_id_api($reservation_additional_amenities[$i]['homestay_id'], $reservation_additional_amenities[$i]['additional_amenities_id'])->getRowArray();
-            $reservation_additional_amenities[$i]['name'] = $amenities['name'];
-            $reservation_additional_amenities[$i]['category'] = $amenities['category'];
-            $reservation_additional_amenities[$i]['price'] = $amenities['price'];
-            $reservation_additional_amenities[$i]['is_order_count_per_day'] = $amenities['is_order_count_per_day'];
-            $reservation_additional_amenities[$i]['is_order_count_per_person'] = $amenities['is_order_count_per_person'];
-            $reservation_additional_amenities[$i]['is_order_count_per_room'] = $amenities['is_order_count_per_room'];
-            $reservation_additional_amenities[$i]['description'] = $amenities['description'];
-            $reservation_additional_amenities[$i]['image_url'] = $amenities['image_url'];
-            $reservation_additional_amenities[$i]['id'] = $reservation_additional_amenities[$i]['additional_amenities_id'];
+            if ($amenities) {
+                $reservation_additional_amenities[$i]['name'] = $amenities['name'];
+                $reservation_additional_amenities[$i]['category'] = $amenities['category'];
+                $reservation_additional_amenities[$i]['price'] = $amenities['price'];
+                $reservation_additional_amenities[$i]['is_order_count_per_day'] = $amenities['is_order_count_per_day'];
+                $reservation_additional_amenities[$i]['is_order_count_per_person'] = $amenities['is_order_count_per_person'];
+                $reservation_additional_amenities[$i]['is_order_count_per_room'] = $amenities['is_order_count_per_room'];
+                $reservation_additional_amenities[$i]['description'] = $amenities['description'];
+                $reservation_additional_amenities[$i]['image_url'] = $amenities['image_url'];
+                $reservation_additional_amenities[$i]['id'] = $reservation_additional_amenities[$i]['additional_amenities_id'];
+            }
         }
 
         $data = [
@@ -1457,6 +1502,37 @@ class Reservation extends ResourcePresenter
             $data = array_merge($data, $data2);
         }
         return view('owner/reservation_detail', $data);
+    }
+
+    public function confirmReservation($id = null)
+    {
+        $request = $this->request->getPost();
+        $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
+        $user = $this->userModel->get_user_by_id($reservation['customer_id'])->getRowArray();
+        $reservation_detail = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($id)->getRowArray();
+        $homestay = $this->homestayModel->get_hs_by_id_api($reservation_detail['homestay_id'])->getRowArray();
+        $owner = $this->userModel->get_user_by_id($homestay['owner'])->getRowArray();
+        $roleUser = $this->userModel->get_role_by_id($user['id'])->getRowArray();
+        $user['role'] = $roleUser['name'];
+        $roleOwner = $this->userModel->get_role_by_id($owner['id'])->getRowArray();
+        $owner['role'] = $roleOwner['name'];
+
+        $confirm = $this->reservationModel->confirm_reservation($request, $id);
+
+        if ($confirm) {
+            if ($request['is_rejected'] == '0') {
+                $messageUser = 'Your reservation with ID ' . $id . ' at ' . $homestay['name'] . ' has been confirmed by the owner.';
+                $messageOwner = 'You have confirmed a reservation with ID ' . $id . ' from @' . $user['username'] . '.';
+            } else {
+                $messageUser = 'Your reservation with ID ' . $id . ' at ' . $homestay['name'] . ' has been rejected by the owner.';
+                $messageOwner = 'You have rejected a reservation with ID ' . $id . ' from @' . $user['username'] . '.';
+            }
+            $this->notification->sendMessage($user, $messageUser);
+            $this->notification->sendMessage($owner, $messageOwner);
+            return redirect()->to(base_url('dashboard/reservation/detail/' . $id));
+        } else {
+            return redirect()->back()->withInput();
+        }
     }
 
     public function refundReservation($reservation_id = null)

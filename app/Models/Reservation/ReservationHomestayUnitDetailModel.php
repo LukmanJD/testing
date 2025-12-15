@@ -14,7 +14,7 @@ class ReservationHomestayUnitDetailModel extends Model
     protected $allowedFields    = ['homestay_id', 'unit_type', 'unit_number', 'date', 'reservation_id'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -47,6 +47,15 @@ class ReservationHomestayUnitDetailModel extends Model
         $insert = $this->db->table($this->table)
             ->insert($reservationDetail);
         return $insert;
+    }
+
+    public function get_date_by_hid($homestay_id = null)
+    {
+        $query = $this->db->table($this->table)
+            ->select('date')
+            ->where('homestay_id', $homestay_id)
+            ->get();
+        return $query;
     }
 
     public function get_reservation_by_id($reservation_id = null)
