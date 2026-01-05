@@ -156,6 +156,7 @@ $routes->group('web', ['namespace' => 'App\Controllers\Web'], function ($routes)
     $routes->get('checkout/(:segment)/(:any)', 'PaymentController::unifiedCheckout/$1/$2', ['filter' => 'role:user']);
     $routes->post('payment/dokuCheckout', 'PaymentController::dokuCheckout');
     $routes->post('payment/dokuNotification', 'PaymentController::dokuNotification');
+    $routes->post('payment/snap', 'PaymentController::snap');
     $routes->post('payment/paypalCreateOrder', 'PaymentController::paypalCreateOrder');
     $routes->post('payment/paypalCaptureOrder', 'PaymentController::paypalCaptureOrder');
 

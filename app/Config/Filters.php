@@ -41,7 +41,7 @@ class Filters extends BaseConfig
     public $globals = [
         'before' => [
             // 'honeypot',
-            'csrf' => ['except' => ['api/*', 'web/payment/dokuNotification']],
+            'csrf' => ['except' => ['api/*', 'web/payment/dokuNotification', 'web/payment/dokuCheckout']],
             // 'invalidchars'
         ],
         'after' => [

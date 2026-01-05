@@ -121,7 +121,7 @@
                                             <div class="card border mb-3">
                                                 <div class="row g-0">
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center">
-                                                        <img width="500px" src="/media/photos/<?= esc($item['galleries'][0]) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
+                                                        <img width="500px" src="<?= base_url('media/photos/' . esc($item['galleries'][0])) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
                                                     </div>
                                                     <div class="col-md-9">
                                                         <div class="card-body">
@@ -701,7 +701,7 @@
                             <div class="card mb-3" style="max-width: 1000px;">
                                 <div class="row g-0">
                                     <div class="col-md-6 d-flex align-items-center justify-content-center">
-                                        <img width="1000px" src="<?= base_url('media/photos'); ?>/<?= esc($activity['image_url']); ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover;" height="250px">
+                                        <img width="1000px" src="<?= base_url('media/photos/' . esc($activity['image_url'])); ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover;" height="250px">
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card-body">
@@ -738,7 +738,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="card-body text-dark">
-                            <img src="/media/photos/<?= esc($reservation['refund_proof']) ?>" class="img-fluid" alt="...">
+                            <img src="<?= base_url('media/photos/' . esc($reservation['refund_proof'])) ?>" class="img-fluid" alt="...">
                             <form class="form form-vertical" action="/web/reservation/refund/confirm/<?= esc($reservation['id']); ?>" method="post" enctype="multipart/form-data">
                                 <div class="form-body">
                                     <div class="form-group ">

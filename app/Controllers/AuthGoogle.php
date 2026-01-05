@@ -34,10 +34,21 @@ class AuthGoogle extends Controller
         if ($code = service('request')->getGet('code')) {
             try {
                 $token = $this->client->fetchAccessTokenWithAuthCode($code);
-                $this->client->setAccessToken($token);
+                log_message('error', '[AuthGoogle] Token: ' . json_encode($token));
 
-                $service = new Google_Service_Oauth2($this->client);
-                $googleUser = $service->userinfo->get();
+                if (!isset($token['id_token'])) {
+                    throw new \Exception('ID token not found in Google auth response.');
+                }
+
+                $payload = $this->client->verifyIdToken($token['id_token']);
+
+                if (!$payload) {
+                    throw new \Exception('Invalid ID token.');
+                }
+                
+                $this->client->setAccessToken($token);
+                
+                $googleUser = (object) $payload;
 
                 $user = $this->findOrCreateUser($googleUser);
 
@@ -45,10 +56,10 @@ class AuthGoogle extends Controller
                 $auth = service('authentication');
                 $auth->login($user);
 
-                return redirect()->to('/')->with('message', lang('Auth.loginSuccess'));
+                return redirect()->to('/web')->with('message', lang('Auth.loginSuccess'));
             } catch (\Exception $e) {
                 log_message('error', '[AuthGoogle] ' . $e->getMessage());
-                return redirect()->to('/login')->with('error', 'Failed to authenticate with Google.');
+                return redirect()->to('/login')->with('error', 'Failed to authenticate with Google: ' . $e->getMessage());
             }
         }
 

@@ -9,14 +9,24 @@
 
 <body>
     <div class="container mt-5">
+        <?php if (session()->getFlashdata('success')) : ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?= session()->getFlashdata('success'); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('error')) : ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?= session()->getFlashdata('error'); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
         <h1>Unified Checkout</h1>
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Your Order</h5>
-                <?php
-                $amountUSD = round($order_amount_idr / $idr_to_usd_rate, 2);
-                ?>
-                <p>Total Amount: <strong>Rp <?= number_format($order_amount_idr, 0, ',', '.') ?></strong> (approx. $<?= number_format($amountUSD, 2, '.', '') ?>)</p>
+                <p>Total Amount: <strong>Rp <?= number_format($order_amount_idr, 0, ',', '.') ?></strong></p>
                 <hr>
 
                 <!-- Currency Converter -->
@@ -40,7 +50,7 @@
 
                 <!-- Doku Payment Button -->
                 <h5>Pay with Doku (IDR)</h5>
-                <form action="<?= site_url('/web/payment/dokuCheckout') ?>" method="post">
+                <form id="doku-payment-form" action="<?= site_url('/web/payment/dokuCheckout') ?>" method="post">
                     <?= csrf_field() ?>
                     <button type="submit" class="btn btn-primary">Pay with Doku</button>
                 </form>
@@ -84,7 +94,7 @@
                         maximumFractionDigits: 2
                     }).format(convertedAmount);
 
-                    convertedPriceElement.innerText = `Approx. ${formattedAmount}`;
+                    convertedPriceElement.innerText = `${formattedAmount}`;
                 }
             }
 
@@ -94,6 +104,30 @@
     <?php endif; ?>
 
     <script>
+        // Doku Payment Handling
+        const dokuForm = document.getElementById('doku-payment-form');
+        dokuForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            fetch('<?= site_url('/web/payment/dokuCheckout') ?>', {
+                    method: 'POST',
+                    body: new FormData(dokuForm)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.payment_url) {
+                        window.open(data.payment_url, 'DokuPaymentPopup', 'width=800,height=600');
+                    } else {
+                        alert('Error: Could not retrieve Doku payment URL.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing the Doku payment.');
+                });
+        });
+
+        // PayPal Payment Handling
         paypal.Buttons({
             // 1. Set up the transaction
             createOrder: function(data, actions) {

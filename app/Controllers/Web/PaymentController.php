@@ -14,6 +14,8 @@ use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 
 class PaymentController extends Controller
 {
+    protected $helpers = ['auth', 'url', 'filesystem'];
+
     private ?GuzzleClient $guzzleClient = null;
     private ?PayPalHttpClient $paypalClient = null;
     protected ReservationModel $reservationModel;
@@ -106,35 +108,70 @@ class PaymentController extends Controller
         $amount  = session()->get('order_amount_idr');
 
         if (!$amount) {
-            return redirect()->to('/')->with('error', 'Order amount not found.');
+            return $this->response->setStatusCode(400)->setJSON(['error' => 'Order amount not found.']);
         }
 
         $requestBody = [
-            'order' => ['invoice_number' => $orderId, 'amount' => $amount],
-            'payment' => ['payment_due_date' => 120],
-            'customer' => ['name' => user()->username, 'email' => user()->email],
+            'order' => [
+                'invoice_number' => $orderId,
+                'amount' => (int)$amount,
+                'currency' => 'IDR',
+                'callback_url' => site_url('web/payment/dokuNotification'),
+                'session_id' => session_id()
+            ],
+            'payment' => [
+                'payment_due_date' => 120,
+                'payment_method_types' => [
+                    'CREDIT_CARD',
+                    'VIRTUAL_ACCOUNT',
+                    'O2O',
+                    'EMONEY'
+                ]
+            ],
+            'customer' => [
+                'name' => user()->username,
+                'email' => user()->email,
+            ]
         ];
 
         $dokuApiUrl = getenv('doku.apiUrl');
         $requestTarget = '/checkout/v1/payment';
 
+        log_message('error', 'Doku API URL: ' . $dokuApiUrl);
+        log_message('error', 'Doku Request Body: ' . json_encode($requestBody));
+
         try {
+            $headers = $this->generateDokuHeaders($requestTarget, $requestBody);
+            log_message('error', 'Doku Headers: ' . json_encode($headers));
+
             $response = $this->guzzleClient->post($dokuApiUrl . $requestTarget, [
-                'headers' => $this->generateDokuHeaders($requestTarget, $requestBody),
+                'headers' => $headers,
                 'json' => $requestBody
             ]);
 
             $responseBody = json_decode($response->getBody()->getContents(), true);
-
+            
             if (isset($responseBody['response']['payment']['url'])) {
-                return redirect()->to($responseBody['response']['payment']['url']);
+                return $this->response->setStatusCode(200)->setJSON(['payment_url' => $responseBody['response']['payment']['url']]);
             }
 
             log_message('error', 'Doku Checkout failed: ' . json_encode($responseBody));
-            return redirect()->to('/web/checkout/' . $orderId . '/' . session()->get('payment_type'))->with('error', 'Failed to create Doku payment session.');
+            return $this->response->setStatusCode(500)->setJSON([
+                'error' => 'Failed to create Doku payment session. Response from Doku was: ' . json_encode($responseBody)
+            ]);
         } catch (RequestException $e) {
             log_message('error', 'Doku API Exception: ' . $e->getMessage());
-            return redirect()->to('/web/checkout/' . $orderId . '/' . session()->get('payment_type'))->with('error', 'An error occurred with the Doku payment gateway.');
+            $errorDetails = 'An error occurred with the Doku payment gateway: ' . $e->getMessage();
+            if ($e->hasResponse()) {
+                $responseBody = $e->getResponse()->getBody()->getContents();
+                log_message('error', 'Doku API Response: ' . $responseBody);
+                $errorDetails .= ' | Full response: ' . $responseBody;
+            }
+            return $this->response->setStatusCode(500)->setJSON(['error' => $errorDetails]);
+        } catch (\Throwable $e) {
+            // Catch any other possible errors
+            log_message('error', 'Doku Generic Exception: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setJSON(['error' => 'A server error occurred: ' . $e->getMessage()]);
         }
     }
 
@@ -221,7 +258,7 @@ class PaymentController extends Controller
         $requestId = bin2hex(random_bytes(16));
         $requestTimestamp = gmdate("Y-m-d\TH:i:s\Z");
 
-        $digest = base64_encode(hash('sha256', json_encode($requestBody), true));
+        $digest = base64_encode(hash('sha256', json_encode($requestBody, JSON_UNESCAPED_SLASHES), true));
 
         $signatureComponents = [
             'Client-Id:' . $clientId,
@@ -239,6 +276,7 @@ class PaymentController extends Controller
             'Client-Id' => $clientId,
             'Request-Id' => $requestId,
             'Request-Timestamp' => $requestTimestamp,
+            'Digest' => $digest,
             'Signature' => "HMACSHA256=" . $signature,
         ];
     }
@@ -251,12 +289,18 @@ class PaymentController extends Controller
         $headers = $this->request->getHeaders();
         $notificationBody = $this->request->getJSON(true);
 
+        // Basic validation
+        if (empty($headers['Client-Id']) || empty($headers['Request-Id']) || empty($headers['Request-Timestamp']) || empty($headers['Signature']) || empty($notificationBody)) {
+             log_message('error', "Doku notification is missing required headers or body.");
+             return $this->response->setStatusCode(400)->setJSON(['status' => 'FAILED']);
+        }
+
         $clientId = $headers['Client-Id']->getValue();
         $requestId = $headers['Request-Id']->getValue();
         $requestTimestamp = $headers['Request-Timestamp']->getValue();
         $signature = $headers['Signature']->getValue();
 
-        $digest = base64_encode(hash('sha256', json_encode($notificationBody), true));
+        $digest = base64_encode(hash('sha256', json_encode($notificationBody, JSON_UNESCAPED_SLASHES), true));
 
         $signatureComponents = [
             'Client-Id:' . $clientId,
@@ -271,13 +315,13 @@ class PaymentController extends Controller
         $expectedSignature = "HMACSHA256=" . base64_encode(hash_hmac('sha256', $signatureString, $secretKey, true));
 
         if (hash_equals($expectedSignature, $signature)) {
-            if ($notificationBody['transaction']['status'] === 'SUCCESS') {
+            if (isset($notificationBody['transaction']['status']) && $notificationBody['transaction']['status'] === 'SUCCESS') {
                 $this->_handleSuccessfulPayment($notificationBody['order']['invoice_number']);
             }
             return $this->response->setStatusCode(200)->setJSON(['status' => 'SUCCESS']);
         }
 
-        log_message('error', "Invalid Doku signature for order");
+        log_message('error', "Invalid Doku signature for order: " . ($notificationBody['order']['invoice_number'] ?? 'N/A'));
         return $this->response->setStatusCode(400)->setJSON(['status' => 'FAILED']);
     }
 
@@ -287,35 +331,47 @@ class PaymentController extends Controller
      */
     private function _handleSuccessfulPayment(string $reservationId = null)
     {
-        $reservationId = $reservationId ?? session()->get('reservation_id');
-        $paymentType   = session()->get('payment_type');
+        // For Doku notifications, the reservation ID comes from the webhook body.
+        // For PayPal, it's retrieved from the session after client-side capture.
+        $resId = $reservationId ?? session()->get('reservation_id');
 
-        if (!$reservationId) {
+        if (!$resId) {
             log_message('error', 'Could not handle successful payment: reservation ID is missing.');
             return;
         }
 
-        $reservation = $this->reservationModel->find($reservationId);
+        $reservation = $this->reservationModel->find($resId);
 
         if (!$reservation) {
-            log_message('error', "Could not find reservation with ID: {$reservationId}");
+            log_message('error', "Could not find reservation with ID: {$resId} during payment handling.");
             return;
         }
 
-        // Determine next status based on current status and payment type
+        $currentStatus = $reservation['status'];
         $nextStatus = null;
-        if ($paymentType === 'deposit' && ($reservation['status'] === '1' || $reservation['status'] === 'Deposit Pending')) { // Deposit payment
+
+        // Determine the next status based on the *current* status in the database.
+        // This is stateless and works for webhooks.
+        if ($currentStatus === '1' || $currentStatus === 'Deposit Pending') {
+            // This was a deposit payment
             $nextStatus = 'Deposit Successful';
-        } elseif ($paymentType === 'full' && ($reservation['status'] === 'Deposit Successful' || $reservation['status'] === 'Full Pay Pending')) { // Full payment
+        } elseif ($currentStatus === 'Deposit Successful' || $currentStatus === 'Full Pay Pending') {
+            // This was a final/full payment
             $nextStatus = 'Full Pay Successful';
         }
 
+
         if ($nextStatus) {
-            $this->reservationModel->update($reservationId, ['status' => $nextStatus]);
-            log_message('info', "Reservation {$reservationId} status updated to {$nextStatus}.");
+            $this->reservationModel->update($resId, ['status' => $nextStatus]);
+            log_message('info', "Reservation {$resId} status updated to {$nextStatus}.");
+        } else {
+             log_message('warning', "Reservation {$resId} was already in a terminal state or an unhandled status '{$currentStatus}'. No status update performed.");
         }
 
-        // Clear session data
-        session()->remove(['reservation_id', 'payment_type', 'order_amount_idr']);
+
+        // Clear session data only if it exists (for browser-based flows like PayPal)
+        if (session()->has('reservation_id')) {
+            session()->remove(['reservation_id', 'payment_type', 'order_amount_idr']);
+        }
     }
 }
