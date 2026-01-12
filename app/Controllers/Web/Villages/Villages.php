@@ -219,7 +219,7 @@ class Villages extends ResourcePresenter
                     "Announcement failed to delete"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

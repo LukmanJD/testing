@@ -6,11 +6,11 @@ use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
 
-use App\Models\HomestayModel;
-use App\Models\HomestayExclusiveActivityModel;
+use App\Models\Homestay\HomestayModel;
+use App\Models\Homestay\HomestayExclusiveActivityModel;
 
-use App\Models\ReservationModel;
-use App\Models\ReservationHomestayActivityDetailModel;
+use App\Models\Reservation\ReservationModel;
+use App\Models\Reservation\ReservationHomestayActivityDetailModel;
 
 class ExclusiveActivity extends ResourcePresenter
 {

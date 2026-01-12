@@ -10,6 +10,7 @@ use App\Models\Reservation\ReservationHomestayUnitDetailModel;
 use App\Models\Reservation\ReservationHomestayUnitDetailBackUpModel;
 use App\Models\Homestay\HomestayModel;
 use App\Models\VisitHistoryModel;
+use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\Session\Session;
 use CodeIgniter\Files\File;
 use Myth\Auth\Config\Auth as AuthConfig;
@@ -36,6 +37,11 @@ class Profile extends BaseController
      * @var Session
      */
     protected $session;
+
+    /**
+     * @var IncomingRequest
+     */
+    protected $request;
 
     public function __construct()
     {
@@ -104,7 +110,7 @@ class Profile extends BaseController
             'success' => false
         ];
 
-        if ($this->request->getMethod() == 'post') {
+        if (strtolower($this->request->getServer('REQUEST_METHOD')) === 'post') {
             $rules = [
                 'password'     => 'required|strong_password',
                 'pass_confirm' => 'required|matches[password]',

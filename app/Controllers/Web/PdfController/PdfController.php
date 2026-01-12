@@ -7,6 +7,7 @@ use CodeIgniter\Controller;
 use App\Libraries\MY_TCPDF as TCPDF;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\Files\File;
+use CodeIgniter\HTTP\IncomingRequest;
 use DateTime;
 
 use App\Models\Reservation\ReservationHomestayUnitDetailBackUpModel;
@@ -68,7 +69,7 @@ class PdfController extends ResourcePresenter
     /**
      * Instance of the main Request object.
      *
-     * @var HTTP\IncomingRequest
+     * @var IncomingRequest
      */
     protected $request;
 
@@ -257,7 +258,7 @@ class PdfController extends ResourcePresenter
         $html = view('web/invoice', $data);
 
         // Print text using writeHTMLCell()
-        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+        $pdf->writeHTMLCell(0, 0, null, null, $html, 0, 1, 0, true, '', true);
 
         // ---------------------------------------------------------
         $this->response->setContentType('application/pdf');

@@ -1,18 +1,18 @@
 <div class="col">
     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Current Location" class="btn icon btn-primary mx-1" id="current-position" onclick="currentPosition()">
-        <span class="material-symbols-outlined">my_location</span>
+        <span class="material-symbols-outlined notranslate">my_location</span>
     </a>
     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Set Manual Location" class="btn icon btn-primary mx-1" id="manual-position" onclick="manualPosition()">
-        <span class="material-symbols-outlined">pin_drop</span>
+        <span class="material-symbols-outlined notranslate">pin_drop</span>
     </a>
     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Toggle Legend" class="btn icon btn-primary mx-1" id="legend-map" onclick="viewLegend();">
-        <span class="material-symbols-outlined">visibility</span>
+        <span class="material-symbols-outlined notranslate">visibility</span>
     </a>
     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Show Traffic" class="btn icon btn-primary mx-1" id="legend-map" onclick="showTraffic(); viewLegendTraffic();">
-        <span class="material-symbols-outlined"> traffic </span>
+        <span class="material-symbols-outlined notranslate"> traffic </span>
     </a>
     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Zoom To Harau Village" class="btn icon btn-primary mx-1" id="legend-map" onclick="digitTourismVillage(true);">
-        <span class="material-symbols-outlined">landscape_2</span>
+        <span class="material-symbols-outlined notranslate">landscape_2</span>
     </a>
 
     <?php
@@ -34,7 +34,7 @@
 
     <!-- <?php if (current_url() == "http://localhost:8080/web"): ?>
         <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="All Object" class="btn icon btn-primary mx-1" id="legend-map" onclick="allObject();">
-            <span class="material-symbols-outlined">universal_local</span>
+            <span class="material-symbols-outlined notranslate">universal_local</span>
         </a>
         <a class="dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,7 +71,7 @@
     $currentURL = $_SERVER['REQUEST_URI'];
     if (($currentURL === '/web')): ?>
         <div class="btn-group mx-1">
-            <button style="height:2.8rem" class="btn btn-primary" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View All Objects" onclick="allObject()"><i style="height:1.3rem;width:1.3rem" class="material-symbols-outlined">file_map_stack</i></button>
+            <button style="height:2.8rem" class="btn btn-primary" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View All Objects" onclick="allObject()"><i style="height:1.3rem;width:1.3rem" class="material-symbols-outlined notranslate">file_map_stack</i></button>
             <button style="height:2.8rem" class="btn btn-primary dropdown-toggle dropdown-toggle-split" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="visually-hidden">Toggle Dropdown</span>
             </button>
@@ -159,7 +159,7 @@
     $currentURL = $_SERVER['REQUEST_URI'];
     if (($currentURL === '/web')): ?>
         <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Homestay" class="btn icon btn-primary mx-1" id="legend-map" onclick="allHomestay(<?= (in_groups('user')) ? 'true' : 'false' ?>);">
-            <span class="material-symbols-outlined">night_shelter</span>
+            <span class="material-symbols-outlined notranslate">night_shelter</span>
         </a>
     <?php endif; ?>
 

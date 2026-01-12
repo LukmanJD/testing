@@ -22,7 +22,7 @@
             </div>
         <?php endif; ?>
 
-        <h1>Unified Checkout</h1>
+        <h1>Checkout</h1>
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Your Order</h5>
@@ -116,7 +116,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.payment_url) {
-                        window.open(data.payment_url, 'DokuPaymentPopup', 'width=800,height=600');
+                        window.location.href = data.payment_url;
                     } else {
                         alert('Error: Could not retrieve Doku payment URL.');
                     }
@@ -133,7 +133,11 @@
             createOrder: function(data, actions) {
                 // Call your backend to create the order
                 return fetch('<?= site_url('/web/payment/paypalCreateOrder') ?>', {
-                    method: 'post'
+                    method: 'post',
+                    headers: { // ADD THESE HEADERS
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 }).then(function(res) {
                     return res.json();
                 }).then(function(orderData) {
@@ -162,8 +166,14 @@
                 }).then(function(orderData) {
                     if (orderData.status === 'success') {
                         alert('Transaction completed!');
-                        // Redirect to the reservation detail page
-                        window.location.href = '<?= site_url('web/reservation/detail/') ?>' + orderData.reservation_id;
+                        if (window.opener) {
+                            window.opener.location.reload();
+                            window.close();
+                        } else if (window.parent && window.parent !== window) {
+                            window.parent.location.reload();
+                        } else {
+                            window.location.href = '<?= site_url('web/reservation/detail/') ?>' + orderData.reservation_id;
+                        }
                     } else {
                         alert('Something went wrong with the payment.');
                     }

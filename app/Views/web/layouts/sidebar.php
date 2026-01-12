@@ -97,7 +97,7 @@ $uri3 = $uri[3] ?? '';
                                             <div class="d-grid gap-2">
                                                 <input type="text" name="nameRG" id="nameHS" class="form-control" placeholder="Name" aria-label="Recipient's username" aria-describedby="button-addon2">
                                                 <button class="btn btn-outline-primary" type="submit" id="button-addon2" onclick="findByName('HS')">
-                                                    <span class="material-icons" style="font-size: 1.5rem; vertical-align: bottom">search</span>
+                                                    <span class="material-icons notranslate" style="font-size: 1.5rem; vertical-align: bottom">search</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -116,7 +116,7 @@ $uri3 = $uri[3] ?? '';
                                                     <input type="hidden" id="rating" value="0">
                                                 </div>
                                                 <button class="btn btn-outline-primary" type="submit" id="button-addon2" onclick="findByRating('HS')">
-                                                    <span class="material-icons" style="font-size: 1.5rem; vertical-align: bottom">search</span>
+                                                    <span class="material-icons notranslate" style="font-size: 1.5rem; vertical-align: bottom">search</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -134,7 +134,7 @@ $uri3 = $uri[3] ?? '';
                                                     </select>
                                                 </fieldset>
                                                 <button class="btn btn-outline-primary" type="submit" id="button-addon2" onclick="findByFacilityHS()">
-                                                    <span class="material-icons" style="font-size: 1.5rem; vertical-align: bottom">search</span>
+                                                    <span class="material-icons notranslate" style="font-size: 1.5rem; vertical-align: bottom">search</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -152,7 +152,7 @@ $uri3 = $uri[3] ?? '';
                                                     </select>
                                                 </fieldset>
                                                 <button class="btn btn-outline-primary" type="submit" id="button-addon2" onclick="findByUnit()">
-                                                    <span class="material-icons" style="font-size: 1.5rem; vertical-align: bottom">search</span>
+                                                    <span class="material-icons notranslate" style="font-size: 1.5rem; vertical-align: bottom">search</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -169,7 +169,7 @@ $uri3 = $uri[3] ?? '';
                                                     </select>
                                                 </fieldset>
                                                 <button class="btn btn-outline-primary" type="submit" id="button-addon2" onclick="findByCategory('HS')">
-                                                    <span class="material-icons" style="font-size: 1.5rem; vertical-align: bottom">search</span>
+                                                    <span class="material-icons notranslate" style="font-size: 1.5rem; vertical-align: bottom">search</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -242,6 +242,66 @@ $uri3 = $uri[3] ?? '';
                 </ul>
 
             </div>
+        </div>
+        <div style="padding: 2rem; position: absolute; bottom: 0; width: 100%;">
+            <div id="google_translate_element"></div>
+            <script type="text/javascript">
+                function googleTranslateElementInit() {
+                    new google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                        autoDisplay: false
+                    }, 'google_translate_element');
+                }
+            </script>
+            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+            <style>
+                .goog-te-gadget-simple {
+                    background-color: #fff !important;
+                    border: 1px solid #dce7f1 !important;
+                    padding: 6px 12px !important;
+                    border-radius: 4px !important;
+                }
+
+                .goog-te-gadget-icon {
+                    display: none !important;
+                }
+
+                /* Hide all original text and spans inside the widget */
+                #google_translate_element .goog-te-gadget-simple span,
+                #google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
+                    display: none !important;
+                }
+
+                /* Add the Globe Icon */
+                #google_translate_element .goog-te-gadget-simple::before {
+                    content: "\f0ac";
+                    font-family: "Font Awesome 5 Free" !important;
+                    font-weight: 900 !important;
+                    color: #607080 !important;
+                    vertical-align: middle;
+                    font-size: 14px !important;
+                    margin-right: 8px;
+                }
+
+                /* Add "Language" text */
+                #google_translate_element .goog-te-gadget-simple::after {
+                    content: "Language";
+                    font-family: "Open Sans", sans-serif !important;
+                    font-weight: 600 !important;
+                    color: #607080 !important;
+                    vertical-align: middle;
+                    font-size: 14px !important;
+                }
+
+                .goog-te-banner-frame.skiptranslate {
+                    display: none !important;
+                }
+
+                body {
+                    top: 0px !important;
+                }
+            </style>
         </div>
     </div>
 </div>

@@ -55,7 +55,7 @@
                                                     <td class="fw-bold"><?= esc($item['name']); ?></td>
                                                     <td>
                                                         <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="More Info" class="btn icon btn-primary mx-1" onclick="focusObject(`<?= esc($item['id']); ?>`);">
-                                                            <span class="material-symbols-outlined">info</span>
+                                                            <span class="material-symbols-outlined notranslate">info</span>
                                                         </a>
                                                     </td>
                                                     <?php $i++ ?>

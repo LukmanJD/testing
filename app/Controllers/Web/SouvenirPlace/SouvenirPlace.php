@@ -95,7 +95,7 @@ class SouvenirPlace extends BaseController
         foreach ($list_facility as $facility) {
             $facilities[] = $facility['name'];
         }
-    
+
         $list_gallery = $this->souvenirPlaceGalleryModel->get_gallery_api($id)->getResultArray();
         $galleries = array();
         foreach ($list_gallery as $gallery) {
@@ -162,7 +162,7 @@ class SouvenirPlace extends BaseController
         if (isset($request['facilities'])) {
             $facilities = $request['facilities'];
             $addFacilities = $this->souvenirPlaceFacilityDetailModel->add_facility_api($id, $facilities);
-        } 
+        }
 
         if (isset($request['gallery'])) {
             $folders = $request['gallery'];
@@ -339,7 +339,7 @@ class SouvenirPlace extends BaseController
                     "Product not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
     public function addProduct()
@@ -434,7 +434,7 @@ class SouvenirPlace extends BaseController
                     "Product not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 
@@ -509,7 +509,7 @@ class SouvenirPlace extends BaseController
                     "SouvenirPlace Facility not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

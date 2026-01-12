@@ -25,19 +25,23 @@ class HomestayCertification extends ResourcePresenter
     {
         $request = $this->request->getPost();
 
-        $folders = $request['gallery'];
-        $gallery = array();
-        foreach ($folders as $folder) {
-            $filepath = WRITEPATH . 'uploads/' . $folder;
-            $filenames = get_filenames($filepath);
-            $fileImg = new File($filepath . '/' . $filenames[0]);
-            $fileImg->move(FCPATH . 'media/photos');
-            delete_files($filepath);
-            rmdir($filepath);
-            $gallery[] = $fileImg->getFilename();
+        if (isset($request['gallery'])) {
+            $folders = $request['gallery'];
+            $gallery = array();
+            foreach ($folders as $folder) {
+                $filepath = WRITEPATH . 'uploads/' . $folder;
+                $filenames = get_filenames($filepath);
+                if (!empty($filenames)) {
+                    $fileImg = new File($filepath . '/' . $filenames[0]);
+                    $fileImg->move(FCPATH . 'media/photos');
+                    delete_files($filepath);
+                    rmdir($filepath);
+                    $gallery[] = $fileImg->getFilename();
+                }
+            }
+            $request['image_url'] = $gallery[0] ?? null;
         }
 
-        $request['image_url'] = $gallery[0];
         $addHS = $this->homestayCertificationModel->add_hc($request);
 
         if ($addHS) {
@@ -50,19 +54,25 @@ class HomestayCertification extends ResourcePresenter
     {
         $request = $this->request->getPost();
 
-        $folders = $request['gallery'];
-        $gallery = array();
-        foreach ($folders as $folder) {
-            $filepath = WRITEPATH . 'uploads/' . $folder;
-            $filenames = get_filenames($filepath);
-            $fileImg = new File($filepath . '/' . $filenames[0]);
-            $fileImg->move(FCPATH . 'media/photos');
-            delete_files($filepath);
-            rmdir($filepath);
-            $gallery[] = $fileImg->getFilename();
+        if (isset($request['gallery'])) {
+            $folders = $request['gallery'];
+            $gallery = array();
+            foreach ($folders as $folder) {
+                $filepath = WRITEPATH . 'uploads/' . $folder;
+                $filenames = get_filenames($filepath);
+                if (!empty($filenames)) {
+                    $fileImg = new File($filepath . '/' . $filenames[0]);
+                    $fileImg->move(FCPATH . 'media/photos');
+                    delete_files($filepath);
+                    rmdir($filepath);
+                    $gallery[] = $fileImg->getFilename();
+                }
+            }
+            if (!empty($gallery)) {
+                $request['image_url'] = $gallery[0];
+            }
         }
 
-        $request['image_url'] = $gallery[0];
         $updateHS = $this->homestayCertificationModel->update_hc($request, $request['homestay_id'], $certification_id);
 
         if ($updateHS) {
@@ -84,7 +94,7 @@ class HomestayCertification extends ResourcePresenter
                     "certification not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

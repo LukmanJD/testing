@@ -152,7 +152,7 @@ class AdditionalAmenities extends ResourcePresenter
                     "Additional Amenities not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
     public function getListAdditionalAmenities($homestay_id = null)
@@ -274,7 +274,7 @@ class AdditionalAmenities extends ResourcePresenter
                     "Additional Amenities not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 

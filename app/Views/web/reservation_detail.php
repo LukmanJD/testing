@@ -261,22 +261,6 @@
         $refund = ($reservation['is_refund'] == '1') ? ($deposit * 0.50) : 0; // 50% of deposit if refundable
         ?>
 
-        <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
-            <div class="row">
-                <div class="col">
-                    <?php if (($reservation['reservation_type'] == 1)) : ?>
-                        <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-3 float-end" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($deposit); ?>','<?= esc($total_price); ?>','<?= esc($coin); ?>')">
-                            <i class="fa-solid fa-check"></i> Done
-                        </a>
-                    <?php elseif (($reservation['reservation_type'] == 2)) : ?>
-                        <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-3 float-end" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($reservation['deposit']); ?>','<?= esc($reservation['total_price']); ?>','<?= esc($coin); ?>')">
-                            <i class="fa-solid fa-check"></i> Done
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        <?php endif; ?>
-
         <div class="row">
             <div class="card">
                 <div class="card-header text-center">
@@ -357,7 +341,6 @@
                                 <!-- <script>
                                     usedCoinText();
                                 </script> -->
-                                `
                                 <?php if ((($reservation['status'] == 'Deposit Successful') || ($reservation['status'] == 'Full Pay Pending') || ($reservation['status'] == 'Full Pay Successful')) && ($reservation['canceled_at'] == null)) : ?>
                                     <?php if (($reservation['reservation_type'] == 1 && $reservation['coin_use'] == 0)) : ?>
                                         <tr>
@@ -523,17 +506,41 @@
                                         <hr class="hr">
                                     </td>
                                 </tr>
-                                <?php if ((($reservation['status'] == '1') || ($reservation['status'] == 'Deposit Pending')) && ($reservation['canceled_at'] == null) && ($reservation['is_rejected'] != '1')) : ?>
+                                <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
                                     <tr>
                                         <td colspan="2">
                                             <span class="fw-bold">To Do : </span>
-                                            Pay deposit by click button bellow
+                                            Finish reservation by click button below
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a href="<?= site_url('web/checkout/' . esc($reservation['id']) . '/deposit') ?>" class="btn icon btn-primary btn-sm mb-1 mt-3">
+                                            <?php if (($reservation['reservation_type'] == 1)) : ?>
+                                                <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-1 mt-3" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($deposit); ?>','<?= esc($total_price); ?>','<?= esc($coin); ?>')">
+                                                    <i class="fa-solid fa-check"></i> Done
+                                                </a>
+                                            <?php elseif (($reservation['reservation_type'] == 2)) : ?>
+                                                <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-1 mt-3" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($reservation['deposit']); ?>','<?= esc($reservation['total_price']); ?>','<?= esc($coin); ?>')">
+                                                    <i class="fa-solid fa-check"></i> Done
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                                <?php if ((($reservation['status'] == '1') || ($reservation['status'] == 'Deposit Pending')) && ($reservation['canceled_at'] == null) && ($reservation['is_rejected'] != '1')) : ?>
+                                    <tr>
+                                        <td colspan="2">
+                                            <span class="fw-bold">To Do : </span>
+                                            Pay deposit or full price by click button bellow
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <a href="javascript:void(0)" onclick="processPayment('<?= esc($reservation['id']) ?>', 'deposit')" class="btn icon btn-primary btn-sm mb-1 mt-3">
                                                 Pay Deposit
+                                            </a>
+                                            <a href="javascript:void(0)" onclick="processPayment('<?= esc($reservation['id']) ?>', 'full')" class="btn icon btn-success btn-sm mb-1 mt-3 ms-1">
+                                                Pay Full
                                             </a>
                                         </td>
                                     </tr>
@@ -547,7 +554,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a href="<?= site_url('web/checkout/' . esc($reservation['id']) . '/full') ?>" class="btn icon btn-primary btn-sm mb-1 mt-3">
+                                            <a href="javascript:void(0)" onclick="processPayment('<?= esc($reservation['id']) ?>', 'full')" class="btn icon btn-primary btn-sm mb-1 mt-3">
                                                 Pay Full Price
                                             </a>
                                         </td>
@@ -663,13 +670,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="card-body text-dark">
-                        <form class="form form-vertical" action="/web/reservation/addAmenities" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                        <form class="form form-vertical" action="<?= base_url('web/reservation/addAmenities'); ?>" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                            <?= csrf_field() ?>
                             <div class="form-body">
                                 <input type="hidden" name="reservation_id" value="<?= esc($reservation['id']); ?>">
                                 <fieldset class="form-group mb-4">
-                                    <script>
-                                        getListAdditionalAmenities('<?= esc($reservation['id']); ?>', '<?= esc($homestay['id']) ?>');
-                                    </script>
                                     <label for="serviceSelect" class="mb-2">Additional Amenities</label>
                                     <select class="form-select" id="serviceSelect" name="additional_amenities_id" onchange="getOrderField(this.value, '<?= esc($homestay['id']) ?>','<?= esc($reservation['day_of_stay']) ?>','<?= esc($reservation['total_people']) ?>','<?= esc(count($homestay_unit)) ?>')" required>
                                     </select>
@@ -680,6 +685,24 @@
                                 <button type="submit" class="btn btn-primary me-1 mt-5">Add</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Checkout -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkoutModalLabel">Checkout</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="ratio ratio-1x1" style="min-height: 600px;">
+                        <iframe id="checkoutFrame" src="" style="border: none; width: 100%; height: 100%;" allow="payment"></iframe>
                     </div>
                 </div>
             </div>
@@ -805,6 +828,157 @@
             });
         }
     }
+
+    function processPayment(reservationId, type) {
+        console.log('Opening Unified Checkout Popup');
+        const url = baseUrl + '/web/checkout/' + reservationId + '/' + type;
+
+        $('#checkoutFrame').attr('src', url);
+        $('#checkoutModal').modal('show');
+    }
+
+    function deleteAdditionalAmenities(homestay_id, additional_amenities_id, reservation_id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: baseUrl + "/web/additionalAmenities/delete/" + homestay_id + "/" + additional_amenities_id + "/" + reservation_id,
+                    type: "POST",
+                    data: {
+                        '_method': 'DELETE',
+                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
+                    },
+                    success: function(response) {
+                        Swal.fire("Deleted!", "Your additional amenity has been deleted.", "success").then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire("Error!", "Failed to delete.", "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+<script>
+    var amenitiesData = [];
+
+    function getListAdditionalAmenities(reservationId, homestayId) {
+        $.ajax({
+            url: baseUrl + "/web/getAdditionalAmenities/" + homestayId + "/" + reservationId,
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                amenitiesData = response.data;
+                var options = '<option value="" selected disabled>--Select Additional Amenities--</option>';
+                $.each(response.data, function(index, value) {
+                    options += '<option value="' + value.additional_amenities_id + '">' + value.name + '</option>';
+                });
+                $('#serviceSelect').html(options);
+            }
+        });
+    }
+
+    function getOrderField(amenitiesId, homestayId, dayOfStay, totalPeople, totalRoom) {
+        const amenity = amenitiesData.find(x => x.additional_amenities_id === amenitiesId);
+        const container = $('#additionalAmenitiesOrderFields');
+        container.empty();
+
+        if (!amenity) return;
+
+        // Image
+        if (amenity.image_url) {
+            container.append(`<div class="text-center mb-3"><img src="/media/photos/${amenity.image_url}" class="img-fluid rounded" style="max-height: 200px;"></div>`);
+        }
+
+        // Description
+        container.append(`<p>${amenity.description}</p>`);
+
+        // Price Info
+        container.append(`<p class="fw-bold">Price: ${amenity.price}</p>`);
+
+        let html = '';
+
+        // Inputs
+        html += `<div class="form-group mb-3">
+                    <label class="mb-2">Total Order</label>
+                    <input type="number" class="form-control" name="total_order" id="totalOrder" value="1" min="1" oninput="calculateTotalPrice()">
+                 </div>`;
+
+        if (amenity.is_order_count_per_day == '1') {
+            html += `<div class="form-group mb-3">
+                        <label class="mb-2">Day Order</label>
+                        <input type="number" class="form-control" name="day_order" id="dayOrder" value="${dayOfStay}" min="1" oninput="calculateTotalPrice()">
+                     </div>`;
+        } else {
+            html += `<input type="hidden" name="day_order" id="dayOrder" value="0">`;
+        }
+
+        if (amenity.is_order_count_per_person == '1') {
+            html += `<div class="form-group mb-3">
+                        <label class="mb-2">Person Order</label>
+                        <input type="number" class="form-control" name="person_order" id="personOrder" value="${totalPeople}" min="1" oninput="calculateTotalPrice()">
+                     </div>`;
+        } else {
+            html += `<input type="hidden" name="person_order" id="personOrder" value="0">`;
+        }
+
+        if (amenity.is_order_count_per_room == '1') {
+            html += `<div class="form-group mb-3">
+                        <label class="mb-2">Room Order</label>
+                        <input type="number" class="form-control" name="room_order" id="roomOrder" value="${totalRoom}" min="1" oninput="calculateTotalPrice()">
+                     </div>`;
+        } else {
+            html += `<input type="hidden" name="room_order" id="roomOrder" value="0">`;
+        }
+
+        // Total Price Display & Hidden Input
+        html += `<div class="form-group mb-3">
+                    <label class="mb-2 fw-bold">Total Price Calculation</label>
+                    <h5 id="totalPriceDisplay">Rp 0</h5>
+                    <input type="hidden" name="total_price" id="totalPriceInput">
+                 </div>`;
+
+        // Stock validation helper
+        if (amenity.stock > 0) {
+            html += `<div class="alert alert-info">Available Stock: <span id="available_stock">${amenity.available_stock}</span></div>`;
+        } else {
+            html += `<span id="available_stock" style="display:none">999999</span>`;
+        }
+
+        container.append(html);
+        calculateTotalPrice();
+    }
+
+    function calculateTotalPrice() {
+        const amenityId = $('#serviceSelect').val();
+        const amenity = amenitiesData.find(x => x.additional_amenities_id === amenityId);
+        if (!amenity) return;
+
+        let price = parseFloat(amenity.real_price);
+        let totalOrder = parseFloat($('#totalOrder').val()) || 0;
+        let dayOrder = parseFloat($('#dayOrder').val());
+        let personOrder = parseFloat($('#personOrder').val());
+        let roomOrder = parseFloat($('#roomOrder').val());
+
+        let total = price * totalOrder;
+
+        if (amenity.is_order_count_per_day == '1' && dayOrder > 0) total *= dayOrder;
+        if (amenity.is_order_count_per_person == '1' && personOrder > 0) total *= personOrder;
+        if (amenity.is_order_count_per_room == '1' && roomOrder > 0) total *= roomOrder;
+
+        $('#totalPriceDisplay').text('Rp ' + total.toLocaleString('id-ID'));
+        $('#totalPriceInput').val(total);
+    }
+
+    // Initialize amenities list
+    getListAdditionalAmenities('<?= esc($reservation['id']); ?>', '<?= esc($homestay['id']) ?>');
 </script>
 
 <script>

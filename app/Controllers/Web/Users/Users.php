@@ -4,6 +4,7 @@ namespace App\Controllers\Web\Users;
 
 use App\Models\AccountModel;
 use CodeIgniter\Files\File;
+use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\Session\Session;
 use Myth\Auth\Config\Auth as AuthConfig;
@@ -24,6 +25,13 @@ class Users extends ResourcePresenter
      * @var Session
      */
     protected $session;
+
+    /**
+     * Instance of the main Request object.
+     *
+     * @var IncomingRequest
+     */
+    protected $request;
 
     public function __construct()
     {

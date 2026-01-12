@@ -18,7 +18,7 @@ try {
     $mail->Port = 587;
 
     // Recipients
-    $mail->setFrom('lukmanjunedd@gmail.com', 'TourismVillage');
+    $mail->setFrom('no-reply@account.tourismvillage.com', 'TourismVillage');
     $mail->addAddress('nightbaron.369@gmail.com'); // Replace with recipient email
 
     // Content

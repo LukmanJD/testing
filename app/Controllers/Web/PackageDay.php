@@ -88,7 +88,7 @@ class PackageDay extends ResourcePresenter
                     "Success delete Package Day"
                 ]
             ];
-            return $this->respondDeleted($response['message']);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,

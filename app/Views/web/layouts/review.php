@@ -19,7 +19,7 @@
                     <div class="col-12 mb-3">
                         <div class="form-floating">
                             <textarea class="form-control" placeholder="Leave a comment here"
-                                      id="floatingTextarea" style="height: 150px;" name="comment"></textarea>
+                                id="floatingTextarea" style="height: 150px;" name="comment"></textarea>
                             <label for="floatingTextarea">Leave a comment here</label>
                         </div>
                     </div>
@@ -38,25 +38,25 @@
         <div class="table-responsive">
             <table class="table table-hover mb-0" id="reviews">
                 <tbody>
-                <?php foreach ($data['reviews'] as $review):  ?>
-                    <tr>
-                        <td>
-                            <p class="mb-0">
-                                <?php for ($i = 0; $i < (int)esc($review['rating']); $i++) { ?>
-                                    <span class="material-symbols-outlined rating-color">star</span>
+                    <?php foreach ($data['reviews'] as $review):  ?>
+                        <tr>
+                            <td>
+                                <p class="mb-0">
+                                    <?php for ($i = 0; $i < (int)esc($review['rating']); $i++) { ?>
+                                        <span class="material-symbols-outlined notranslate rating-color">star</span>
+                                    <?php } ?>
+                                    <?php for ($i = 0; $i < (5 - (int)esc($review['rating'])); $i++) { ?>
+                                        <span class="material-symbols-outlined notranslate">star</span>
+                                    <?php } ?>
+                                </p>
+                                <p class="mb-0"><?= "{$review['first_name']} {$review['last_name']}"; ?></p>
+                                <p class="fw-light"><?= date('Y-m-d', strtotime(esc($review['created_at']))); ?></p>
+                                <?php if (!empty($review['comment'])) { ?>
+                                    <p class="fw-bold"><?= esc($review['comment']); ?></p>
                                 <?php } ?>
-                                <?php for ($i = 0; $i < (5 - (int)esc($review['rating'])); $i++) { ?>
-                                    <span class="material-symbols-outlined">star</span>
-                                <?php } ?>
-                            </p>
-                            <p class="mb-0"><?= "{$review['first_name']} {$review['last_name']}"; ?></p>
-                            <p class="fw-light"><?= date('Y-m-d', strtotime(esc($review['created_at']))); ?></p>
-                            <?php if (!empty($review['comment'])) { ?>
-                                <p class="fw-bold"><?= esc($review['comment']); ?></p>
-                            <?php } ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>

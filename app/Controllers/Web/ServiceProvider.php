@@ -3,12 +3,11 @@
 namespace App\Controllers\Web;
 
 use App\Controllers\BaseController;
-use App\Database\Migrations\WorshipPlaceCategory;
-use App\Models\GalleryWorshipPlaceModel;
 use App\Models\ReviewModel;
-use App\Models\WorshipPlaceModel;
-use App\Models\WorshipPlaceGalleryModel;
-use App\Models\WorshipPlaceCategoryModel;
+use App\Models\GalleryWorshipPlaceModel;
+use App\Models\Worship\WorshipPlaceModel;
+use App\Models\Worship\WorshipPlaceGalleryModel;
+use App\Models\Worship\WorshipPlaceCategoryModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourceController;
@@ -21,14 +20,28 @@ class ServiceProvider extends BaseController
 {
     use ResponseTrait;
 
+    /** @var WorshipPlaceModel */
     protected $worshipPlaceModel;
+
+    /** @var WorshipPlaceGalleryModel */
     protected $worshipPlaceGalleryModel;
+
+    /** @var WorshipPlaceCategoryModel */
     protected $worshipPlaceCategoryModel;
+
+    /** @var GalleryWorshipPlaceModel */
     protected $galleryWorshipPlaceModel;
+
+    /** @var ReviewModel */
     protected $reviewModel;
 
+    /** @var ServiceModel */
     protected $serviceModel;
+
+    /** @var ServiceProviderModel */
     protected $serviceProviderModel;
+
+    /** @var ServiceProviderGalleryModel */
     protected $serviceProviderGalleryModel;
 
     public function __construct()
@@ -272,7 +285,7 @@ class ServiceProvider extends BaseController
                     "Success delete Service"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,
@@ -280,7 +293,7 @@ class ServiceProvider extends BaseController
                     "Service not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

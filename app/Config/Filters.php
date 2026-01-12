@@ -48,7 +48,12 @@ class Filters extends BaseConfig
             'toolbar',
             // 'honeypot',
             // 'secureheaders',
-            'tawkto',
+            'tawkto' => [
+                'except' => [
+                    'web/checkout/*',
+                    'web/payment/dokuPopupClose'
+                ]
+            ],
         ],
     ];
 

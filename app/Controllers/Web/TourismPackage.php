@@ -6,21 +6,21 @@ use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
 
-use App\Models\HomestayModel;
+use App\Models\Homestay\HomestayModel;
 use App\Models\PackageModel;
 use App\Models\PackageDetailModel;
 use App\Models\PackageServiceDetailModel;
 use App\Models\PackageDayModel;
 use App\Models\AttractionModel;
-use App\Models\CulinaryPlaceModel;
-use App\Models\SouvenirPlaceModel;
+use App\Models\Culinary\CulinaryPlaceModel;
+use App\Models\Souvenir\SouvenirPlaceModel;
 use App\Models\ServiceProviderModel;
-use App\Models\WorshipPlaceModel;
-use App\Models\HomestayExclusiveActivityModel;
+use App\Models\Worship\WorshipPlaceModel;
+use App\Models\Homestay\HomestayExclusiveActivityModel;
 use App\Models\EventModel;
 
-use App\Models\ReservationModel;
-use App\Models\ReservationHomestayUnitDetailModel;
+use App\Models\Reservation\ReservationModel;
+use App\Models\Reservation\ReservationHomestayUnitDetailModel;
 
 class TourismPackage extends ResourcePresenter
 {
@@ -357,7 +357,7 @@ class TourismPackage extends ResourcePresenter
                     "Package not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

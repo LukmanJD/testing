@@ -10,12 +10,12 @@ use App\Models\PackageModel;
 use App\Models\PackageDetailModel;
 use App\Models\AttractionModel;
 use App\Models\EventModel;
-use App\Models\HomestayExclusiveActivityModel;
-use App\Models\CulinaryPlaceModel;
-use App\Models\SouvenirPlaceModel;
+use App\Models\Homestay\HomestayExclusiveActivityModel;
+use App\Models\Culinary\CulinaryPlaceModel;
+use App\Models\Souvenir\SouvenirPlaceModel;
 use App\Models\ServiceProviderModel;
-use App\Models\WorshipPlaceModel;
-use App\Models\ReservationModel;
+use App\Models\Worship\WorshipPlaceModel;
+use App\Models\Reservation\ReservationModel;
 
 class PackageDetail extends ResourcePresenter
 {
@@ -200,7 +200,7 @@ class PackageDetail extends ResourcePresenter
                     "Success delete Activity"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,
@@ -208,7 +208,7 @@ class PackageDetail extends ResourcePresenter
                     "Activity not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

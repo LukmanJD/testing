@@ -104,7 +104,7 @@ class CulinaryPlace extends BaseController
         }
 
         $list_product = $this->culinaryProductDetailModel->get_product_by_sp_api($id)->getResultArray();
-        
+
         $list_facility = $this->culinaryPlaceFacilityDetailModel->get_facility_by_cp_api($id)->getResultArray();
         $facilities = array();
         foreach ($list_facility as $facility) {
@@ -177,7 +177,7 @@ class CulinaryPlace extends BaseController
         if (isset($request['facilities'])) {
             $facilities = $request['facilities'];
             $addFacilities = $this->culinaryPlaceFacilityDetailModel->add_facility_api($id, $facilities);
-        } 
+        }
 
         if (isset($request['gallery'])) {
             $folders = $request['gallery'];
@@ -352,7 +352,7 @@ class CulinaryPlace extends BaseController
                     "Product not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
     public function addProduct()
@@ -447,7 +447,7 @@ class CulinaryPlace extends BaseController
                     "Product not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 
@@ -522,7 +522,7 @@ class CulinaryPlace extends BaseController
                     "Culinary Place Facility not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

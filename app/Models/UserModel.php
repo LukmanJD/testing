@@ -16,6 +16,7 @@ class UserModel extends MythModel
         'reset_at',
         'reset_expires',
         'activate_hash',
+        'activate_expires',
         'status',
         'status_message',
         'active',

@@ -47,11 +47,6 @@
             padding: 0;
         }
 
-        #home {
-            /* height: 65vh;
-            /* Height is set by JavaScript to fill the viewport under the navbar */
-        }
-
         .header-carousel {
             height: 100%;
         }
@@ -424,6 +419,89 @@
                         <a class="btn btn-link" href="#about">About</a>
                         <a class="btn btn-link" href="#award">Award</a>
                         <a class="btn btn-link" href="<?= base_url('login'); ?>">Login</a>
+
+                        <div class="mt-3">
+                            <div id="google_translate_element"></div>
+                            <script type="text/javascript">
+                                // Prevent scroll to top when clicking Google Translate
+                                $(document).ready(function() {
+                                    $('#google_translate_element').on('click', 'a', function(e) {
+                                        e.preventDefault();
+                                    });
+                                });
+
+                                function googleTranslateElementInit() {
+                                    new google.translate.TranslateElement({
+                                        pageLanguage: 'en',
+                                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                                        autoDisplay: false
+                                    }, 'google_translate_element');
+                                }
+                            </script>
+                            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                            <style>
+                                #google_translate_element .goog-te-gadget-simple {
+                                    background-color: transparent !important;
+                                    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+                                    padding: 5px 10px !important;
+                                    border-radius: 4px !important;
+                                }
+
+                                .goog-te-gadget-icon {
+                                    display: none !important;
+                                }
+
+                                /* Hide all original text and spans inside the widget */
+                                #google_translate_element .goog-te-gadget-simple span,
+                                #google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
+                                    display: none !important;
+                                }
+
+                                /* Add the Globe Icon */
+                                #google_translate_element .goog-te-gadget-simple::before {
+                                    content: "\f0ac";
+                                    font-family: "Font Awesome 5 Free" !important;
+                                    font-weight: 900 !important;
+                                    color: #ffffff !important;
+                                    vertical-align: middle;
+                                    font-size: 14px !important;
+                                    margin-right: 8px;
+                                }
+
+                                /* Add "Language" text */
+                                #google_translate_element .goog-te-gadget-simple::after {
+                                    content: "Language";
+                                    font-family: "Open Sans", sans-serif !important;
+                                    font-weight: 500 !important;
+                                    color: #ffffff !important;
+                                    vertical-align: middle;
+                                    font-size: 14px !important;
+                                }
+
+                                .goog-te-banner-frame.skiptranslate {
+                                    display: none !important;
+                                }
+
+                                body {
+                                    top: 0px !important;
+                                }
+
+                                #goog-gt-tt {
+                                    display: none !important;
+                                }
+
+                                .goog-text-highlight {
+                                    background-color: transparent !important;
+                                    box-shadow: none !important;
+                                }
+                            </style>
+                            <!-- <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
+                            <script>
+                                Weglot.initialize({
+                                    api_key: 'wg_594606240d660c4f2b0253f9783968582'
+                                });
+                            </script> -->
+                        </div>
                     </div>
                 </div>
             </div>

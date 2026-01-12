@@ -30,7 +30,7 @@ class MY_TCPDF extends TCPDF
         $addressParts = explode('Kabupaten', $villageData['address'], 2);
 
         $addressPart1 = trim($addressParts[0]);
-        $addressPart2 = 'Kabupaten' . $addressParts[1];
+        $addressPart2 = isset($addressParts[1]) ? 'Kabupaten' . $addressParts[1] : '';
         $this->Cell(0, 2, $addressPart1, 0, 1, '', 0, '', 0);
         $this->SetX(40);
         $this->Cell(0, 2, $addressPart2, 0, 1, '', 0, '', 0);

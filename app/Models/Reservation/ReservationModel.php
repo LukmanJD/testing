@@ -12,7 +12,7 @@ class ReservationModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at', 'is_rejected'];
+    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at', 'is_rejected', 'payment_token'];
 
     // Dates
     protected $useTimestamps = false;

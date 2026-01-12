@@ -6,15 +6,15 @@ use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
 
-use App\Models\ReservationModel;
+use App\Models\Reservation\ReservationModel;
 use App\Models\PackageModel;
 use App\Models\PackageDetailModel;
 use App\Models\AttractionModel;
-use App\Models\HomestayExclusiveActivityModel;
-use App\Models\CulinaryPlaceModel;
-use App\Models\SouvenirPlaceModel;
+use App\Models\Homestay\HomestayExclusiveActivityModel;
+use App\Models\Culinary\CulinaryPlaceModel;
+use App\Models\Souvenir\SouvenirPlaceModel;
 use App\Models\ServiceProviderModel;
-use App\Models\WorshipPlaceModel;
+use App\Models\Worship\WorshipPlaceModel;
 
 use App\Models\PackageServiceModel;
 use App\Models\PackageServiceDetailModel;
@@ -164,7 +164,7 @@ class PackageService extends ResourcePresenter
                     "Success delete Service"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,
@@ -172,7 +172,7 @@ class PackageService extends ResourcePresenter
                     "Service not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

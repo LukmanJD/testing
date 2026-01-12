@@ -445,7 +445,7 @@ class Event extends ResourcePresenter
                     "Date not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

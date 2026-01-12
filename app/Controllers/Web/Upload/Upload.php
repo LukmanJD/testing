@@ -5,11 +5,23 @@ namespace App\Controllers\Web\Upload;
 use App\Controllers\BaseController;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Files\File;
+use CodeIgniter\HTTP\IncomingRequest;
+use CodeIgniter\HTTP\Response;
 use CodeIgniter\I18n\Time;
 use CodeIgniter\RESTful\ResourceController;
 
 class Upload extends ResourceController
 {
+    /**
+     * @var Response
+     */
+    protected $response;
+
+    /**
+     * @var IncomingRequest
+     */
+    protected $request;
+
     protected $helpers = ['filesystem'];
     use ResponseTrait;
 
@@ -24,14 +36,14 @@ class Upload extends ResourceController
                 $createdFolder = mkdir(WRITEPATH . 'uploads/' . $folder);
                 if ($createdFolder) {
                     $filepath = WRITEPATH . 'uploads/' . $img->store($folder, $file);
-                    return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($folder);
+                    return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($folder);
                 }
                 $error = "failed create temp folder. Folder: " . $folder . "; Filename:" . $file;
-                return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody($error);
+                return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody($error);
             }
-            return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($originalName);
+            return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($originalName);
         }
-        return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("file is null, upload failed");
+        return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody("file is null, upload failed");
     }
 
     public function remove()
@@ -41,15 +53,15 @@ class Upload extends ResourceController
             $filepath = WRITEPATH . 'uploads/' . $folder;
             $deleteFile = delete_files($filepath);
             if (!$deleteFile) {
-                return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("Failed deleting files in directory: " . $filepath);
+                return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody("Failed deleting files in directory: " . $filepath);
             }
             $removeDir = rmdir($filepath);
             if (!$removeDir) {
-                return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("Failed deleting directory: " . $filepath);
+                return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody("Failed deleting directory: " . $filepath);
             }
-            return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($filepath);
+            return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($filepath);
         }
-        return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($folder);
+        return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($folder);
     }
 
     public function photo()
@@ -63,15 +75,15 @@ class Upload extends ResourceController
                     $createdFolder = mkdir(WRITEPATH . 'uploads/' . $folder);
                     if ($createdFolder) {
                         $filepath = WRITEPATH . 'uploads/' . $img->store($folder, $file);
-                        return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($folder);
+                        return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($folder);
                     }
                     $error = "failed create temp folder. Folder: " . $folder . "; Filename:" . $file;
-                    return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody($error);
+                    return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody($error);
                 }
             }
-            return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody('');
+            return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody('');
         }
-        return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("file is null, upload failed");
+        return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody("file is null, upload failed");
     }
 
     public function video()
@@ -84,13 +96,13 @@ class Upload extends ResourceController
                 $createdFolder = mkdir(WRITEPATH . 'uploads/' . $folder);
                 if ($createdFolder) {
                     $filepath = WRITEPATH . 'uploads/' . $img->store($folder, $file);
-                    return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($folder);
+                    return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($folder);
                 }
                 $error = "failed create temp folder. Folder: " . $folder . "; Filename:" . $file;
-                return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody($error);
+                return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody($error);
             }
-            return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody('');
+            return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody('');
         }
-        return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("file is null, upload failed");
+        return $this->response->setStatusCode(400)->setHeader('Content-Type', 'text/plain')->setBody("file is null, upload failed");
     }
 }

@@ -133,7 +133,7 @@ class WorshipPlace extends BaseController
         if (isset($request['facilities'])) {
             $facilities = $request['facilities'];
             $addFacilities = $this->worshipPlaceFacilityDetailModel->add_facility_api($id, $facilities);
-        } 
+        }
 
         if (isset($request['gallery'])) {
             $folders = $request['gallery'];
@@ -299,7 +299,7 @@ class WorshipPlace extends BaseController
                     "Success delete Worship Place Facility"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,
@@ -307,7 +307,7 @@ class WorshipPlace extends BaseController
                     "Worship Place Facility not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 }

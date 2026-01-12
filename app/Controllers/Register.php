@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+use CodeIgniter\HTTP\IncomingRequest;
 use App\Entities\User;
 use Myth\Auth\Authorization\GroupModel;
 
@@ -10,6 +11,13 @@ class Register extends Controller
 {
     protected $auth;
     protected $config;
+
+    /**
+     * Instance of the main Request object.
+     *
+     * @var IncomingRequest
+     */
+    protected $request;
 
     public function __construct()
     {
@@ -65,8 +73,9 @@ class Register extends Controller
         // Generate a random activation hash
         $user->generateActivateHash();
 
-        // Set activation expiration time (10 minutes from now)
-        $user->activate_expires = date('Y-m-d H:i:s', time() + 600);
+        // Set activation expiration time (1 hour from now)
+        // Note: Ensure 'activate_expires' is in the $allowedFields of your App\Models\UserModel
+        $user->activate_expires = date('Y-m-d H:i:s', time() + 3600);
 
         // Ensure user is not active until email is verified
         $user->active = 0;
@@ -125,7 +134,7 @@ class Register extends Controller
 
         // User found and is not active, resend the email.
         $user->generateActivateHash();
-        $user->activate_expires = date('Y-m-d H:i:s', time() + 600);
+        $user->activate_expires = date('Y-m-d H:i:s', time() + 3600);
 
         if ($users->save($user)) {
             // Load the helper that contains the sendEmailWithPHPMailer function.
@@ -166,7 +175,7 @@ class Register extends Controller
 
         // Check if the hash has expired
         if (is_null($user->activate_expires) || strtotime($user->activate_expires) < time()) {
-            return redirect()->to('/login')->with('error', 'This activation link has expired. Please register again.');
+            return redirect()->to('/login')->with('error', 'This activation link has expired. Please resend activation mail again.');
         }
 
         // Activate the user
@@ -181,7 +190,7 @@ class Register extends Controller
         $userGroup = $groupModel->where('name', 'user')->first();
 
         if ($userGroup) {
-            $users->addToGroup($user->id, $userGroup->id);
+            $groupModel->addUserToGroup($user->id, $userGroup->id);
         }
 
         return redirect()->to('/login')->with('message', 'Account activated successfully! You can now log in.');

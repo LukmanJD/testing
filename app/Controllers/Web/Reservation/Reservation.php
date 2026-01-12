@@ -4,6 +4,7 @@ namespace App\Controllers\Web\Reservation;
 
 use CodeIgniter\I18n\Time;
 use CodeIgniter\Files\File;
+use CodeIgniter\HTTP\Response;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
 
@@ -31,6 +32,8 @@ use App\Models\Worship\WorshipPlaceModel;
 use App\Models\EventModel;
 use App\Models\UserBankAccountModel;
 use Myth\Auth\Models\UserModel;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
 
 class Reservation extends ResourcePresenter
 {
@@ -61,6 +64,7 @@ class Reservation extends ResourcePresenter
     protected $eventModel;
     protected UserBankAccountModel $userBankAccountModel;
     protected $userModel;
+    private ?GuzzleClient $guzzleClient = null;
 
     protected $helpers = ['auth', 'url', 'filesystem'];
 
@@ -91,6 +95,7 @@ class Reservation extends ResourcePresenter
         $this->eventModel = new EventModel();
         $this->userBankAccountModel = new UserBankAccountModel();
         $this->userModel = new UserModel();
+        $this->guzzleClient = new GuzzleClient();
     }
 
     public function listReservation()
@@ -99,10 +104,10 @@ class Reservation extends ResourcePresenter
 
         foreach ($reservations as $reservation) {
             if (($reservation['canceled_at'] == null) && ($reservation['status'] != 'Done')) {
-                $checkIsReservationCancel = $this->checkIsReservationCancel($reservation);
+                $this->checkIsReservationCancel($reservation);
             }
             if ($reservation['status'] == 'Full Pay Successful') {
-                $checkIsReservationDone = $this->checkIsReservationDone($reservation);
+                $this->checkIsReservationDone($reservation);
             }
         }
 
@@ -185,6 +190,7 @@ class Reservation extends ResourcePresenter
         $url = $api_url . '?' . $query;
 
         $client = \Config\Services::curlrequest();
+        /** @var Response $response */
         $response = $client->get($url);
 
         if ($response->getStatusCode() === 200) {
@@ -387,7 +393,7 @@ class Reservation extends ResourcePresenter
     public function create($homestay_id = null)
     {
         $request = $this->request->getPost();
-        
+
         if ($homestay_id === null) {
             $homestay_id = $request['homestay_id'];
         }
@@ -731,6 +737,22 @@ class Reservation extends ResourcePresenter
             }
         }
 
+        // --- Fetch Currency Conversion Rates for Popup Checkout ---
+        $rates = [];
+        $apiKey = getenv('exchangerate.apiKey');
+        if ($apiKey) {
+            try {
+                $response = $this->guzzleClient->get("https://v6.exchangerate-api.com/v6/{$apiKey}/latest/IDR");
+                $body = json_decode($response->getBody()->getContents(), true);
+                if ($body['result'] === 'success') {
+                    $rates = $body['conversion_rates'];
+                }
+            } catch (RequestException $e) {
+                log_message('error', 'ExchangeRate-API Exception: ' . $e->getMessage());
+            }
+        }
+        // --- End Fetch ---
+
         $data = [
             'title' => 'Reservation',
             'reservation' => $reservation,
@@ -739,6 +761,8 @@ class Reservation extends ResourcePresenter
             'homestay' => $homestay,
             'homestay_unit' => $homestay_units,
             'reservation_additional_amenities' => $reservation_additional_amenities,
+            'idr_to_usd_rate'  => (float)getenv('IDR_TO_USD_RATE'),
+            'rates'            => $rates
         ];
         return view('web/reservation_detail', $data);
     }
@@ -1060,7 +1084,7 @@ class Reservation extends ResourcePresenter
         if ($finishPackage) {
             $coinUser = $this->accountModel->calculate_coin(user()->id, $coin);
             if ($coinUser) {
-                return redirect()->to(base_url('web'));
+                return redirect()->to(base_url('web/reservation'));
             }
         } else {
             return redirect()->back()->withInput();
@@ -1280,9 +1304,30 @@ class Reservation extends ResourcePresenter
     public function addAmenities()
     {
         $request = $this->request->getPost();
-        $request['additional_amenities_id'] = substr($request['additional_amenities_id'], 0, 2);
 
-        $add = $this->reservationHomestayAdditionalAmenitiesDetailModel->add_detail_haa($request);
+        if (!isset($request['additional_amenities_id'])) {
+            session()->setFlashdata('error', 'Please select an amenity.');
+            return redirect()->back()->withInput();
+        }
+
+        $data = [
+            'reservation_id' => $request['reservation_id'],
+            'homestay_id' => $request['homestay_id'],
+            'additional_amenities_id' => $request['additional_amenities_id'],
+            'total_order' => $request['total_order'] ?? 1,
+            'total_price' => $request['total_price'] ?? 0,
+            'day_order' => $request['day_order'] ?? 0,
+            'person_order' => $request['person_order'] ?? 0,
+            'room_order' => $request['room_order'] ?? 0,
+        ];
+
+        $add = $this->reservationHomestayAdditionalAmenitiesDetailModel->add_detail_haa($data);
+
+        if ($add) {
+            session()->setFlashdata('success', 'Additional amenity added successfully.');
+        } else {
+            session()->setFlashdata('error', 'Failed to add additional amenity.');
+        }
 
         return redirect()->to(base_url('web/reservation/detail/' . $request['reservation_id']));
     }
@@ -1363,10 +1408,10 @@ class Reservation extends ResourcePresenter
         for ($i = 0; $i < count($nid); $i++) {
             $reservation = $this->reservationModel->get_reservation_by_id($nid[$i])->getRowArray();
             if (($reservation['canceled_at'] == null) && ($reservation['status'] != 'Done')) {
-                $checkIsReservationCancel = $this->checkIsReservationCancel($reservation);
+                $this->checkIsReservationCancel($reservation);
             }
             if ($reservation['status'] == 'Payment Successful') {
-                $checkIsReservationDone = $this->checkIsReservationDone($reservation);
+                $this->checkIsReservationDone($reservation);
             }
             $reservation = $this->reservationModel->get_reservation_by_id($nid[$i])->getRowArray();
             $reservations[] = $reservation;

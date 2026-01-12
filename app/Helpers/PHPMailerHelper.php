@@ -27,6 +27,7 @@ function sendEmailWithPHPMailer($to, $subject, $body)
 
         // Recipients
         $mail->setFrom(env('SMTP_FROM_EMAIL'), env('SMTP_FROM_NAME'));
+        $mail->addReplyTo(env('SMTP_FROM_EMAIL'), env('SMTP_FROM_NAME'));
         $mail->addAddress($to);
 
         // Content

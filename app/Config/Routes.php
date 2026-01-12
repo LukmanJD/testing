@@ -153,10 +153,12 @@ $routes->group('web', ['namespace' => 'App\Controllers\Web'], function ($routes)
     $routes->delete('packageService/delete/(:segment)/(:segment)/(:segment)', 'PackageService::delete/$1/$2/$3',  ['filter' => 'role:user']);
 
     // Unified Checkout Routes
-    $routes->get('checkout/(:segment)/(:any)', 'PaymentController::unifiedCheckout/$1/$2', ['filter' => 'role:user']);
+    $routes->get('checkout/(:segment)/(:segment)', 'PaymentController::unifiedCheckout/$1/$2');
     $routes->post('payment/dokuCheckout', 'PaymentController::dokuCheckout');
     $routes->post('payment/dokuNotification', 'PaymentController::dokuNotification');
+    $routes->get('payment/dokuNotification', 'PaymentController::dokuPopupClose'); // Handle browser redirect fallback
     $routes->post('payment/snap', 'PaymentController::snap');
+    $routes->get('payment/dokuPopupClose', 'PaymentController::dokuPopupClose');
     $routes->post('payment/paypalCreateOrder', 'PaymentController::paypalCreateOrder');
     $routes->post('payment/paypalCaptureOrder', 'PaymentController::paypalCaptureOrder');
 

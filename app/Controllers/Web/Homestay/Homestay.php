@@ -674,7 +674,7 @@ class Homestay extends ResourcePresenter
                     "Homestay Facility not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 
@@ -749,7 +749,7 @@ class Homestay extends ResourcePresenter
                     "Homestay Unit Facility not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 

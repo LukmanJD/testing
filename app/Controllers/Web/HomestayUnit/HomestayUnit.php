@@ -2,11 +2,6 @@
 
 namespace App\Controllers\Web\HomestayUnit;
 
-// use App\Models\DetailFacilityRumahGadangModel;
-// use App\Models\FacilityRumahGadangModel;
-// use App\Models\GalleryRumahGadangModel;
-// use App\Models\ReviewModel;
-// use App\Models\RumahGadangModel;
 use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
@@ -27,12 +22,6 @@ class HomestayUnit extends ResourcePresenter
 {
     use ResponseTrait;
 
-    // protected $rumahGadangModel;
-    // protected $galleryRumahGadangModel;
-    // protected $detailFacilityRumahGadangModel;
-    // protected $reviewModel;
-    // protected $facilityRumahGadangModel;
-
     protected $homestayModel;
     protected $homestayUnitModel;
     protected $homestayUnitFacilityDetailModel;
@@ -49,12 +38,6 @@ class HomestayUnit extends ResourcePresenter
 
     public function __construct()
     {
-        // $this->rumahGadangModel = new RumahGadangModel();
-        // $this->galleryRumahGadangModel = new GalleryRumahGadangModel();
-        // $this->detailFacilityRumahGadangModel = new DetailFacilityRumahGadangModel();
-        // $this->reviewModel = new ReviewModel();
-        // $this->facilityRumahGadangModel = new FacilityRumahGadangModel();
-
         $this->homestayModel = new HomestayModel();
         $this->homestayUnitModel = new HomestayUnitModel();
         $this->homestayUnitFacilityDetailModel = new HomestayUnitFacilityDetailModel();
@@ -325,7 +308,7 @@ class HomestayUnit extends ResourcePresenter
                     "Success delete Homestay Unit"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,
@@ -333,79 +316,10 @@ class HomestayUnit extends ResourcePresenter
                     "Homestay Unit not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
 
-    public function recommendation()
-    {
-        $contents = $this->rumahGadangModel->get_recommendation_api()->getResultArray();
-        for ($index = 0; $index < count($contents); $index++) {
-            $list_gallery = $this->galleryRumahGadangModel->get_gallery_api($contents[$index]['id'])->getResultArray();
-            $galleries = array();
-            foreach ($list_gallery as $gallery) {
-                $galleries[] = $gallery['url'];
-            }
-            $contents[$index]['gallery'] = $galleries;
-        }
-        $data = [
-            'title' => 'Home',
-            'data' => $contents,
-        ];
-
-        return view('web/recommendation', $data);
-    }
-
-    public function maps()
-    {
-        $contents = $this->rumahGadangModel->get_list_rg_api()->getResultArray();
-        $data = [
-            'title' => 'Rumah Gadang',
-            'data' => $contents,
-        ];
-
-        return view('maps/rumah_gadang', $data);
-    }
-
-    public function detail($id = null)
-    {
-        $rumahGadang = $this->rumahGadangModel->get_rg_by_id_api($id)->getRowArray();
-        if (empty($rumahGadang)) {
-            return redirect()->to(substr(current_url(), 0, -strlen($id)));
-        }
-
-        $avg_rating = $this->reviewModel->get_rating('rumah_gadang_id', $id)->getRowArray()['avg_rating'];
-
-        $list_facility = $this->detailFacilityRumahGadangModel->get_facility_by_rg_api($id)->getResultArray();
-        $facilities = array();
-        foreach ($list_facility as $facility) {
-            $facilities[] = $facility['facility'];
-        }
-
-        $list_review = $this->reviewModel->get_review_object_api('rumah_gadang_id', $id)->getResultArray();
-
-        $list_gallery = $this->galleryRumahGadangModel->get_gallery_api($id)->getResultArray();
-        $galleries = array();
-        foreach ($list_gallery as $gallery) {
-            $galleries[] = $gallery['url'];
-        }
-
-
-        $rumahGadang['avg_rating'] = $avg_rating;
-        $rumahGadang['facilities'] = $facilities;
-        $rumahGadang['reviews'] = $list_review;
-        $rumahGadang['gallery'] = $galleries;
-
-        $data = [
-            'title' => $rumahGadang['name'],
-            'data' => $rumahGadang,
-        ];
-
-        if (url_is('*dashboard*')) {
-            return view('dashboard/detail_rumah_gadang', $data);
-        }
-        return view('maps/detail_rumah_gadang', $data);
-    }
     public function addNewFacility($homestay_id = null, $unit_type = null, $unit_number = null)
     {
         $request = $this->request->getPost();
@@ -461,7 +375,7 @@ class HomestayUnit extends ResourcePresenter
                     "Success delete Unit Facility"
                 ]
             ];
-            return $this->respondDeleted($response);
+            return $this->respondDeleted($response['message'][0]);
         } else {
             $response = [
                 'status' => 404,
@@ -469,7 +383,7 @@ class HomestayUnit extends ResourcePresenter
                     "Unit Facility not found"
                 ]
             ];
-            return $this->failNotFound($response);
+            return $this->failNotFound($response['message'][0]);
         }
     }
     public function getListUnit($homestay_id = null)
