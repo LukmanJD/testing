@@ -11,7 +11,11 @@ class ReservationModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'reservation';
     protected $returnType       = 'array';
+<<<<<<< Updated upstream
     protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_pepole', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status'];
+=======
+    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at', 'is_rejected', 'payment_token', 'account_refund'];
+>>>>>>> Stashed changes
 
     // Dates
     protected $useTimestamps = true;
@@ -79,40 +83,19 @@ class ReservationModel extends Model
     public function get_reservation_by_pid($reservation_id = null, $homestay_id = null, $package_id = null)
     {
 
-        $query = $this->db->table($this->table)
+        return $this->db->table($this->table)
             ->select("*")
             ->where('id', $reservation_id)
-            ->where('homestay_id', $homestay_id)
-            ->where('package_id', $package_id)
             ->get();
-        return $query;
     }
     public function get_reservation_by_cpid($homestay_id = null, $package_id = null)
     {
 
-        $query = $this->db->table($this->table)
+        $query = $this->db->table('reservation_package_detail')
+            ->join('reservation', 'reservation.id = reservation_package_detail.reservation_id', 'left')
             ->select("*")
-            ->where('homestay_id', $homestay_id)
             ->where('package_id', $package_id)
             ->get();
-        return $query;
-    }
-    public function add_package_api($reservation = null, $reservation_id = null, $homestay_id = null, $package_id = null)
-    {
-        $reservation['homestay_id'] = $homestay_id;
-        $reservation['package_id'] = $package_id;
-        $query = $this->db->table($this->table)
-            ->where('id', $reservation_id)
-            ->update($reservation);
-        return $query;
-    }
-    public function del_package_api($reservation_id = null)
-    {
-        $query = $this->db->table($this->table)
-            ->set('homestay_id', null)
-            ->set('package_id', null)
-            ->where('id', $reservation_id)
-            ->update();
         return $query;
     }
 
@@ -192,8 +175,6 @@ class ReservationModel extends Model
     {
         $reservation['cust_package_price_confirmed_at'] = Time::now('Asia/Jakarta', 'en_US');
         $query = $this->db->table($this->table)
-            ->where('id', $reservation_id)
-            ->where('package_id', $package_id)
             ->update($reservation);
         return $query;
     }

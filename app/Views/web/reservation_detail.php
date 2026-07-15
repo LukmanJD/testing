@@ -145,6 +145,57 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                        Tourism Package
+                                    </button>
+                                </h2>
+                                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                    <div class="accordion-body">
+                                        <?php if (empty($package)) : ?>
+                                            <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
+                                                <a title="Choose Package" class="btn icon btn-primary btn-sm" href="/web/reservation/package/<?= esc($homestay['id']) ?>/<?= esc($reservation['id']) ?>">
+                                                    <i class="fa-solid fa-plus"></i> Choose Package
+                                                </a>
+                                            <?php else : ?>
+                                                <span>No package chosen</span>
+                                            <?php endif; ?>
+                                        <?php else : ?>
+                                            <div class="card border mb-3">
+                                                <div class="row g-0">
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center">
+                                                        <img width="500px" src="/media/photos/<?= esc($package['brochure_url']) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">
+                                                                <?= esc($package['name']) ?>
+                                                                <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
+                                                                    <a class="text-danger float-end" onclick="deletePackage('<?= esc($reservation['id']); ?>')"><i class="fa-solid fa-trash"></i></a>
+                                                                <?php endif; ?>
+                                                                <a class="text-info float-end me-2" target="_blank" href="/web/homestayPackage/detail/<?= esc($package['homestay_id']) ?>/<?= esc($package['id']) ?>"><i class="fa-solid fa-circle-info"></i></a>
+                                                            </h5>
+                                                            <p class="card-text">
+                                                                Package Day: <?= esc($package['total_day']) ?> day <br>
+                                                                Minimum Capacity: <?= esc($package['min_capacity']) ?> people
+                                                            </p>
+                                                            <p class="card-text"><small class="text-dark"><?= esc("Rp " . number_format($package['price'], 0, ',', '.')); ?></small></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php
+                                            $package_total_price = $package['price'];
+                                            if (isset($package['package_order'])) {
+                                                $package_total_price = $package['price'] * $package['package_order'];
+                                            }
+                                            ?>
+                                            <span>Package total price = <?= esc("Rp " . number_format($package_total_price, 0, ',', '.')) ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
                             <?php if ($homestay_unit[0]['unit_type'] != "3") : ?>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="panelsStayOpen-headingFour">
@@ -156,17 +207,23 @@
                                         <div class="accordion-body">
                                             <div class="mb-3">
                                                 <span class="fw-bold"><?= esc($homestay['name']) ?></span>
-                                                <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null) && ($reservation['reservation_type'] == 1)) : ?>
-                                                    <a title="Detail" class="text-success float-end" data-bs-toggle="modal" data-bs-target="#insertService"><i class="fa-solid fa-add"></i> Additional Amenities</a>
+                                                <?php if (($reservation['status'] == null) || ($reservation['status'] == '0') || ($reservation['status'] == '1')) : ?>
+                                                    <a title="Add amenities" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#insertService">
+                                                        <i class="fa-solid fa-plus"></i> Add Amenities
+                                                    </a>
                                                 <?php endif; ?>
                                             </div>
                                             <?php if (!empty($reservation_additional_amenities)) : ?>
                                                 <?php foreach ($reservation_additional_amenities as $activity) : ?>
                                                     <li><?= esc($activity['name']) ?>
-                                                        <?php if (($reservation['status'] == null) && ($reservation['reservation_type'] == 1)) : ?>
-                                                            <a class="text-danger float-end ms-2" onclick="deleteAdditionalAmenities('<?= esc($activity['homestay_id']); ?>','<?= esc($activity['additional_amenities_id']); ?>','<?= esc($activity['reservation_id']); ?>')"><i class="fa-solid fa-trash"></i></a>
-                                                        <?php endif; ?>
-                                                        <a class="text-info float-end" target="_blank"><i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#infoActivity<?= esc($activity['id']); ?>"></i></a><br>
+                                                        <div class="float-end">
+                                                            <a class="text-info" target="_blank"><i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#infoActivity<?= esc($activity['id']); ?>"></i></a>
+                                                            <?php if (($reservation['status'] == null) || ($reservation['status'] == '0') || ($reservation['status'] == '1')) : ?>
+                                                                <a class="text-warning ms-2" data-bs-toggle="modal" data-bs-target="#editAmenities<?= esc($activity['id']); ?>"><i class="fa-solid fa-pencil"></i></a>
+                                                                <a class="text-danger ms-2" onclick="deleteAmenities('<?= esc($reservation['id']); ?>', '<?= esc($activity['homestay_id']); ?>', '<?= esc($activity['additional_amenities_id']); ?>', '<?= esc($activity['name']); ?>')"><i class="fa-solid fa-trash"></i></a>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <br>
                                                         <p class="ms-4">
                                                             <?= esc("Rp " . number_format($activity['price'], 0, ',', '.')); ?><?= ($activity['is_order_count_per_day'] == '1') ? '/day' : '' ?><?= ($activity['is_order_count_per_person'] == '1') ? '/person' : '' ?><?= ($activity['is_order_count_per_room'] == '1') ? '/room' : '' ?>
                                                             <br>
@@ -189,7 +246,7 @@
                             <?php endif; ?>
                         </div>
 
-                        <?php if ($reservation['reservation_type'] == 1 && $reservation['total_price'] == null && $reservation['deposit'] == null) : ?>
+                        <?php if ($reservation['reservation_type'] == 1 && ($reservation['status'] == null || $reservation['status'] == '0' || $reservation['status'] == '1')) : ?>
                             <div class="form-check form-switch mt-3">
                                 <?php if (!empty($coin) && $coin['total_coin'] > 0): ?>
                                     <input hidden readonly type="number" id="coin" name="coin" class="form-control" value="<?= esc($coin['total_coin']); ?>">
@@ -209,7 +266,7 @@
                                 <?php endif; ?>
                             </div>
 
-                        <?php elseif ($reservation['reservation_type'] == 2 && $reservation['total_price'] != null && $reservation['deposit'] != null && $reservation['status'] == null) : ?>
+                        <?php elseif ($reservation['reservation_type'] == 2 && ($reservation['status'] == null || $reservation['status'] == '0' || $reservation['status'] == '1')) : ?>
                             <div class="form-check form-switch mt-3">
                                 <?php if (!empty($coin) && $coin['total_coin'] > 0): ?>
                                     <input hidden readonly type="number" id="coin" name="coin" class="form-control" value="<?= esc($coin['total_coin']); ?>">
@@ -300,7 +357,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">Deposit</td>
-                                        <td>: <?= esc("Rp " . number_format($deposit, 0, ',', '.')) ?> <i>*(20% of total price)</i></td>
+                                        <td>: <?= esc("Rp " . number_format($deposit ?? 0, 0, ',', '.')) ?> <i>*(20% of total price)</i></td>
                                     </tr>
                                 <?php elseif (($reservation['reservation_type'] == 2)) : ?>
                                     <tr>
@@ -311,7 +368,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">Deposit</td>
-                                        <td>: <?= esc("Rp " . number_format($homestay_unit_total_price * 90 / 100 * 20 / 100, 0, ',', '.')) ?> <i>*(20% of total price)</i></td>
+                                        <td>: <?= esc("Rp " . number_format(($homestay_unit_total_price * 90 / 100 * 20 / 100) ?? 0, 0, ',', '.')) ?> <i>*(20% of total price)</i></td>
                                     </tr>
                                 <?php endif; ?>
 
@@ -322,9 +379,9 @@
                                     <td>
                                         <div id="used_coin_2" <?= (($reservation['status'] == null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>
                                             <?php if ($reservation['status'] != null && isset($reservation['coin_use']) && $reservation['coin_use'] != '0') : ?>
-                                                <?= esc("-Rp " . number_format($reservation['coin_use'], 0, ',', '.')) ?>
+                                                <?= esc("-Rp " . number_format($reservation['coin_use'] ?? 0, 0, ',', '.')) ?>
                                             <?php elseif (isset($coin) && $coin != null && $coin != '0') : ?>
-                                                <?= esc("-Rp " . number_format($coin, 0, ',', '.')) ?>
+                                                <?= esc("-Rp " . number_format($coin ?? 0, 0, ',', '.')) ?>
                                             <?php endif; ?>
                                         </div>
                                     </td>
@@ -336,19 +393,19 @@
                                     </td>
                                     <td>
                                         <?php if (($reservation['status'] != null)) : ?>
-                                            <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format($reservation['total_price'] - $reservation['coin_use'], 0, ',', '.')) ?></div>
+                                            <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format(($reservation['total_price'] ?? 0) - ($reservation['coin_use'] ?? 0), 0, ',', '.')) ?></div>
                                         <?php else : ?>
                                             <?php if (($reservation['reservation_type'] == 1)) : ?>
                                                 <?php if (($coin > 0.15 * $total_price)) : ?>
-                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format($total_price - 0.15 * $total_price, 0, ',', '.')) ?></div>
+                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format(($total_price ?? 0) - 0.15 * ($total_price ?? 0), 0, ',', '.')) ?></div>
                                                 <?php else : ?>
-                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format($total_price - $coin, 0, ',', '.')) ?></div>
+                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format(($total_price ?? 0) - ($coin ?? 0), 0, ',', '.')) ?></div>
                                                 <?php endif; ?>
                                             <?php else : ?>
                                                 <?php if (($coin > 0.15 * $total_price)) : ?>
-                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format(($homestay_unit_total_price * 90 / 100) - (0.15 * $homestay_unit_total_price * 90 / 100), 0, ',', '.')) ?></div>
+                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format((($homestay_unit_total_price ?? 0) * 90 / 100) - (0.15 * ($homestay_unit_total_price ?? 0) * 90 / 100), 0, ',', '.')) ?></div>
                                                 <?php else : ?>
-                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format($homestay_unit_total_price * 90 / 100 - $coin, 0, ',', '.')) ?></div>
+                                                    <div id="used_coin_4" <?= (($reservation['status'] == Null) || ($reservation['coin_use'] == '0')) ? 'style="display: none;"' : '' ?>>: <?= esc("Rp " . number_format((($homestay_unit_total_price ?? 0) * 90 / 100) - ($coin ?? 0), 0, ',', '.')) ?></div>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         <?php endif; ?>
@@ -394,8 +451,16 @@
                                 <?php if ($reservation['is_refund'] == '1') : ?>
                                     <tr>
                                         <td class="fw-bold">Refund</td>
-                                        <td>
-                                            : <?= esc("Rp " . number_format($refund, 0, ',', '.')) ?> <i>*(50% of deposit)</i>
+                                        <td>:
+                                            <?php if ($reservation['status'] == 'Full Pay Successful' || ($reservation['canceled_at'] != null && $reservation['full_paid_at'] != null)) : ?>
+                                                <?= esc("Rp " . number_format($reservation['total_price'] * 0.5, 0, ',', '.')) ?>
+                                                <br>
+                                                <small><i>(Based on <b>Full Payment</b>, 50% of total price)</i></small>
+                                            <?php else : ?>
+                                                <?= esc("Rp " . number_format($refund, 0, ',', '.')) ?>
+                                                <br>
+                                                <small><i>(Based on <b>Deposit</b>, 50% of deposit)</i></small>
+                                            <?php endif; ?>
                                             <?php if ($reservation['refund_paid_confirmed_at'] != null) : ?>
                                                 <span class="text-success">(Paid by homestay owner)</span>
                                             <?php endif; ?>
@@ -419,7 +484,13 @@
                                 </a>
                             <?php endif; ?>
 
-                            <?php if (($reservation['status'] == 'Deposit Successful') && ($reservation['canceled_at'] == null)) : ?>
+                            <?php if ((($reservation['status'] == null) || ($reservation['status'] == '0') || ($reservation['status'] == '1') || ($reservation['status'] == 'Full Pay Successful')) && ($reservation['canceled_at'] == null)) : ?>
+                                <a title="Extend Reservation" class="btn icon btn-info btn-sm mt-3 float-end me-2" href="/web/reservation/extend/<?= esc($reservation['id']) ?>">
+                                    <i class="fa-solid fa-calendar-plus"></i> Extend Reservation
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if ((($reservation['status'] == 'Deposit Successful') || ($reservation['status'] == 'Full Pay Successful')) && ($reservation['canceled_at'] == null)) : ?>
                                 <a title="Cancel Reservation" class="btn icon btn-danger btn-sm mt-3 float-end" onclick="confirmCancelReservation('<?= esc($reservation['id']); ?>')">
                                     <i class="fa-solid fa-xmark"></i> Cancel Reservation
                                 </a>
@@ -561,7 +632,7 @@
                                     </tr>
                                 <?php endif; ?>
 
-                                <?php if (($reservation['canceled_at'] != null) && ($reservation['is_refund'] == '1') && ($reservation['refund_proof'] == null)) : ?>
+                                <?php if (in_groups('user') && ($reservation['canceled_at'] != null) && ($reservation['is_refund'] == '1') && ($reservation['refund_proof'] == null)) : ?>
                                     <tr>
                                         <td colspan="2">
                                             <span class="fw-bold">To Do : </span>
@@ -572,6 +643,7 @@
                                         <td colspan="2">
                                             <div class="col-md-6">
                                                 <form class="form form-vertical" action="<?= base_url('web/reservationRefund'); ?>" method="post" enctype="multipart/form-data">
+                                                    <?= csrf_field() ?>
                                                     <div class="form-body">
                                                         <input type="hidden" name="reservation_id" value="<?= esc($reservation['id']); ?>">
                                                         <div class="form-group">
@@ -598,7 +670,7 @@
                                             </a>
                                         </td>
                                     </tr>
-                                <?php elseif (($reservation['status'] == 'Done') && ($reservation['rating'] == null) && ($reservation['review'] == null)) : ?>
+                                <?php elseif (in_groups('user') && ($reservation['status'] == 'Done') && ($reservation['rating'] == null) && ($reservation['review'] == null)) : ?>
                                     <tr>
                                         <td colspan="2">
                                             <span class="fw-bold">To Do : </span>
@@ -726,6 +798,46 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
+    <!-- Modal Edit Amenities -->
+    <?php if (!empty($reservation_additional_amenities)) : ?>
+        <?php foreach ($reservation_additional_amenities as $amenity) : ?>
+            <div class="modal fade" id="editAmenities<?= esc($amenity['id']); ?>" tabindex="-1" role="dialog" aria-labelledby="editAmenitiesLabel<?= esc($amenity['id']); ?>" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editAmenitiesLabel<?= esc($amenity['id']); ?>">Edit <?= esc($amenity['name']); ?></h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form form-vertical" action="<?= base_url('web/reservation/amenities/update'); ?>" method="post">
+                                <?= csrf_field(); ?>
+                                <input type="hidden" name="reservation_id" value="<?= esc($reservation['id']); ?>">
+                                <input type="hidden" name="homestay_id" value="<?= esc($amenity['homestay_id']); ?>">
+                                <input type="hidden" name="additional_amenities_id" value="<?= esc($amenity['id']); ?>">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label for="total_order_edit_<?= esc($amenity['id']); ?>" class="mb-2">Total Order</label>
+                                        <input type="number" id="total_order_edit_<?= esc($amenity['id']); ?>" class="form-control" name="total_order" placeholder="Total Order" value="<?= esc($amenity['total_order']); ?>" min="1" onchange="calculatePriceEdit('<?= esc($amenity['id']); ?>', this.value, '<?= esc($amenity['price']); ?>')" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="total_price_edit_<?= esc($amenity['id']); ?>" class="mb-2">Total Price</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rp</span>
+                                            <input type="number" id="total_price_edit_<?= esc($amenity['id']); ?>" class="form-control" name="total_price" value="<?= esc($amenity['total_price']); ?>" readonly>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary me-1 my-3">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
     <!-- Modal Refund Confirmation -->
     <?php if (($reservation['canceled_at'] != null) && ($reservation['is_refund'] == '1') && ($reservation['refund_proof'] != null) && ($reservation['refund_paid_confirmed_at'] == null)) : ?>
         <div class="modal fade" id="confirmRefund" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -770,6 +882,32 @@
 
 <?= $this->endSection() ?>
 <?= $this->section('javascript') ?>
+<script>
+    function deletePackage(reservation_id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "<?= base_url('web/reservation/package/delete/') ?>" + reservation_id,
+                    type: "POST",
+                    data: {
+                        '_method': 'DELETE'
+                    },
+                    success: function(response) {
+                        Swal.fire("Deleted!", "The package has been removed from your reservation.", "success").then(() => {
+                            location.reload();
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmDone(reservation_id, deposit, total_price, coin) {
@@ -805,6 +943,153 @@
                 }
             });
         }
+    }
+<<<<<<< Updated upstream
+=======
+
+    function processPayment(reservationId, type) {
+        console.log('Opening Unified Checkout Popup');
+        const url = baseUrl + '/web/checkout/' + reservationId + '/' + type;
+
+        $('#checkoutFrame').attr('src', url);
+        $('#checkoutModal').modal('show');
+    }
+
+    function deleteAmenities(reservation_id, homestay_id, amenity_id, amenity_name) {
+        Swal.fire({
+            title: `Are you sure you want to delete ${amenity_name}?`,
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/web/reservation/amenities/delete/${reservation_id}/${homestay_id}/${amenity_id}`;
+            }
+        })
+    }
+</script>
+<script>
+    var amenitiesData = [];
+
+    function getListAdditionalAmenities(reservationId, homestayId) {
+        $.ajax({
+            url: baseUrl + "/web/getAdditionalAmenities/" + homestayId + "/" + reservationId,
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                amenitiesData = response.data;
+                var options = '<option value="" selected disabled>--Select Additional Amenities--</option>';
+                $.each(response.data, function(index, value) {
+                    options += '<option value="' + value.additional_amenities_id + '">' + value.name + '</option>';
+                });
+                $('#serviceSelect').html(options);
+            }
+        });
+    }
+
+    function getOrderField(amenitiesId, homestayId, dayOfStay, totalPeople, totalRoom) {
+        const amenity = amenitiesData.find(x => x.additional_amenities_id === amenitiesId);
+        const container = $('#additionalAmenitiesOrderFields');
+        container.empty();
+
+        if (!amenity) return;
+
+        // Image
+        if (amenity.image_url) {
+            container.append(`<div class="text-center mb-3"><img src="/media/photos/${amenity.image_url}" class="img-fluid rounded" style="max-height: 200px;"></div>`);
+        }
+
+        // Description
+        container.append(`<p>${amenity.description}</p>`);
+
+        // Price Info
+        container.append(`<p class="fw-bold">Price: ${amenity.price}</p>`);
+
+        let html = '';
+
+        // Inputs
+        html += `<div class="form-group mb-3">
+                    <label class="mb-2">Total Order</label>
+                    <input type="number" class="form-control" name="total_order" id="totalOrder" value="1" min="1" oninput="calculateTotalPrice()">
+                 </div>`;
+
+        if (amenity.is_order_count_per_day == '1') {
+            html += `<div class="form-group mb-3">
+                        <label class="mb-2">Day Order</label>
+                        <input type="number" class="form-control" name="day_order" id="dayOrder" value="${dayOfStay}" min="1" oninput="calculateTotalPrice()">
+                     </div>`;
+        } else {
+            html += `<input type="hidden" name="day_order" id="dayOrder" value="0">`;
+        }
+
+        if (amenity.is_order_count_per_person == '1') {
+            html += `<div class="form-group mb-3">
+                        <label class="mb-2">Person Order</label>
+                        <input type="number" class="form-control" name="person_order" id="personOrder" value="${totalPeople}" min="1" oninput="calculateTotalPrice()">
+                     </div>`;
+        } else {
+            html += `<input type="hidden" name="person_order" id="personOrder" value="0">`;
+        }
+
+        if (amenity.is_order_count_per_room == '1') {
+            html += `<div class="form-group mb-3">
+                        <label class="mb-2">Room Order</label>
+                        <input type="number" class="form-control" name="room_order" id="roomOrder" value="${totalRoom}" min="1" oninput="calculateTotalPrice()">
+                     </div>`;
+        } else {
+            html += `<input type="hidden" name="room_order" id="roomOrder" value="0">`;
+        }
+
+        // Total Price Display & Hidden Input
+        html += `<div class="form-group mb-3">
+                    <label class="mb-2 fw-bold">Total Price Calculation</label>
+                    <h5 id="totalPriceDisplay">Rp 0</h5>
+                    <input type="hidden" name="total_price" id="totalPriceInput">
+                 </div>`;
+
+        // Stock validation helper
+        if (amenity.stock > 0) {
+            html += `<div class="alert alert-info">Available Stock: <span id="available_stock">${amenity.available_stock}</span></div>`;
+        } else {
+            html += `<span id="available_stock" style="display:none">999999</span>`;
+        }
+
+        container.append(html);
+        calculateTotalPrice();
+    }
+
+    function calculateTotalPrice() {
+        const amenityId = $('#serviceSelect').val();
+        const amenity = amenitiesData.find(x => x.additional_amenities_id === amenityId);
+        if (!amenity) return;
+
+        let price = parseFloat(amenity.real_price);
+        let totalOrder = parseFloat($('#totalOrder').val()) || 0;
+        let dayOrder = parseFloat($('#dayOrder').val());
+        let personOrder = parseFloat($('#personOrder').val());
+        let roomOrder = parseFloat($('#roomOrder').val());
+
+        let total = price * totalOrder;
+
+        if (amenity.is_order_count_per_day == '1' && dayOrder > 0) total *= dayOrder;
+        if (amenity.is_order_count_per_person == '1' && personOrder > 0) total *= personOrder;
+        if (amenity.is_order_count_per_room == '1' && roomOrder > 0) total *= roomOrder;
+
+        $('#totalPriceDisplay').text('Rp ' + total.toLocaleString('id-ID'));
+        $('#totalPriceInput').val(total);
+    }
+
+    // Initialize amenities list
+    getListAdditionalAmenities('<?= esc($reservation['id']); ?>', '<?= esc($homestay['id']) ?>');
+>>>>>>> Stashed changes
+</script>
+<script>
+    function calculatePriceEdit(amenityId, totalOrder, price) {
+        const totalPriceField = document.getElementById(`total_price_edit_${amenityId}`);
+        totalPriceField.value = totalOrder * price;
     }
 </script>
 

@@ -53,8 +53,8 @@
                                                     <p class="card-text"><small class="text-dark"><?= esc("Rp " . number_format($item['price'], 0, ',', '.')); ?></small></p>
                                                 </div>
                                                 <div class="col">
-                                                    <a title="Buy Package" class="btn icon btn-success btn-sm float-end me-1" data-bs-toggle="modal" data-bs-target="#buyPackage<?= esc($item['id']) ?>">
-                                                        <i class="fa-solid fa-dollar-sign"></i> Buy
+                                                    <a title="Add Package" class="btn icon btn-success btn-sm float-end me-1" data-bs-toggle="modal" data-bs-target="#buyPackage<?= esc($item['id']) ?>">
+                                                        <i class="fa-solid fa-plus"></i> Add
                                                     </a>
                                                     <a title="Extend Package" class="btn icon btn-primary btn-sm float-end me-1" href="/web/reservation/package/extend/<?= esc($h_id) ?>/<?= esc($reservation_id) ?>/<?= esc($item['id']) ?>">
                                                         <i class="fa-solid fa-square-plus"></i> Extend
@@ -81,7 +81,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Buy Package</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Add Package</h5>
                             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -113,20 +113,7 @@
                                                 <span class="input-group-text">people</span>
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="price" class="mb-2">Package Order</label>
-                                            <div class="input-group">
-                                                <input type="number" id="package_order[<?= esc($item['id']) ?>]" class="form-control" placeholder="Package Order" aria-label="Price" aria-describedby="price" readonly required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="price" class="mb-2">Total Price</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">Rp</span>
-                                                <input type="number" id="total_price[<?= esc($item['id']) ?>]" class="form-control" placeholder="Total Price" aria-label="Price" aria-describedby="price" readonly required>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary me-1 my-3">Buy</button>
+                                        <button type="submit" class="btn btn-primary me-1 my-3">Add</button>
                                     </div>
                                 </form>
                             </div>

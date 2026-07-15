@@ -48,18 +48,25 @@
 
 
     // Header carousel
-    $(".header-carousel").owlCarousel({
+    var $headerCarousel = $(".header-carousel");
+    var itemCount = $headerCarousel.children().length;
+    $headerCarousel.owlCarousel({
         autoplay: true,
         smartSpeed: 1000,
         items: 1,
         dots: true,
-        loop: true,
-        nav : true,
+        loop: itemCount > 1,
+        nav : itemCount > 1,
         navText : [
             '<i class="bi bi-chevron-left"></i>',
             '<i class="bi bi-chevron-right"></i>'
         ]
     });
+
+    // Wrap nav buttons and dots into a custom container for the < ... > layout
+    if (itemCount > 1) {
+        $headerCarousel.find('.owl-nav, .owl-dots').wrapAll('<div class="owl-custom-nav"></div>');
+    }
 
 
     // Testimonials carousel
@@ -98,4 +105,3 @@
         $("#video").attr('src', '');
     })
 })(jQuery);
-

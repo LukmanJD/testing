@@ -14,6 +14,9 @@
     <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Zoom To Harau Village" class="btn icon btn-primary mx-1" id="legend-map" onclick="digitTourismVillage(true);">
         <span class="material-symbols-outlined">landscape_2</span>
     </a>
+    <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Create Custom Route" class="btn icon btn-primary mx-1" id="custom-route-btn" onclick="toggleCustomRoute()">
+        <span class="material-symbols-outlined notranslate">alt_route</span>
+    </a>
 
     <?php
     $currentURL = $_SERVER['REQUEST_URI'];

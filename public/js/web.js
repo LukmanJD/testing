@@ -28,6 +28,12 @@ let customLabelsCountry = [];
 let latVillage = 0;
 let lngVillage = 0;
 
+let isCustomRoute = false;
+let customMarkers = [];
+let customDirectionsRenderer;
+let customPolyline;
+let confirmRouteControlDiv;
+
 let selectedShape,
   drawingManager = new google.maps.drawing.DrawingManager();
 let customStyled = [
@@ -66,6 +72,11 @@ let customStyled = [
   },
 ];
 
+/**
+ * Sets the base URL for API calls.
+ * Purpose: To ensure all AJAX requests use the correct base path.
+ * How it works: Assigns the passed url string to the global baseUrl variable.
+ */
 function setBaseUrl(url) {
   baseUrl = url;
 }
@@ -106,11 +117,16 @@ function setBaseUrl(url) {
 //   digitCities();
 // }
 
+/**
+ * Initializes the Google Map.
+ * Purpose: Sets up the map with default center, zoom, styles, and loads initial layers.
+ * How it works: Creates a new google.maps.Map instance, sets styles, and calls functions to load country, province, and city layers.
+ */
 function initMap(lat = -0.45645247101825404, lng = 100.49283409109306) {
   directionsService = new google.maps.DirectionsService();
   const center = new google.maps.LatLng(lat, lng);
   map = new google.maps.Map(document.getElementById("googlemaps"), {
-    zoom: 6,
+    zoom: 8,
     center: center,
     mapTypeId: "hybrid",
     // styles: ,
@@ -130,12 +146,22 @@ function initMap(lat = -0.45645247101825404, lng = 100.49283409109306) {
   addCustomLabelsCountry(map);
 }
 
+/**
+ * Pans the map to the village location.
+ * Purpose: To focus the map on the main village area.
+ * How it works: Uses map.panTo and map.setZoom to change the view.
+ */
 function goToVillage() {
   // map.setCenter({ lat: -0.11371891332439286, lng: 100.66784601319584 });
   map.panTo({ lat: -0.11371891332439286, lng: 100.66784601319584 });
   map.setZoom(16);
 }
 
+/**
+ * Fetches and displays country boundaries.
+ * Purpose: To visualize countries on the map.
+ * How it works: AJAX GET to /api/countries, loads GeoJSON, sets styles, and adds click listeners for InfoWindows.
+ */
 function digitCountries() {
   $.ajax({
     url: baseUrl + "/api/countries",
@@ -174,6 +200,11 @@ function digitCountries() {
   });
 }
 
+/**
+ * Fetches and displays province boundaries.
+ * Purpose: To visualize provinces on the map.
+ * How it works: AJAX GET to /api/provinces, loads GeoJSON, sets styles, and adds click listeners.
+ */
 function digitProvinces() {
   $.ajax({
     url: baseUrl + "/api/provinces",
@@ -208,6 +239,11 @@ function digitProvinces() {
     },
   });
 }
+/**
+ * Fetches and displays city boundaries.
+ * Purpose: To visualize cities on the map.
+ * How it works: AJAX GET to /api/cities, loads GeoJSON, sets styles, and adds click listeners.
+ */
 function digitCities() {
   $.ajax({
     url: baseUrl + "/api/cities",
@@ -242,6 +278,11 @@ function digitCities() {
     },
   });
 }
+/**
+ * Fetches and displays subdistrict boundaries.
+ * Purpose: To visualize subdistricts on the map.
+ * How it works: AJAX GET to /api/subdistricts, loads GeoJSON, sets styles, and adds click listeners.
+ */
 function digitSubdistricts() {
   $.ajax({
     url: baseUrl + "/api/subdistricts",
@@ -276,6 +317,11 @@ function digitSubdistricts() {
   });
 }
 
+/**
+ * Fetches and displays village boundaries.
+ * Purpose: To visualize villages on the map.
+ * How it works: AJAX GET to /api/villages, loads GeoJSON, sets styles, and adds click listeners.
+ */
 function digitVillages() {
   $.ajax({
     url: baseUrl + "/api/villages",
@@ -309,7 +355,11 @@ function digitVillages() {
   });
 }
 
-// Display tourism village digitizing
+/**
+ * Displays tourism village digitizing.
+ * Purpose: To show the specific tourism village boundary.
+ * How it works: AJAX POST to /api/village, loads GeoJSON, and sets styles.
+ */
 function digitVillage() {
   const village = new google.maps.Data();
   $.ajax({
@@ -335,6 +385,11 @@ function digitVillage() {
   });
 }
 
+/**
+ * Fetches and displays the tourism village boundary.
+ * Purpose: To highlight the main tourism village area.
+ * How it works: AJAX GET to /api/touristVillage, loads GeoJSON, fits map bounds to it, and adds a marker.
+ */
 function digitTourismVillage(goToVillage = false) {
   if (currentVillage) {
     currentVillage.setMap(null); // Menghapus polygon sebelumnya
@@ -368,8 +423,18 @@ function digitTourismVillage(goToVillage = false) {
             goToVillage == false
           ) {
             // map.setZoom(6);
-          } else {
+          } else if (Object.keys(markerArray).length === 0) {
             map.fitBounds(bounds);
+            let listener = google.maps.event.addListener(map, "idle", function () {
+              if (map.getZoom() < 15) map.setZoom(15);
+              google.maps.event.removeListener(listener);
+            });
+          } else if (goToVillage) {
+            map.fitBounds(bounds);
+            let listener = google.maps.event.addListener(map, "idle", function () {
+              if (map.getZoom() < 15) map.setZoom(15);
+              google.maps.event.removeListener(listener);
+            });
           }
 
           // Mendapatkan pusat dari bounds
@@ -407,6 +472,11 @@ function digitTourismVillage(goToVillage = false) {
   });
 }
 
+/**
+ * Fetches and displays unique attraction boundaries.
+ * Purpose: To visualize unique attractions on the map.
+ * How it works: AJAX GET to /api/uniqueAttraction, adds GeoJSON to data layer, and sets styles.
+ */
 function digitUniqueAtt() {
   const village = new google.maps.Data();
   $.ajax({
@@ -430,6 +500,11 @@ function digitUniqueAtt() {
   });
 }
 
+/**
+ * Displays a generic object from raw JSON data.
+ * Purpose: To render a map feature from a JSON string.
+ * How it works: Parses the JSON string, adds it to a data layer, sets styles, and adds it to the map.
+ */
 function digitObject(dataraw) {
   const village = new google.maps.Data();
   dataraw = dataraw.replace(/&quot;/g, '"');
@@ -448,14 +523,22 @@ function digitObject(dataraw) {
   village.setMap(map);
 }
 
-// Remove user location
+/**
+ * Removes the user's marker from the map.
+ * Purpose: To clear the user's current location indicator.
+ * How it works: Sets the userMarker map property to null and resets coordinates.
+ */
 function clearUser() {
   userLat = 0;
   userLng = 0;
   userMarker.setMap(null);
 }
 
-// Set current location based on user location
+/**
+ * Sets the global user location variables.
+ * Purpose: To store the user's coordinates for routing and other functions.
+ * How it works: Updates userLat, userLng, currentLat, and currentLng variables.
+ */
 function setUserLoc(lat, lng) {
   userLat = lat;
   userLng = lng;
@@ -463,16 +546,27 @@ function setUserLoc(lat, lng) {
   currentLng = userLng;
 }
 
-// Remove any route shown
+/**
+ * Removes any displayed routes from the map.
+ * Purpose: To clear navigation lines and directions.
+ * How it works: Iterates through routeArray setting map to null, hides direction panel, and toggles off custom route if active.
+ */
 function clearRoute() {
   for (i in routeArray) {
     routeArray[i].setMap(null);
   }
   routeArray = [];
   $("#direction-row").hide();
+  if (isCustomRoute) {
+    toggleCustomRoute();
+  }
 }
 
-// Remove any radius shown
+/**
+ * Removes any displayed radius circles.
+ * Purpose: To clear search radius visualizations.
+ * How it works: Iterates through circleArray setting map to null.
+ */
 function clearRadius() {
   for (i in circleArray) {
     circleArray[i].setMap(null);
@@ -480,7 +574,11 @@ function clearRadius() {
   circleArray = [];
 }
 
-// Remove any marker shown
+/**
+ * Removes all object markers from the map.
+ * Purpose: To clear the map of points of interest.
+ * How it works: Iterates through markerArray setting map to null and resets the array.
+ */
 function clearMarker() {
   for (i in markerArray) {
     markerArray[i].setMap(null);
@@ -488,7 +586,11 @@ function clearMarker() {
   markerArray = {};
 }
 
-// Get user's current position
+/**
+ * Gets the user's current position using Geolocation API.
+ * Purpose: To locate the user on the map.
+ * How it works: Calls navigator.geolocation.getCurrentPosition, places a marker, centers map, and sets user location variables.
+ */
 function currentPosition() {
   clearRadius();
   clearRoute();
@@ -545,7 +647,11 @@ function currentPosition() {
   }
 }
 
-// Error handler for geolocation
+/**
+ * Handles geolocation errors.
+ * Purpose: To display an error message if geolocation fails.
+ * How it works: Sets InfoWindow content with an error message and opens it on the map.
+ */
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(
@@ -556,7 +662,11 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.open(map);
 }
 
-// User set position on map
+/**
+ * Allows the user to set their position manually by clicking on the map.
+ * Purpose: To let users define their location if geolocation is unavailable or incorrect.
+ * How it works: Adds a click listener to the map that places the user marker and updates location variables.
+ */
 function manualPosition() {
   clearRadius();
   clearRoute();
@@ -609,7 +719,11 @@ function manualPosition() {
   });
 }
 
-// Render route on selected object
+/**
+ * Renders a route from the user's location to a destination.
+ * Purpose: To show navigation directions.
+ * How it works: Uses DirectionsService to calculate a route and DirectionsRenderer to display it. Calls showSteps to list instructions.
+ */
 function routeTo(lat, lng, routeFromUser = true) {
   clearRadius();
   clearRoute();
@@ -629,21 +743,34 @@ function routeTo(lat, lng, routeFromUser = true) {
     destination: end,
     travelMode: "DRIVING",
   };
+  
+  if (!directionsService) {
+    directionsService = new google.maps.DirectionsService();
+  }
+
   directionsService.route(request, function (result, status) {
     if (status == "OK") {
-      directionsRenderer.setDirections(result);
+      const renderer = new google.maps.DirectionsRenderer({
+        map: map
+      });
+      renderer.setDirections(result);
       showSteps(result);
-      directionsRenderer.setMap(map);
-      routeArray.push(directionsRenderer);
+      routeArray.push(renderer);
     }
   });
   boundToRoute(start, end);
 }
 
-// Display marker for loaded object
+/**
+ * Displays a marker for a loaded object.
+ * Purpose: To show points of interest (attractions, homestays, etc.) on the map.
+ * How it works: Creates a google.maps.Marker with a specific icon based on ID prefix. Adds a click listener to open the InfoWindow.
+ */
 function objectMarker(id, lat, lng, anim = true, attcat = null, login = false) {
   const currentUrl = window.location.href;
-  google.maps.event.clearListeners(map, "click");
+  if (!isCustomRoute) {
+    google.maps.event.clearListeners(map, "click");
+  }
   let pos = new google.maps.LatLng(lat, lng);
   let marker = new google.maps.Marker();
 
@@ -690,12 +817,25 @@ function objectMarker(id, lat, lng, anim = true, attcat = null, login = false) {
     villageInfoWindow.close();
     objectInfoWindow(id, attcat, login);
     infoWindow.open(map, marker);
+    map.panTo(marker.getPosition());
   });
 
   markerArray[id] = marker;
 }
 
-// Display info window for loaded object
+/**
+ * Displays the InfoWindow for a specific object.
+ * Purpose: To show details about a selected marker.
+ * How it works: Fetches object details via AJAX based on ID prefix (R, A, H, E, C, W, S, V, L) and populates the InfoWindow content.
+ * Redirects:
+ * - Rumah Gadang: /web/rumahGadang/{id}
+ * - Attraction: /web/attraction/{id}
+ * - Homestay: /web/homestay/{id}
+ * - Event: /web/event/{id}
+ * - Culinary: /web/culinaryPlace/{id}
+ * - Worship: /web/worshipPlace/{id}
+ * - Souvenir: /web/souvenirPlace/{id}
+ */
 function objectInfoWindow(id, attcat = null, login = false) {
   let content = "";
   let contentButton = "";
@@ -716,10 +856,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
         let open = data.open.substring(0, data.open.length - 3);
         let close = data.close.substring(0, data.close.length - 3);
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p> <br>" +
           '<p><i class="fa-solid fa-clock me-2"></i> ' +
           open +
@@ -756,6 +897,7 @@ function objectInfoWindow(id, attcat = null, login = false) {
           rgid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + rgid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "</div>";
         contentMobile =
           '<br><div class="text-center">' +
@@ -792,10 +934,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
         let open = data.open.substring(0, data.open.length - 3);
         let close = data.close.substring(0, data.close.length - 3);
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p> <br>" +
           '<p><i class="fa-solid fa-clock me-2"></i> ' +
           open +
@@ -832,6 +975,7 @@ function objectInfoWindow(id, attcat = null, login = false) {
           rgid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + rgid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "</div>";
         contentMobile =
           '<br><div class="text-center">' +
@@ -868,10 +1012,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
         let open = data.open.substring(0, data.open.length - 3);
         let close = data.close.substring(0, data.close.length - 3);
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p>" +
           '<p><i class="fa-solid fa-money-bills me-2"></i> ' +
           price +
@@ -919,6 +1064,7 @@ function objectInfoWindow(id, attcat = null, login = false) {
           rgid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + rgid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "<br>" +
           bookingButton +
           "</div>";
@@ -980,10 +1126,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
           " " +
           date_next.getFullYear();
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p> <br>" +
           '<p><i class="fa-solid fa-money-bill me-2"></i> ' +
           ticket_price +
@@ -1018,6 +1165,7 @@ function objectInfoWindow(id, attcat = null, login = false) {
           evid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + evid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "</div>";
         contentMobile =
           '<br><div class="text-center">' +
@@ -1053,10 +1201,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
         let lat = data.lat;
         let lng = data.lng;
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p>" +
           '<p><i class="fa-solid fa-clock me-2"></i> ' +
           open +
@@ -1090,6 +1239,7 @@ function objectInfoWindow(id, attcat = null, login = false) {
           rgid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + rgid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "</div>";
 
         infoWindow.setContent(content + contentButton);
@@ -1106,10 +1256,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
         let lat = data.lat;
         let lng = data.lng;
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p>" +
           "</div>";
 
@@ -1138,11 +1289,12 @@ function objectInfoWindow(id, attcat = null, login = false) {
           rgid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + rgid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "</div>";
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p>" +
           "</div>";
 
@@ -1162,10 +1314,11 @@ function objectInfoWindow(id, attcat = null, login = false) {
         let lat = data.lat;
         let lng = data.lng;
 
+        let safeName = name.replace(/'/g, "\\'");
         content =
           '<div class="text-center">' +
           '<p class="fw-bold fs-6">' +
-          name +
+          safeName +
           "</p>" +
           '<p><i class="fa-solid fa-clock me-2"></i> ' +
           open +
@@ -1199,6 +1352,7 @@ function objectInfoWindow(id, attcat = null, login = false) {
           rgid +
           '><i class="fa-solid fa-info"></i></a>' +
           nearbyButton +
+          '<a title="Add to Custom Route" class="btn icon btn-outline-primary mx-1" onclick="addMarkerToCustomRoute(' + lat + ', ' + lng + ', \'' + safeName + '\', \'' + rgid + '\')"><i class="fa-solid fa-route"></i></a>' +
           "</div>";
 
         infoWindow.setContent(content + contentButton);
@@ -1244,15 +1398,28 @@ function objectInfoWindow(id, attcat = null, login = false) {
   }
 }
 
-// Render map to contains all object marker
+/**
+ * Adjusts map bounds to fit all object markers.
+ * Purpose: To ensure all displayed markers are visible.
+ * How it works: Creates a LatLngBounds object, extends it with all marker positions, and calls map.fitBounds.
+ */
 function boundToObject(firstTime = true) {
   if (Object.keys(markerArray).length > 0) {
     bounds = new google.maps.LatLngBounds();
     for (i in markerArray) {
       bounds.extend(markerArray[i].getPosition());
     }
+    if (window.location.href.indexOf("uniqueAttraction") > -1) {
+      bounds.extend(
+        new google.maps.LatLng(-0.10908259406018868, 100.66435044295643)
+      );
+    }
     if (firstTime) {
       map.fitBounds(bounds, 80);
+      let listener = google.maps.event.addListener(map, "idle", function () {
+        if (map.getZoom() < 15) map.setZoom(15);
+        google.maps.event.removeListener(listener);
+      });
     } else {
       map.panTo(bounds.getCenter());
     }
@@ -1263,7 +1430,11 @@ function boundToObject(firstTime = true) {
   }
 }
 
-// Render map to contains route and its markers
+/**
+ * Adjusts map bounds to fit a route.
+ * Purpose: To ensure the entire route is visible.
+ * How it works: Extends bounds with start and end points and calls map.panToBounds.
+ */
 function boundToRoute(start, end) {
   bounds = new google.maps.LatLngBounds();
   bounds.extend(start);
@@ -1271,7 +1442,11 @@ function boundToRoute(start, end) {
   map.panToBounds(bounds, 100);
 }
 
-// Add user position to map bound
+/**
+ * Adjusts map bounds to fit a radius circle.
+ * Purpose: To ensure the search radius is visible.
+ * How it works: Creates a circle object and fits map bounds to its bounds.
+ */
 function boundToRadius(lat, lng, rad) {
   let userBound = new google.maps.LatLng(lat, lng);
   const radiusCircle = new google.maps.Circle({
@@ -1281,7 +1456,11 @@ function boundToRadius(lat, lng, rad) {
   map.fitBounds(radiusCircle.getBounds());
 }
 
-// Draw radius circle
+/**
+ * Draws a radius circle on the map.
+ * Purpose: To visualize the search area.
+ * How it works: Creates a google.maps.Circle and adds it to the map.
+ */
 function drawRadius(position, radius) {
   const radiusCircle = new google.maps.Circle({
     center: position,
@@ -1297,7 +1476,11 @@ function drawRadius(position, radius) {
   boundToRadius(currentLat, currentLng, radius);
 }
 
-// Update radiusValue on search by radius
+/**
+ * Updates the radius value display.
+ * Purpose: To show the selected radius in meters.
+ * How it works: Reads the input value, multiplies by 100, and updates the label text.
+ */
 function updateRadius(postfix) {
   // userInfoWindow.close();
   document.getElementById("radiusValue" + postfix).innerHTML =
@@ -1312,7 +1495,11 @@ function updateRadius(postfix) {
 //     document.getElementById("inputRadius" + postfix).value * 100 + " m";
 // }
 
-// Render search by radius
+/**
+ * Performs a radius search for objects.
+ * Purpose: To find objects within a specified distance from the user.
+ * How it works: Clears map, draws radius, and calls specific API endpoints (Nearby, RG, EV, AT, HS) via AJAX.
+ */
 function radiusSearch({ postfix = null } = {}) {
   if (userLat == 0 && userLng == 0) {
     document.getElementById("radiusValue" + postfix).innerHTML = "0 m";
@@ -1400,13 +1587,21 @@ function radiusSearch({ postfix = null } = {}) {
   }
 }
 
-// pan to selected object
+/**
+ * Focuses the map on a specific object.
+ * Purpose: To highlight a selected object.
+ * How it works: Triggers a click event on the object's marker and pans the map to it.
+ */
 function focusObject(id) {
   google.maps.event.trigger(markerArray[id], "click");
   map.panTo(markerArray[id].getPosition());
 }
 
-// display objects by feature used
+/**
+ * Displays found objects in a list.
+ * Purpose: To show search results in a table.
+ * How it works: Iterates through the response data, appends rows to the table, and adds markers to the map.
+ */
 function displayFoundObject(response) {
   $("#table-data").empty();
   let data = response.data;
@@ -1478,7 +1673,11 @@ function displayFoundObject(response) {
   }
 }
 
-// display steps of direction to selected route
+/**
+ * Displays navigation steps.
+ * Purpose: To show turn-by-turn directions.
+ * How it works: Iterates through the route steps and appends them to a table.
+ */
 function showSteps(directionResult) {
   $("#direction-row").show();
   $("#table-direction").empty();
@@ -1499,7 +1698,11 @@ function showSteps(directionResult) {
   }
 }
 
-// close nearby search section
+/**
+ * Closes the nearby search section.
+ * Purpose: To return to the main list view.
+ * How it works: Hides nearby UI elements and shows the default lists.
+ */
 function closeNearby() {
   $("#direction-row").hide();
   $("#check-nearby-col").hide();
@@ -1510,12 +1713,20 @@ function closeNearby() {
   $("#list-ev-col").show();
 }
 
-// open nearby search section
+/**
+ * Opens the nearby search section for a specific object.
+ * Purpose: To allow searching for amenities around a selected location.
+ * How it works: Hides main lists, shows nearby UI, pans map, and sets up the radius input.
+ */
 function openNearby(id, lat, lng) {
   $("#list-rg-col").hide();
   $("#list-ev-col").hide();
   $("#list-rec-col").hide();
   $("#check-nearby-col").show();
+
+  if (isCustomRoute) {
+    toggleCustomRoute();
+  }
 
   currentLat = lat;
   currentLng = lng;
@@ -1530,7 +1741,11 @@ function openNearby(id, lat, lng) {
     );
 }
 
-// Search Result Object Around
+/**
+ * Searches for objects around a specific location.
+ * Purpose: To find amenities (attractions, homestays, etc.) near a selected object.
+ * How it works: Clears map, checks selected checkboxes, calls findNearby for each category, and draws the radius.
+ */
 function checkNearby(id) {
   clearRadius();
   clearRoute();
@@ -1597,6 +1812,11 @@ function checkNearby(id) {
   $("#result-nearby-col").show();
 }
 
+/**
+ * Searches for objects around the user's current location.
+ * Purpose: To find amenities near the user.
+ * How it works: Similar to checkNearby, but uses the user's current coordinates.
+ */
 function checkAround() {
   if (userLat == 0 && userLng == 0) {
     document.getElementById("radiusValueNearby").innerHTML = "0 m";
@@ -1740,7 +1960,11 @@ function checkAround() {
 //   $("#result-nearby-col").show();
 // }
 
-// Fetch object nearby by category
+/**
+ * Fetches nearby objects by category.
+ * Purpose: To retrieve data for nearby search.
+ * How it works: Sends an AJAX POST request to the appropriate API endpoint based on the category.
+ */
 function findNearby(category, radius) {
   let pos = new google.maps.LatLng(currentLat, currentLng);
   if (category === "uatt") {
@@ -1846,7 +2070,11 @@ function findNearby(category, radius) {
   }
 }
 
-// Add nearby object to corresponding table
+/**
+ * Displays nearby search results.
+ * Purpose: To render the results of findNearby in the UI.
+ * How it works: Appends a table to the result container and adds rows for each found item. Adds markers to the map.
+ */
 function displayNearbyResult(category, response) {
   let data = response.data;
   let headerName;
@@ -1909,7 +2137,18 @@ function displayNearbyResult(category, response) {
   }
 }
 
-// Show modal for object
+/**
+ * Opens a modal (new tab) with object details.
+ * Purpose: To show full information about an object.
+ * How it works: Opens a new window with the detail URL.
+ * Redirects:
+ * - Culinary: /web/culinaryPlace/{id}
+ * - Homestay: /web/homestay/{id}
+ * - Attraction: /web/attraction/{id}
+ * - Worship: /web/worshipPlace/{id}
+ * - Souvenir: /web/souvenirPlace/{id}
+ * - Service: /web/serviceProvider/{id}
+ */
 function infoModal(id) {
   let title, content;
   if (id.substring(0, 1) === "C") {
@@ -1927,7 +2166,11 @@ function infoModal(id) {
   }
 }
 
-// Find object by name
+/**
+ * Finds objects by name.
+ * Purpose: To search for specific objects (RG, EV, AT, HS).
+ * How it works: Sends an AJAX POST request with the name query to the corresponding API.
+ */
 function findByName(category) {
   clearRadius();
   clearRoute();
@@ -1999,7 +2242,11 @@ function findByName(category) {
   }
 }
 
-// Get list of Rumah Gadang facilities
+/**
+ * Fetches Rumah Gadang facilities.
+ * Purpose: To populate a select dropdown with facilities.
+ * How it works: AJAX GET to /api/facility.
+ */
 function getFacility() {
   let facility;
   $("#facilitySelect").empty();
@@ -2017,6 +2264,11 @@ function getFacility() {
     },
   });
 }
+/**
+ * Fetches Attraction facilities.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/attractionFacility.
+ */
 function getATFacility() {
   let facility;
   $("#atfacilitySelect").empty();
@@ -2033,6 +2285,11 @@ function getATFacility() {
     },
   });
 }
+/**
+ * Fetches Homestay facilities.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/homestayFacility.
+ */
 function getHSFacility() {
   let facility;
   $("#hsfacilitySelect").empty();
@@ -2050,7 +2307,11 @@ function getHSFacility() {
   });
 }
 
-// Find Attraction by Facility
+/**
+ * Finds Attractions by facility.
+ * Purpose: To filter attractions.
+ * How it works: AJAX POST to /api/attraction/findByFacility.
+ */
 function findByFacility() {
   clearRadius();
   clearRoute();
@@ -2074,7 +2335,11 @@ function findByFacility() {
     },
   });
 }
-// Find Homestay by Facility
+/**
+ * Finds Homestays by facility.
+ * Purpose: To filter homestays.
+ * How it works: AJAX POST to /api/homestay/findByFacility.
+ */
 function findByFacilityHS() {
   clearRadius();
   clearRoute();
@@ -2099,7 +2364,11 @@ function findByFacilityHS() {
   });
 }
 
-// Set star by user input
+/**
+ * Sets the star rating value.
+ * Purpose: To handle UI interaction for rating input.
+ * How it works: Updates the visual state of stars and sets the hidden input value.
+ */
 function setStar(star) {
   switch (star) {
     case "star-1":
@@ -2128,6 +2397,11 @@ function setStar(star) {
       break;
   }
 }
+/**
+ * Sets the rating star value (alternative).
+ * Purpose: To handle UI interaction for another rating input.
+ * How it works: Updates visual state and hidden input.
+ */
 function setRatingStar(star) {
   switch (star) {
     case "rstar-1":
@@ -2159,7 +2433,11 @@ function setRatingStar(star) {
   }
 }
 
-// Find object by Rating
+/**
+ * Finds objects by rating.
+ * Purpose: To filter objects (RG, EV, HS) by star rating.
+ * How it works: AJAX POST to the corresponding API endpoint.
+ */
 function findByRating(category) {
   clearRadius();
   clearRoute();
@@ -2212,7 +2490,11 @@ function findByRating(category) {
   }
 }
 
-// Find object by Category
+/**
+ * Finds Homestays by unit availability.
+ * Purpose: To filter homestays.
+ * How it works: AJAX POST to /api/homestay/findByUnit.
+ */
 function findByUnit() {
   clearRadius();
   clearRoute();
@@ -2236,6 +2518,11 @@ function findByUnit() {
     },
   });
 }
+/**
+ * Finds objects by category.
+ * Purpose: To filter objects (RG, EV, HS) by category.
+ * How it works: AJAX POST to the corresponding API endpoint.
+ */
 function findByCategory(object) {
   clearRadius();
   clearRoute();
@@ -2290,7 +2577,11 @@ function findByCategory(object) {
   }
 }
 
-// Get list of Event category
+/**
+ * Fetches Event categories.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/event/category.
+ */
 function getCategory() {
   let category;
   $("#categoryEVSelect").empty();
@@ -2309,7 +2600,11 @@ function getCategory() {
   });
 }
 
-// // Find object by Date
+/**
+ * Finds Events by date.
+ * Purpose: To filter events.
+ * How it works: AJAX POST to /api/event/findByDate.
+ */
 function findByDate() {
   clearRadius();
   clearRoute();
@@ -2334,7 +2629,11 @@ function findByDate() {
   });
 }
 
-// Create compass
+/**
+ * Adds a compass control to the map.
+ * Purpose: To show orientation.
+ * How it works: Creates a DOM element with a compass image and pushes it to map controls.
+ */
 function setCompass() {
   const compass = document.createElement("div");
   compass.setAttribute("id", "compass");
@@ -2347,7 +2646,11 @@ function setCompass() {
   map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(compass);
 }
 
-// Create legend
+/**
+ * Creates and adds a legend to the map.
+ * Purpose: To explain map icons.
+ * How it works: Iterates through an icons object, creates HTML elements, and adds them to the map controls.
+ */
 function getLegend() {
   const icons = {
     my: {
@@ -2402,7 +2705,11 @@ function getLegend() {
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
 }
 
-// toggle legend element
+/**
+ * Toggles the visibility of the legend.
+ * Purpose: To show/hide the legend.
+ * How it works: Toggles the display style of the #legend element.
+ */
 function viewLegend() {
   if ($("#legend").is(":hidden")) {
     $("#legend").show();
@@ -2411,6 +2718,11 @@ function viewLegend() {
   }
 }
 
+/**
+ * Creates and adds a traffic legend to the map.
+ * Purpose: To explain traffic colors.
+ * How it works: Similar to getLegend but for traffic.
+ */
 function getLegendTraffic() {
   const icons = {
     green: {
@@ -2445,6 +2757,11 @@ function getLegendTraffic() {
   map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend_t);
 }
 
+/**
+ * Toggles the visibility of the traffic legend.
+ * Purpose: To show/hide the traffic legend.
+ * How it works: Toggles the display style of #legend_t.
+ */
 function viewLegendTraffic() {
   if ($("#legend_t").is(":hidden")) {
     $("#legend_t").show();
@@ -2457,6 +2774,11 @@ let trafficVisible = false;
 
 const trafficLayer = new google.maps.TrafficLayer();
 
+/**
+ * Toggles the traffic layer on the map.
+ * Purpose: To show/hide real-time traffic info.
+ * How it works: Sets the trafficLayer map property to map or null.
+ */
 function showTraffic() {
   if (trafficVisible) {
     trafficLayer.setMap(null); // Remove traffic layer from the map
@@ -2468,7 +2790,11 @@ function showTraffic() {
   trafficVisible = !trafficVisible;
 }
 
-// list object for new visit history
+/**
+ * Populates the object select list based on category.
+ * Purpose: To dynamically load objects for forms (e.g., visit history).
+ * How it works: Checks selected category and makes AJAX call to fetch corresponding objects.
+ */
 function getObjectByCategory() {
   const category = document.getElementById("category").value;
   $("#object").empty();
@@ -2509,7 +2835,11 @@ function getObjectByCategory() {
   }
 }
 
-// Validate if star rating picked yet
+/**
+ * Validates star rating input.
+ * Purpose: To ensure a rating is selected before submission.
+ * How it works: Checks if value is "0" and prevents default action if so.
+ */
 function checkStar(event) {
   const star = document.getElementById("rating").value;
   if (star == "0") {
@@ -2517,6 +2847,11 @@ function checkStar(event) {
     Swal.fire("Please put rating star");
   }
 }
+/**
+ * Validates rating star input (alternative).
+ * Purpose: To ensure a rating is selected.
+ * How it works: Checks if value is "0".
+ */
 function checkRatingStar(event) {
   const star = document.getElementById("rating_star").value;
   if (star == "0") {
@@ -2525,7 +2860,11 @@ function checkRatingStar(event) {
   }
 }
 
-// Check if Category and Object is chose correctly
+/**
+ * Validates form category and object selection.
+ * Purpose: To ensure valid selections.
+ * How it works: Checks if values are "None".
+ */
 function checkForm(event) {
   const category = document.getElementById("category").value;
   const object = document.getElementById("object").value;
@@ -2535,7 +2874,11 @@ function checkForm(event) {
   }
 }
 
-// Update preview of uploaded photo profile
+/**
+ * Previews an uploaded image.
+ * Purpose: To show the user what they selected.
+ * How it works: Uses FileReader to read the file and set the src of the preview image.
+ */
 function showPreview(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
@@ -2546,7 +2889,11 @@ function showPreview(input) {
   }
 }
 
-// Get list of Recommendation
+/**
+ * Fetches recommendation list.
+ * Purpose: To populate a select dropdown for recommendations.
+ * How it works: AJAX GET to /api/recommendationList.
+ */
 function getRecommendation(id, recom) {
   let recommendation;
   $("#recommendationSelect" + id).empty();
@@ -2574,7 +2921,11 @@ function getRecommendation(id, recom) {
   });
 }
 
-// Update option onclick function for updating Recommendation
+/**
+ * Toggles edit mode for recommendation.
+ * Purpose: To enable/disable the change listener for updating recommendations.
+ * How it works: Toggles button visibility and attaches/removes event listener.
+ */
 function changeRecom(status = null) {
   if (status === "edit") {
     $("#recomBtnEdit").hide();
@@ -2589,7 +2940,11 @@ function changeRecom(status = null) {
   }
 }
 
-// Update recommendation based on input User
+/**
+ * Updates the recommendation via AJAX.
+ * Purpose: To save the selected recommendation.
+ * How it works: Sends POST request to /api/recommendation.
+ */
 function updateRecom() {
   let recom = $(this).find("option:selected").val();
   let id = $(this).attr("id");
@@ -2610,7 +2965,11 @@ function updateRecom() {
   });
 }
 
-// Set map to coordinate put by user
+/**
+ * Pans map to coordinates from input fields.
+ * Purpose: To locate a point entered manually.
+ * How it works: Reads lat/lng inputs, creates a marker, and pans map.
+ */
 function findCoords(object) {
   clearMarker();
   google.maps.event.clearListeners(map, "click");
@@ -2634,7 +2993,11 @@ function findCoords(object) {
   map.panTo(pos);
 }
 
-// Unselect shape on drawing map
+/**
+ * Clears the selection in Drawing Manager.
+ * Purpose: To deselect a shape.
+ * How it works: Sets editable to false and clears selectedShape variable.
+ */
 function clearSelection() {
   if (selectedShape) {
     selectedShape.setEditable(false);
@@ -2642,14 +3005,22 @@ function clearSelection() {
   }
 }
 
-// Make selected shape editable on maps
+/**
+ * Sets a shape as selected.
+ * Purpose: To make a shape editable.
+ * How it works: Clears previous selection, sets new selection, and enables editing.
+ */
 function setSelection(shape) {
   clearSelection();
   selectedShape = shape;
   shape.setEditable(true);
 }
 
-// Remove selected shape on maps
+/**
+ * Deletes the selected shape.
+ * Purpose: To remove a drawn polygon.
+ * How it works: Clears inputs, markers, sets shape map to null, and resets drawing manager options.
+ */
 function deleteSelectedShape() {
   if (selectedShape) {
     document.getElementById("latitude").value = "";
@@ -2667,7 +3038,11 @@ function deleteSelectedShape() {
   }
 }
 
-// Initialize drawing manager on maps
+/**
+ * Initializes the Google Maps Drawing Manager.
+ * Purpose: To allow drawing polygons on the map.
+ * How it works: Sets up DrawingManager options and event listeners for overlaycomplete, click, etc.
+ */
 function initDrawingManager(edit = false) {
   const drawingManagerOpts = {
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
@@ -2764,7 +3139,11 @@ function initDrawingManager(edit = false) {
   );
 }
 
-// Get geoJSON of selected shape on map
+/**
+ * Saves the selected shape as GeoJSON.
+ * Purpose: To convert the drawn polygon into a format suitable for storage.
+ * How it works: Converts shape paths to GeoJSON and updates hidden input fields.
+ */
 function saveSelection(shape) {
   const paths = shape.getPath().getArray();
   let bounds = new google.maps.LatLngBounds();
@@ -2802,7 +3181,11 @@ function saveSelection(shape) {
   });
 }
 
-// Get list of users
+/**
+ * Fetches list of users/owners.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/owner.
+ */
 function getListUsers(owner) {
   console.log(owner);
   let users;
@@ -2848,7 +3231,11 @@ function getListUsers(owner) {
     },
   });
 }
-// Get list of Village
+/**
+ * Fetches list of villages.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/selectVillage.
+ */
 function getListVillage() {
   $("#catSelect").empty();
   let cats;
@@ -2871,6 +3258,11 @@ function getListVillage() {
 // Variabel untuk menyimpan referensi village
 let currentVillage = null;
 
+/**
+ * Fetches and displays village geometry.
+ * Purpose: To show a specific village on the map and populate a form.
+ * How it works: AJAX GET to /api/village/{id}, loads GeoJSON, and dynamically builds a form.
+ */
 function getVillageGeom(id_village) {
   // Jika ada polygon village yang sudah ada, hapus dari peta
   if (currentVillage) {
@@ -3136,7 +3528,11 @@ function getVillageGeom(id_village) {
     });
 }
 
-// Get list of Worship Place Category
+/**
+ * Fetches Attraction categories.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/aTTCat.
+ */
 function getListATTCat(cat_id) {
   let cats;
   $("#catSelect").empty();
@@ -3164,6 +3560,11 @@ function getListATTCat(cat_id) {
   });
 }
 
+/**
+ * Fetches Worship Place categories.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/wPCat.
+ */
 function getListWPCat(cat_id) {
   let cats;
   $("#catSelect").empty();
@@ -3190,7 +3591,11 @@ function getListWPCat(cat_id) {
     },
   });
 }
-// Get list of Homestay Unit Facility
+/**
+ * Fetches Homestay Unit Facilities.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/homestayUnitFac.
+ */
 function getListFHU(homestay_id, unit_type, unit_number) {
   $("#proSelect").empty();
   $.ajax({
@@ -3216,7 +3621,11 @@ function getListFHU(homestay_id, unit_type, unit_number) {
     },
   });
 }
-// Get list of Souvenir Product
+/**
+ * Fetches Souvenir Products.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/proList.
+ */
 function getListSPP(cat_id, sp_id) {
   let cats;
   $("#proSelect").empty();
@@ -3250,7 +3659,11 @@ function getListSPP(cat_id, sp_id) {
     },
   });
 }
-// Get list of Culinary Product
+/**
+ * Fetches Culinary Products.
+ * Purpose: To populate a select dropdown.
+ * How it works: AJAX GET to /api/culList.
+ */
 function getListCPP(cat_id, sp_id) {
   let cats;
   $("#proSelect").empty();
@@ -3285,7 +3698,11 @@ function getListCPP(cat_id, sp_id) {
   });
 }
 
-// Draw current GeoJSON on drawing manager
+/**
+ * Draws a polygon from GeoJSON input.
+ * Purpose: To visualize existing geometry in edit mode.
+ * How it works: Parses GeoJSON string from input and creates a google.maps.Polygon.
+ */
 function drawGeom() {
   const geoJSON = $("#geo-json").val();
   if (geoJSON !== "") {
@@ -3305,7 +3722,11 @@ function drawGeom() {
     return polygon;
   }
 }
-//Delete Unit Facility
+/**
+ * Deletes a unit facility.
+ * Purpose: To remove a facility from a unit.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deleteUnitFacility(
   homestay_id = null,
   unit_type = null,
@@ -3356,7 +3777,11 @@ function deleteUnitFacility(
     }
   });
 }
-//Delete Event Date
+/**
+ * Deletes an event date.
+ * Purpose: To remove a date from an event.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deleteEventDate(event_id = null, date = null) {
   Swal.fire({
     title: "Delete Date?",
@@ -3388,7 +3813,11 @@ function deleteEventDate(event_id = null, date = null) {
     }
   });
 }
-//Delete Package Day
+/**
+ * Deletes a package day.
+ * Purpose: To remove a day from a package.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deletePackageDay(homestay_id = null, package_id = null, day = null) {
   Swal.fire({
     title: "Delete Package Day?",
@@ -3427,6 +3856,11 @@ function deletePackageDay(homestay_id = null, package_id = null, day = null) {
     }
   });
 }
+/**
+ * Deletes a custom package day.
+ * Purpose: To remove a day from a custom package.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deleteCustomPackageDay(
   homestay_id = null,
   package_id = null,
@@ -3470,7 +3904,11 @@ function deleteCustomPackageDay(
     }
   });
 }
-//Delete Package Detail
+/**
+ * Deletes a package detail (activity).
+ * Purpose: To remove an activity from a package day.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deletePackageDetail(
   homestay_id = null,
   package_id = null,
@@ -3516,6 +3954,11 @@ function deletePackageDetail(
     }
   });
 }
+/**
+ * Deletes a custom package detail.
+ * Purpose: To remove an activity from a custom package day.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deletePackageDetailC(
   homestay_id = null,
   package_id = null,
@@ -3561,7 +4004,11 @@ function deletePackageDetailC(
     }
   });
 }
-//Delete Package Service
+/**
+ * Deletes a package service.
+ * Purpose: To remove a service from a package.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deletePackageService(
   homestay_id = null,
   package_id = null,
@@ -3604,6 +4051,11 @@ function deletePackageService(
     }
   });
 }
+/**
+ * Deletes a custom package service.
+ * Purpose: To remove a service from a custom package.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deletePackageServiceC(
   homestay_id = null,
   package_id = null,
@@ -3647,7 +4099,11 @@ function deletePackageServiceC(
   });
 }
 
-// Delete selected object
+/**
+ * Generic delete function for various objects.
+ * Purpose: To handle deletion of different entity types based on ID prefix.
+ * How it works: Determines the API endpoint based on ID, sends AJAX DELETE request, and reloads page on success.
+ */
 function deleteObject(id = null, name = null, user = false) {
   if (id === null) {
     return Swal.fire("ID cannot be null");
@@ -3852,7 +4308,11 @@ function deleteObject(id = null, name = null, user = false) {
 
 /// Android API ///
 
-// Get user's current position
+/**
+ * Sets user position (API/Android).
+ * Purpose: To update user location from external source.
+ * How it works: Updates marker and global variables.
+ */
 function userPositionAPI(lat = null, lng = null) {
   clearRadius();
   clearRoute();
@@ -3870,7 +4330,11 @@ function userPositionAPI(lat = null, lng = null) {
   setUserLoc(pos.lat().toFixed(8), pos.lng().toFixed(8));
 }
 
-// Pan map to user position
+/**
+ * Pans map to user position.
+ * Purpose: To center map on user.
+ * How it works: Uses map.panTo with user coordinates.
+ */
 function panToUser() {
   if (userLat == 0 && userLng == 0) {
     return Swal.fire("Determine your position first!");
@@ -3879,7 +4343,11 @@ function panToUser() {
   map.panTo(pos);
 }
 
-// Find RG on mobile
+/**
+ * Finds Rumah Gadang (Mobile).
+ * Purpose: Mobile-specific search by name.
+ * How it works: AJAX POST to /api/rumahGadang/findByName.
+ */
 function findRG(name = null) {
   clearRadius();
   clearRoute();
@@ -3907,7 +4375,11 @@ function findRG(name = null) {
   });
 }
 
-// Find RG by Rating on Mobile
+/**
+ * Finds Rumah Gadang by Rating (Mobile).
+ * Purpose: Mobile-specific search by rating.
+ * How it works: AJAX POST to /api/rumahGadang/findByRating.
+ */
 function findByRatingRG(rating) {
   clearRadius();
   clearRoute();
@@ -3935,7 +4407,11 @@ function findByRatingRG(rating) {
   });
 }
 
-// Find object by Facility on Mobile
+/**
+ * Finds Rumah Gadang by Facility (Mobile).
+ * Purpose: Mobile-specific search by facility.
+ * How it works: AJAX POST to /api/rumahGadang/findByFacility.
+ */
 function findByFacilityRG(facility) {
   clearRadius();
   clearRoute();
@@ -3963,7 +4439,11 @@ function findByFacilityRG(facility) {
   });
 }
 
-// Find RG by Category on Mobile
+/**
+ * Finds Rumah Gadang by Category (Mobile).
+ * Purpose: Mobile-specific search by category.
+ * How it works: AJAX POST to /api/rumahGadang/findByCategory.
+ */
 function findByCategoryRG(category) {
   clearRadius();
   clearRoute();
@@ -3991,7 +4471,11 @@ function findByCategoryRG(category) {
   });
 }
 
-// Find EV on mobile
+/**
+ * Finds Event by Name (Mobile).
+ * Purpose: Mobile-specific search by name.
+ * How it works: AJAX POST to /api/event/findByName.
+ */
 function findEV(name = null) {
   clearRadius();
   clearRoute();
@@ -4019,7 +4503,11 @@ function findEV(name = null) {
   });
 }
 
-// Find EV by Rating on Mobile
+/**
+ * Finds Event by Rating (Mobile).
+ * Purpose: Mobile-specific search by rating.
+ * How it works: AJAX POST to /api/event/findByRating.
+ */
 function findByRatingEV(rating) {
   clearRadius();
   clearRoute();
@@ -4047,7 +4535,11 @@ function findByRatingEV(rating) {
   });
 }
 
-// Find EV by Category on Mobile
+/**
+ * Finds Event by Category (Mobile).
+ * Purpose: Mobile-specific search by category.
+ * How it works: AJAX POST to /api/event/findByCategory.
+ */
 function findByCategoryEV(category) {
   clearRadius();
   clearRoute();
@@ -4075,7 +4567,11 @@ function findByCategoryEV(category) {
   });
 }
 
-// // Find EV by Date
+/**
+ * Finds Event by Date (Mobile).
+ * Purpose: Mobile-specific search by date.
+ * How it works: AJAX POST to /api/event/findByDate.
+ */
 function findByDateEV(eventDate) {
   clearRadius();
   clearRoute();
@@ -4102,8 +4598,11 @@ function findByDateEV(eventDate) {
   });
 }
 
-// Get Homestay Name
-
+/**
+ * Fetches Homestay Name by User ID.
+ * Purpose: To display the homestay name associated with a user.
+ * How it works: AJAX GET to /api/getHomestayNameByUser.
+ */
 function getHSName(id) {
   $.ajax({
     url: baseUrl + "/api/getHomestayNameByUser/" + id,
@@ -4116,7 +4615,11 @@ function getHSName(id) {
     },
   });
 }
-// Get List Object for Tourism Package
+/**
+ * Fetches objects for Tourism Package.
+ * Purpose: To populate a select dropdown for package details.
+ * How it works: AJAX GET to /dashboard/packageDetail/getObject.
+ */
 function getListObject(homestay_id, package_id, day) {
   $("#ownerSelect").empty();
   $.ajax({
@@ -4166,6 +4669,11 @@ function getListObject(homestay_id, package_id, day) {
     },
   });
 }
+/**
+ * Fetches objects for Custom Tourism Package.
+ * Purpose: To populate a select dropdown for custom package details.
+ * How it works: AJAX GET to /web/packageDetail/getObject.
+ */
 function getListObjectC(homestay_id, package_id, day, date) {
   $("#ownerSelect").empty();
   $.ajax({
@@ -4217,7 +4725,11 @@ function getListObjectC(homestay_id, package_id, day, date) {
     },
   });
 }
-// Get List Service for Tourism Package
+/**
+ * Fetches services for Tourism Package.
+ * Purpose: To populate a select dropdown for package services.
+ * How it works: AJAX GET to /dashboard/packageService.
+ */
 function getListPackageService(homestay_id = null, package_id = null) {
   $("#ownerSelect").empty();
   $.ajax({
@@ -4244,6 +4756,11 @@ function getListPackageService(homestay_id = null, package_id = null) {
     },
   });
 }
+/**
+ * Fetches services for Custom Tourism Package.
+ * Purpose: To populate a select dropdown for custom package services.
+ * How it works: AJAX GET to /web/packageService.
+ */
 function getListPackageServiceC(homestay_id = null, package_id = null) {
   $("#serviceSelect").empty();
   $.ajax({
@@ -4270,6 +4787,11 @@ function getListPackageServiceC(homestay_id = null, package_id = null) {
   });
 }
 
+/**
+ * Fetches additional amenities.
+ * Purpose: To populate a select dropdown for additional amenities.
+ * How it works: AJAX GET to /web/getAdditionalAmenities.
+ */
 function getListAdditionalAmenities(reservation_id = null, homestay_id = null) {
   $("#serviceSelect").empty();
   $.ajax({
@@ -4314,6 +4836,11 @@ function getListAdditionalAmenities(reservation_id = null, homestay_id = null) {
   });
 }
 
+/**
+ * Generates input fields for ordering amenities.
+ * Purpose: To create dynamic form fields based on amenity type (per day, per person, etc.).
+ * How it works: Parses the ID string to determine requirements and appends HTML to #additionalAmenitiesOrderFields.
+ */
 function getOrderField(
   id = null,
   homestay_id = null,
@@ -4435,6 +4962,11 @@ function getOrderField(
   }
 }
 
+/**
+ * Calculates total order quantity and price.
+ * Purpose: To update totals when individual order fields change.
+ * How it works: Multiplies day, person, and room orders to get total order, then multiplies by price.
+ */
 function getTotalOrder(price = null) {
   const day_order = document.getElementById("dayOrder");
   const person_order = document.getElementById("personOrder");
@@ -4451,6 +4983,11 @@ function getTotalOrder(price = null) {
     .setAttribute("value", total_order * price);
 }
 
+/**
+ * Calculates total price based on total order.
+ * Purpose: To update total price when total order changes directly.
+ * How it works: Multiplies total order by price.
+ */
 function getTotalPrice(price = null) {
   const total_order = document.getElementById("totalOrder");
 
@@ -4459,6 +4996,11 @@ function getTotalPrice(price = null) {
     .setAttribute("value", total_order.value * price);
 }
 
+/**
+ * Fetches available units based on type and date.
+ * Purpose: To show available homestay units for reservation.
+ * How it works: AJAX GET to /web/reservation/unit, then populates the #units-available container.
+ */
 function getUnitType(homestay_id = null) {
   const unitType = document.getElementById("unit_type");
   const dayOfStay = document.getElementById("day_of_stay");
@@ -4522,6 +5064,16 @@ function getUnitType(homestay_id = null) {
       success: function (response) {
         let data = response.data;
         if (data === "Empty") {
+          Swal.fire({
+            icon: "error",
+            title: "Full Booked",
+            text: "There are no units available on this date!",
+          });
+          checkInInput.value = "";
+          if (checkInInput._flatpickr) {
+            checkInInput._flatpickr.clear();
+          }
+          $("#units-available").empty();
           objs = "<center><span>There are no units available</span></center>";
           $("#units-available").append(objs);
         } else {
@@ -4628,6 +5180,11 @@ function getUnitType(homestay_id = null) {
   }
   $("#units-available").show();
 }
+/**
+ * Creates a marker for a route waypoint.
+ * Purpose: To show a point on a route.
+ * How it works: Similar to objectMarker but simplified for routing purposes.
+ */
 function objectMarkerRoute(id, lat, lng, anim = true) {
   google.maps.event.clearListeners(map, "click");
   let pos = new google.maps.LatLng(lat, lng);
@@ -4671,11 +5228,14 @@ function objectMarkerRoute(id, lat, lng, anim = true) {
   });
   markerArray[id] = marker;
 }
-// route between two sets of coordinates
+/**
+ * Draws a route between two sets of coordinates.
+ * Purpose: To show a path between two specific points.
+ * How it works: Uses DirectionsService to calculate and DirectionsRenderer to display the route.
+ */
 function routeBetweenObjects(startLat, startLng, endLat, endLng) {
   clearRadius();
   clearRoute();
-  initMap();
   google.maps.event.clearListeners(map, "click");
 
   // Create LatLng objects for the start and end coordinates
@@ -4688,18 +5248,30 @@ function routeBetweenObjects(startLat, startLng, endLat, endLng) {
     travelMode: "DRIVING",
   };
 
+  if (!directionsService) {
+    directionsService = new google.maps.DirectionsService();
+  }
+
   directionsService.route(request, function (result, status) {
     if (status == "OK") {
-      directionsRenderer.setDirections(result);
+      const renderer = new google.maps.DirectionsRenderer({
+        map: map,
+        suppressMarkers: false
+      });
+      renderer.setDirections(result);
       showSteps(result);
-      directionsRenderer.setMap(map);
-      routeArray.push(directionsRenderer);
+      routeArray.push(renderer);
     }
   });
 
   boundToRoute(start, end);
 }
 
+/**
+ * Deletes an additional amenity.
+ * Purpose: To remove an amenity from a reservation.
+ * How it works: AJAX DELETE request. Reloads page on success.
+ */
 function deleteAdditionalAmenities(
   homestay_id = null,
   additional_amenities_id = null,
@@ -4744,6 +5316,11 @@ function deleteAdditionalAmenities(
   });
 }
 
+/**
+ * Displays all objects on the map.
+ * Purpose: To show all points of interest in Explore mode.
+ * How it works: Clears map, checks all category checkboxes, and calls checkObject.
+ */
 function allObject() {
   clearRadius();
   clearRoute();
@@ -4793,6 +5370,11 @@ function allObject() {
   // });
 }
 
+/**
+ * Displays all homestays.
+ * Purpose: To show only homestays on the map.
+ * How it works: Clears map, hides other tables, calls findAll for Homestay.
+ */
 function allHomestay(login = false) {
   clearRadius();
   clearRoute();
@@ -4813,6 +5395,11 @@ function allHomestay(login = false) {
   $("#table-Homestay").show();
 }
 
+/**
+ * Filters displayed objects based on checkboxes.
+ * Purpose: To update the map based on user selection in Explore mode.
+ * How it works: Checks status of each checkbox and calls findAll for checked categories.
+ */
 function checkObject() {
   // Bersihkan peta dan tabel
   clearRadius();
@@ -4882,6 +5469,11 @@ function checkObject() {
   }
 }
 
+/**
+ * Fetches all objects of a category.
+ * Purpose: To retrieve data for Explore mode.
+ * How it works: AJAX POST to /api/{category}/findAll.
+ */
 function findAll(category, login = false) {
   // let pos = new google.maps.LatLng(currentLat, currentLng);
   if (category === "uAttraction") {
@@ -5015,6 +5607,11 @@ function findAll(category, login = false) {
   }
 }
 
+/**
+ * Toggles map layers (Country, Province, City, Village).
+ * Purpose: To show/hide administrative boundaries based on checkboxes.
+ * How it works: Checks checkbox status and calls digit* or clearDigit* functions.
+ */
 function checkLayer() {
   // Bersihkan peta dan tabel
   clearRadius();
@@ -5080,6 +5677,11 @@ function checkLayer() {
   }
 }
 
+/**
+ * Clears country layers.
+ * Purpose: To remove country boundaries from map.
+ * How it works: Iterates through digitNegLayers setting map to null.
+ */
 function clearDigitNeg() {
   digitNegLayers.forEach((layer) => {
     layer.setMap(null);
@@ -5087,6 +5689,11 @@ function clearDigitNeg() {
   digitNegLayers = [];
 }
 
+/**
+ * Clears province layers.
+ * Purpose: To remove province boundaries from map.
+ * How it works: Iterates through digitProvLayers setting map to null.
+ */
 function clearDigitProv() {
   digitProvLayers.forEach((layer) => {
     layer.setMap(null);
@@ -5094,6 +5701,11 @@ function clearDigitProv() {
   digitProvLayers = [];
 }
 
+/**
+ * Clears city layers.
+ * Purpose: To remove city boundaries from map.
+ * How it works: Iterates through digitKabKotaLayers setting map to null.
+ */
 function clearDigitKabKota() {
   digitKabKotaLayers.forEach((layer) => {
     layer.setMap(null);
@@ -5101,6 +5713,11 @@ function clearDigitKabKota() {
   digitKabKotaLayers = [];
 }
 
+/**
+ * Clears village layers.
+ * Purpose: To remove village boundaries from map.
+ * How it works: Iterates through digitVillageLayers setting map to null.
+ */
 function clearDigitVillage() {
   digitVillageLayers.forEach((layer) => {
     layer.setMap(null);
@@ -5108,6 +5725,11 @@ function clearDigitVillage() {
   digitVillageLayers = [];
 }
 
+/**
+ * Resets map and layers to default state.
+ * Purpose: To initialize the Explore mode view.
+ * How it works: Clears everything, loads all layers, checks all layer checkboxes, and shows result column.
+ */
 function clickLayer() {
   clearRadius();
   clearRoute();
@@ -5174,6 +5796,11 @@ function clickLayer() {
   });
 }
 
+/**
+ * Animations for flight/car route to Lembah Harau.
+ * Purpose: To visualize how to reach the destination from major cities.
+ * How it works: Uses markers with custom icons (plane, car) and animates their position along a path. Adds text overlays.
+ */
 function howToReachLembahHarau() {
   clearAirplaneMarkers();
   clearCarMarkers();
@@ -5331,7 +5958,7 @@ function howToReachLembahHarau() {
       <div>
         <b>From Singapore <img src="${baseUrl}/media/icon/sg.svg" alt="Singapore Flag" style="width: 24px; height: 16px; margin-right: 4px;">(SIN):</b><br>
         1. Take a flight from Singapore (SIN) to Padang (PDG), Indonesia.<br>
-        2. Rent a car to Nagari Tuo Pariangan.
+        2. Rent a car to Lembah Harau.
       </div>
     </div>
   `
@@ -5346,7 +5973,7 @@ function howToReachLembahHarau() {
       <div>
         <b>From Kuala Lumpur <img src="${baseUrl}/media/icon/my.svg" alt="Malaysia Flag" style="width: 24px; height: 16px; margin-right: 4px;">(KUL):</b><br>
         1. Take a flight from Kuala Lumpur (KUL) to Padang (PDG), Indonesia.<br>
-        2. Rent a car to Nagari Tuo Pariangan.
+        2. Rent a car to Lembah Harau.
       </div>
     </div>
   `
@@ -5361,7 +5988,7 @@ function howToReachLembahHarau() {
       <div>
         <b>From Jakarta <img src="${baseUrl}/media/icon/id.svg" alt="Indonesia Flag" style="width: 24px; height: 16px; margin-right: 4px;">:</b><br>
         1. Take a domestic flight to Padang (PDG), Indonesia.<br>
-        2. Rent a car to Nagari Tuo Pariangan.
+        2. Rent a car to Lembah Harau.
       </div>
     </div>
   `
@@ -5374,8 +6001,8 @@ function howToReachLembahHarau() {
     <div style="display: flex; align-items: center;">      
       <div>
         <b>From anywhere in Sumatra <img src="${baseUrl}/media/icon/id.svg" alt="Indonesia Flag" style="width: 24px; height: 16px; margin-right: 4px;">:</b><br>
-        1. Travel by land directly to Nagari Tuo Pariangan.<br>
-        2. Alternatively, fly to Padang (PDG) and rent a car to Nagari Tuo Pariangan.
+        1. Travel by land directly to Lembah Harau.<br>
+        2. Alternatively, fly to Padang (PDG) and rent a car to Lembah Harau.
       </div>
     </div>
   `
@@ -5384,17 +6011,31 @@ function howToReachLembahHarau() {
   map.setZoom(6);
 }
 
+/**
+ * Clears airplane markers.
+ * Purpose: To remove flight animations.
+ * How it works: Iterates through airplaneMarkers setting map to null.
+ */
 function clearAirplaneMarkers() {
   airplaneMarkers.forEach((marker) => marker.setMap(null));
   airplaneMarkers.length = 0; // Clear the array
 }
 
-// Clear all car markers
+/**
+ * Clears car markers.
+ * Purpose: To remove car animations.
+ * How it works: Iterates through carMarkers setting map to null.
+ */
 function clearCarMarkers() {
   carMarkers.forEach((marker) => marker.setMap(null));
   carMarkers.length = 0; // Clear the array
 }
 
+/**
+ * Clears text overlays.
+ * Purpose: To remove route instructions.
+ * How it works: Iterates through overlays setting map to null.
+ */
 function clearOverlay() {
   overlays.forEach((overlay) => {
     overlay.setMap(null); // Remove overlay from the map
@@ -5402,6 +6043,11 @@ function clearOverlay() {
   overlays = []; // Clear the array
 }
 
+/**
+ * Toggles map labels.
+ * Purpose: To show/hide default map labels vs custom labels.
+ * How it works: Sets map styles based on checkbox state and toggles custom label visibility.
+ */
 function checkLabel() {
   const checkBox = document.getElementById("check-label");
   isLabelChecked = checkBox.checked; // Update status global
@@ -5447,6 +6093,11 @@ function checkLabel() {
   }
 }
 
+/**
+ * Toggles terrain map type.
+ * Purpose: To switch between hybrid and terrain views.
+ * How it works: Sets mapTypeId based on checkbox state.
+ */
 function checkTerrain() {
   const checkBox = document.getElementById("check-terrain");
   isTerrainChecked = checkBox.checked; // Update status global
@@ -5463,6 +6114,11 @@ function checkTerrain() {
   }
 }
 
+/**
+ * Adds custom city labels to the map.
+ * Purpose: To show labels for major cities when default labels are hidden.
+ * How it works: Creates OverlayView objects for specific locations and adds them to the map.
+ */
 function addCustomLabels(map) {
   const locations = [
     { position: { lat: -6.2088, lng: 106.8456 }, name: "JAKARTA" },
@@ -5517,6 +6173,11 @@ function addCustomLabels(map) {
   });
 }
 
+/**
+ * Adds custom country labels to the map.
+ * Purpose: To show labels for countries when default labels are hidden.
+ * How it works: Similar to addCustomLabels but for countries.
+ */
 function addCustomLabelsCountry(map) {
   const locations = [
     { position: { lat: 3.440052, lng: 101.957396 }, name: "MALAYSIA" },
@@ -5572,12 +6233,22 @@ function addCustomLabelsCountry(map) {
   });
 }
 
+/**
+ * Clears How To Reach objects.
+ * Purpose: To reset the map after viewing route animations.
+ * How it works: Calls clear functions for markers and overlays.
+ */
 function clearHtro() {
   clearAirplaneMarkers();
   clearCarMarkers();
   clearOverlay();
 }
 
+/**
+ * Fetches and displays current weather.
+ * Purpose: To show weather info for Harau.
+ * How it works: Fetches data from OpenWeatherMap API and updates the DOM.
+ */
 function weatherNow() {
   const apiKey = "8253305683d95339ac1253f3c16aa325";
   const cityName = "Harau";
@@ -5619,6 +6290,14 @@ function weatherNow() {
   window.onload = fetchWeather;
 }
 
+/**
+ * Shows booking options (Personal or Event).
+ * Purpose: To let the user choose the type of reservation.
+ * How it works: Displays a SweetAlert with two buttons.
+ * Redirects:
+ * - Personal: /web/reservation/{id}
+ * - Event: /web/reservationEvent/{id}
+ */
 function iwOpsiBook(id) {
   Swal.fire({
     title: "Select Booking Options",
@@ -5638,6 +6317,12 @@ function iwOpsiBook(id) {
   });
 }
 
+/**
+ * Redirects unauthenticated users to login.
+ * Purpose: To enforce login for booking.
+ * How it works: Displays a warning SweetAlert, then redirects.
+ * Redirects: /login
+ */
 function iwRedirectToLogin() {
   Swal.fire({
     icon: "warning",
@@ -5651,9 +6336,520 @@ function iwRedirectToLogin() {
     }
   });
 }
+/**
+ * Opens the 'Around You' search interface.
+ * Purpose: To switch the sidebar to nearby search mode.
+ * How it works: Hides other columns and shows #check-nearbyyou-col.
+ */
 function openAround() {
   $("#list-rg-col").hide();
   $("#list-ev-col").hide();
   $("#list-rec-col").hide();
   $("#check-nearbyyou-col").show();
+  if (isCustomRoute) {
+    toggleCustomRoute();
+  }
+}
+
+/**
+ * Validates the selected event date.
+ * Purpose: To ensure the selected date matches the event's schedule.
+ * How it works: AJAX GET to /api/event/{id}, compares input value with available dates.
+ */
+function checkEventDate(event_id) {
+  const dateInput = document.getElementById("reservationDate");
+  if (!dateInput || dateInput.value === "") return;
+
+  $.ajax({
+    url: baseUrl + "/api/event/" + event_id,
+    dataType: "json",
+    success: function (response) {
+      let data = response.data;
+      let rawDates = data.dates || [data.date];
+      let availableDates = rawDates.map(date => date.substring(0, 10));
+
+      if (!availableDates.includes(dateInput.value)) {
+        Swal.fire({
+          icon: "error",
+          title: "Unavailable",
+          text: "This event is not available on the selected date!",
+        });
+        dateInput.value = "";
+        if (dateInput._flatpickr) {
+          dateInput._flatpickr.clear();
+        }
+      }
+    },
+  });
+}
+
+/**
+ * Initializes Flatpickr on an input.
+ * Purpose: To attach a date picker to a form field.
+ * How it works: Calls flatpickr() with specific options.
+ */
+function initFlatpickr(id, enableDates = [], minDate = "today") {
+  if (typeof flatpickr !== "undefined") {
+    flatpickr("#" + id, {
+      enable: enableDates.length > 0 ? enableDates : undefined,
+      minDate: minDate,
+      dateFormat: "Y-m-d",
+      disableMobile: true,
+      allowInput: false,
+    });
+  }
+}
+
+/**
+ * Initializes date picker for Event reservation.
+ * Purpose: To enable only valid event dates in the calendar.
+ * How it works: AJAX GET to /api/event/{id}, then initializes flatpickr with enabled dates.
+ */
+function initEventDate(event_id) {
+  const dateInput = document.getElementById("reservationDate");
+  if (!dateInput) return;
+
+  $.ajax({
+    url: baseUrl + "/api/event/" + event_id,
+    dataType: "json",
+    success: function (response) {
+      let data = response.data;
+      let rawDates = data.dates || [data.date];
+      let availableDates = rawDates.map((date) => date.substring(0, 10));
+
+      if (typeof flatpickr !== "undefined") {
+        flatpickr(dateInput, {
+          enable: availableDates,
+          dateFormat: "Y-m-d",
+          minDate: "today",
+          disableMobile: true,
+          allowInput: false,
+        });
+      }
+    },
+  });
+}
+
+/**
+ * Initializes date picker for Homestay reservation.
+ * Purpose: To disable already booked dates.
+ * How it works: AJAX GET to /web/reservation/bookedDates/{id}, then initializes flatpickr with disabled dates.
+ */
+function initHomestayReservationDate(homestay_id) {
+  const dateInput = document.getElementById("check_in");
+  if (!dateInput) return;
+
+  $.ajax({
+    url: baseUrl + "/web/reservation/bookedDates/" + homestay_id,
+    dataType: "json",
+    success: function (response) {
+      let disableDates = Array.isArray(response) ? response.map((item) => item.date) : [];
+
+      if (typeof flatpickr !== "undefined") {
+        flatpickr(dateInput, {
+          minDate: "today",
+          dateFormat: "Y-m-d",
+          disableMobile: true,
+          allowInput: false,
+          disable: disableDates,
+          onChange: function (selectedDates, dateStr, instance) {
+             if (typeof getCheckOut2 === 'function') {
+                 getCheckOut2();
+             }
+          },
+        });
+      }
+    },
+  });
+}
+
+/**
+ * Initializes date picker for generic event reservation.
+ * Purpose: To setup calendar with specific constraints.
+ * How it works: Calls flatpickr with disable/minDate options.
+ */
+function initEventReservationDate(id, disableDates = [], minDate = "today") {
+  if (typeof flatpickr !== "undefined") {
+    flatpickr("#" + id, {
+      disable: disableDates,
+      minDate: minDate,
+      dateFormat: "Y-m-d",
+      disableMobile: true,
+      allowInput: false,
+      onChange: function (selectedDates, dateStr, instance) {
+        if (typeof getCheckOut2 === "function") {
+          getCheckOut2();
+        }
+      },
+    });
+  }
+}
+
+/**
+ * Adds a marker to the custom route from InfoWindow.
+ * Purpose: To allow users to add points of interest to their route.
+ * How it works: Checks if custom route mode is active, then calls addCustomMarker.
+ */
+function addMarkerToCustomRoute(lat, lng, name = null, id = null) {
+    if (!isCustomRoute) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Mode not active',
+            text: 'Please start "Create Custom Route" mode first to add waypoints.'
+        });
+        return;
+    }
+
+    addCustomMarker(new google.maps.LatLng(lat, lng), name, id);
+    infoWindow.close();
+}
+
+/**
+ * Toggles the Custom Route creation mode.
+ * Purpose: To enter or exit the route builder interface.
+ * How it works:
+ * - If active: Hides UI, clears route, restores original map state.
+ * - If inactive: Shows UI, clears map, enables map click listener for adding points.
+ */
+function toggleCustomRoute() {
+    if (isCustomRoute) {
+        isCustomRoute = false;
+        $("#custom-route-col").hide();
+        $("#custom-route-floating-wrapper").hide();
+        $("#list-rg-col").show();
+        $("#list-ev-col").show();
+        $("#list-rec-col").show();
+        $("#confirm-custom-route-btn").hide();
+        
+        if (customDirectionsRenderer) {
+            customDirectionsRenderer.setMap(null);
+        }
+        if (customPolyline) {
+            customPolyline.setMap(null);
+        }
+        clearCustomRoute();
+        
+        // Restore markers visibility
+        for (const key in markerArray) {
+            markerArray[key].setMap(map);
+        }
+        
+        // Restore Nearby Result Column if it has content
+        if ($("#result-nearby-col").find("tbody tr").length > 0) {
+             $("#result-nearby-col").show();
+             $("#check-nearby-col").show();
+        }
+
+        return;
+    }
+
+    let hasOtherMarkers = false;
+    for (const key in markerArray) {
+        if (key !== 'L') {
+            hasOtherMarkers = true;
+            break;
+        }
+    }
+
+    if (!hasOtherMarkers) {
+        allObject();
+    }
+
+    isCustomRoute = true;
+    
+    // Clear existing click listeners to avoid conflicts with manualPosition
+    google.maps.event.clearListeners(map, "click");
+    
+    digitTourismVillage(false);
+    
+    const customRouteHTML = `
+            <div class="col-12 mb-4" id="custom-route-col" style="display: none;">
+                <div class="card text-dark">
+                    <div class="card-header">
+                        <h5 class="card-title text-center">Custom Route</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2 mb-3">
+                            <button class="btn btn-danger" onclick="clearCustomRoute()">Clear Route</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 table-lg text-dark">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Coords</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="custom-route-list">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-grid gap-2 mt-3">
+                            <button id="confirm-custom-route-btn" class="btn btn-success" onclick="confirmCustomRoute()">Confirm Route</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+    let $container = $("#custom-route-col");
+    if ($container.length === 0) {
+        $container = $(customRouteHTML);
+    } else {
+        $container.addClass("mb-4");
+    }
+
+    if ($("#list-rg-col").length) {
+        $container.insertAfter("#list-rg-col");
+    } else if ($("#list-rec-col").length) {
+        $container.insertAfter("#list-rec-col");
+    } else if ($("#list-ev-col").length) {
+        $container.insertAfter("#list-ev-col");
+    } else {
+        if ($("#custom-route-floating-wrapper").length === 0) {
+            $("body").append('<div id="custom-route-floating-wrapper" style="position: fixed; top: 100px; right: 20px; width: 350px; z-index: 9999; max-height: 80vh; overflow-y: auto;"></div>');
+        }
+        $container.appendTo("#custom-route-floating-wrapper");
+        $container.removeClass("col-12 mb-4");
+    }
+
+    if (userLat != 0 && userLng != 0) {
+        addCustomMarker(new google.maps.LatLng(userLat, userLng), "User Location");
+    }
+
+    $("#custom-route-col").show();
+    $("#custom-route-floating-wrapper").show();
+    $container.show();
+    $("#check-nearby-col").hide();
+    $("#result-nearby-col").hide();
+    $("#result-nearbyyou-col").hide();
+    $("#result-explore-col").hide();
+    $("#list-rg-col").hide();
+    $("#list-ev-col").hide();
+    $("#list-rec-col").hide();
+
+    if ($("#confirm-custom-route-btn").length === 0) {
+        const btnHtml = '<div class="d-grid gap-2 mt-3"><button id="confirm-custom-route-btn" class="btn btn-success" onclick="confirmCustomRoute()">Confirm Route</button></div>';
+        if ($("#custom-route-col .card-body").length) {
+            $("#custom-route-col .card-body").append(btnHtml);
+        } else {
+            $("#custom-route-col").append(btnHtml);
+        }
+    }
+    $("#confirm-custom-route-btn").show();
+    
+
+    map.addListener("click", (event) => {
+        addCustomMarker(event.latLng);
+    });
+    
+    Swal.fire({
+        icon: 'info',
+        title: 'Custom Route Mode',
+        text: 'Click on the map to add waypoints for your route.'
+    });
+}
+
+/**
+ * Adds a waypoint marker to the custom route.
+ * Purpose: To visually represent a stop in the custom route.
+ * How it works: Creates a google.maps.Marker, adds to array, and updates the list.
+ */
+function addCustomMarker(latLng, name = null, id = null) {
+    const marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        label: (customMarkers.length + 1).toString()
+    });
+    marker.customName = name;
+    marker.customId = id;
+    customMarkers.push(marker);
+    updateCustomRouteList();
+}
+
+/**
+ * Clears the custom route.
+ * Purpose: To reset the route builder.
+ * How it works: Removes all custom markers and route lines from the map and resets arrays.
+ */
+function clearCustomRoute() {
+    for (let m of customMarkers) {
+        m.setMap(null);
+    }
+    customMarkers = [];
+    if (customDirectionsRenderer) {
+        customDirectionsRenderer.setMap(null);
+    }
+    if (customPolyline) {
+        customPolyline.setMap(null);
+    }
+    updateCustomRouteList();
+}
+
+/**
+ * Updates the list of custom route waypoints.
+ * Purpose: To show the current sequence of points in the UI.
+ * How it works: Rebuilds the HTML table based on customMarkers array.
+ */
+function updateCustomRouteList() {
+    const list = $("#custom-route-list");
+    list.empty();
+    customMarkers.forEach((marker, index) => {
+        const lat = marker.getPosition().lat().toFixed(5);
+        const lng = marker.getPosition().lng().toFixed(5);
+        const displayName = marker.customName ? marker.customName : `${lat}, ${lng}`;
+        let infoBtn = '';
+        if (marker.customId) {
+            infoBtn = `<button class="btn btn-sm btn-info mx-1" onclick="infoModal('${marker.customId}')"><i class="fa-solid fa-info"></i></button>`;
+        }
+        
+        let upBtn = '';
+        let downBtn = '';
+        if (index > 0) {
+            upBtn = `<button class="btn btn-sm btn-secondary mx-1" onclick="moveCustomMarkerUp(${index})"><i class="fa-solid fa-arrow-up"></i></button>`;
+        }
+        if (index < customMarkers.length - 1) {
+            downBtn = `<button class="btn btn-sm btn-secondary mx-1" onclick="moveCustomMarkerDown(${index})"><i class="fa-solid fa-arrow-down"></i></button>`;
+        }
+
+        const row = `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${displayName}</td>
+                <td>${infoBtn}${upBtn}${downBtn}<button class="btn btn-sm btn-danger" onclick="removeCustomMarker(${index})"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+        `;
+        list.append(row);
+    });
+}
+
+/**
+ * Removes a waypoint from the custom route.
+ * Purpose: To delete a specific point.
+ * How it works: Removes marker from map, splices array, re-labels remaining markers, updates list.
+ */
+function removeCustomMarker(index) {
+    customMarkers[index].setMap(null);
+    customMarkers.splice(index, 1);
+    // Re-label markers
+    customMarkers.forEach((m, i) => m.setLabel((i + 1).toString()));
+    updateCustomRouteList();
+}
+
+/**
+ * Moves a waypoint up in the sequence.
+ * Purpose: To reorder the route.
+ * How it works: Swaps array elements and updates list.
+ */
+function moveCustomMarkerUp(index) {
+    if (index > 0) {
+        const temp = customMarkers[index];
+        customMarkers[index] = customMarkers[index - 1];
+        customMarkers[index - 1] = temp;
+        
+        // Update labels
+        customMarkers.forEach((m, i) => m.setLabel((i + 1).toString()));
+        
+        updateCustomRouteList();
+    }
+}
+
+/**
+ * Moves a waypoint down in the sequence.
+ * Purpose: To reorder the route.
+ * How it works: Swaps array elements and updates list.
+ */
+function moveCustomMarkerDown(index) {
+    if (index < customMarkers.length - 1) {
+        const temp = customMarkers[index];
+        customMarkers[index] = customMarkers[index + 1];
+        customMarkers[index + 1] = temp;
+        
+        // Update labels
+        customMarkers.forEach((m, i) => m.setLabel((i + 1).toString()));
+        
+        updateCustomRouteList();
+    }
+}
+
+/**
+ * Confirms and calculates the custom route.
+ * Purpose: To generate the path connecting the selected waypoints.
+ * How it works:
+ * 1. Validates point count (min 2).
+ * 2. Hides markers.
+ * 3. Sends DirectionsRequest (origin, dest, waypoints) to Google API.
+ * 4. Renders route or shows error.
+ */
+function confirmCustomRoute() {
+    if (customMarkers.length < 2) {
+        return Swal.fire({
+            icon: 'warning',
+            title: 'Not enough points',
+            text: 'Please add at least 2 points to create a route.'
+        });
+    }
+
+    google.maps.event.clearListeners(map, "click");
+    for (const key in markerArray) {
+        markerArray[key].setMap(null);
+    }
+    
+    $("#confirm-custom-route-btn").hide();
+
+    const origin = customMarkers[0].getPosition();
+    const destination = customMarkers[customMarkers.length - 1].getPosition();
+    const waypoints = [];
+    for (let i = 1; i < customMarkers.length - 1; i++) {
+        waypoints.push({
+            location: customMarkers[i].getPosition(),
+            stopover: true
+        });
+    }
+
+    const request = {
+        origin: origin,
+        destination: destination,
+        waypoints: waypoints,
+        travelMode: google.maps.TravelMode.DRIVING
+    };
+
+    if (!directionsService) {
+        directionsService = new google.maps.DirectionsService();
+    }
+
+    directionsService.route(request, function(result, status) {
+        if (status === 'OK') {
+            if (!customDirectionsRenderer) {
+                customDirectionsRenderer = new google.maps.DirectionsRenderer({
+                    map: map,
+                    suppressMarkers: true,
+                    polylineOptions: {
+                        strokeColor: "#0000FF",
+                        strokeOpacity: 0.7,
+                        strokeWeight: 5
+                    }
+                });
+            } else {
+                customDirectionsRenderer.setMap(map);
+            }
+            customDirectionsRenderer.setDirections(result);
+        } else {
+            console.error("Directions request failed. Status:", status);
+            let errorMsg = 'Could not calculate route: ' + status;
+            if (status === 'REQUEST_DENIED') {
+                errorMsg = 'Routing failed.';
+            }
+            Swal.fire({
+                icon: 'error',
+                title: 'Routing Failed',
+                text: errorMsg
+            });
+        }
+    });
+
+    let bounds = new google.maps.LatLngBounds();
+    customMarkers.forEach(marker => bounds.extend(marker.getPosition()));
+    map.fitBounds(bounds);
 }

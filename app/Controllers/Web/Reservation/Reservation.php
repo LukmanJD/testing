@@ -21,6 +21,7 @@ use App\Models\Reservation\ReservationHomestayUnitDetailModel;
 use App\Models\Reservation\ReservationHomestayUnitDetailBackUpModel;
 use App\Models\Reservation\ReservationHomestayActivityDetailModel;
 use App\Models\Reservation\ReservationHomestayAdditionalAmenitiesDetailModel;
+use App\Models\Reservation\ReservationPackageDetailModel;
 use App\Models\AccountModel;
 use App\Controllers\Api\Notification;
 
@@ -54,6 +55,7 @@ class Reservation extends ResourcePresenter
     protected $reservationHomestayUnitDetailBackUpModel;
     protected $reservationHomestayActivityDetailModel;
     protected $reservationHomestayAdditionalAmenitiesDetailModel;
+    protected $reservationPackageDetailModel;
     protected $notification;
 
     // protected $attractionModel;
@@ -86,6 +88,7 @@ class Reservation extends ResourcePresenter
         $this->reservationHomestayUnitDetailBackUpModel = new ReservationHomestayUnitDetailBackUpModel();
         $this->reservationHomestayActivityDetailModel = new ReservationHomestayActivityDetailModel();
         $this->reservationHomestayAdditionalAmenitiesDetailModel = new ReservationHomestayAdditionalAmenitiesDetailModel();
+        $this->reservationPackageDetailModel = new ReservationPackageDetailModel();
         $this->notification = new Notification();
 
         // $this->attractionModel = new AttractionModel();
@@ -703,7 +706,7 @@ class Reservation extends ResourcePresenter
         }
 
         if ($addReservation) {
-            return redirect()->to(base_url('dashboard/reservation/detail/' . $new_id));
+            return redirect()->to(base_url('dashboard/Reservation/detail/' . $new_id));
         } else {
             return redirect()->back()->withInput();
         }
@@ -934,7 +937,38 @@ class Reservation extends ResourcePresenter
             $reservation_additional_amenities[$i]['id'] = $reservation_additional_amenities[$i]['additional_amenities_id'];
         }
 
+<<<<<<< Updated upstream
         // $price_after_coin=$reservation()
+=======
+        $package = null;
+        $reservation_package = $this->reservationPackageDetailModel->get_packages_by_rid($id);
+        if (!empty($reservation_package)) {
+            // Assuming one package per reservation for now for simplicity
+            $package_id = $reservation_package[0]['package_id'];
+            $package = $this->packageModel->get_package_by_id_api($homestay_id[0], $package_id)->getRowArray();
+            if ($package) {
+                $package['package_order'] = $reservation_package[0]['package_order'];
+                $package['package_total_price'] = $reservation_package[0]['package_total_price'];
+            }
+        }
+
+        // --- Fetch Currency Conversion Rates for Popup Checkout ---
+        $rates = [];
+        $apiKey = env('exchangerate.apiKey');
+        if ($apiKey) {
+            try {
+                $response = $this->guzzleClient->get("https://v6.exchangerate-api.com/v6/{$apiKey}/latest/IDR");
+                $body = json_decode($response->getBody()->getContents(), true);
+                if ($body['result'] === 'success') {
+                    $rates = $body['conversion_rates'];
+                }
+            } catch (RequestException $e) {
+                log_message('error', 'ExchangeRate-API Exception: ' . $e->getMessage());
+            }
+        }
+        // --- End Fetch ---
+
+>>>>>>> Stashed changes
         $data = [
             'title' => 'Reservation',
             'reservation' => $reservation,
@@ -943,6 +977,12 @@ class Reservation extends ResourcePresenter
             'homestay' => $homestay,
             'homestay_unit' => $homestay_units,
             'reservation_additional_amenities' => $reservation_additional_amenities,
+<<<<<<< Updated upstream
+=======
+            'package' => $package,
+            'idr_to_usd_rate'  => (float)env('IDR_TO_USD_RATE'),
+            'rates'            => $rates
+>>>>>>> Stashed changes
         ];
         // dd($data);
 
@@ -991,7 +1031,7 @@ class Reservation extends ResourcePresenter
             $rating = 0;
             $rating_divider = 0;
             foreach ($reservations as $reservation) {
-                if ($reservation['rating'] != null) {
+                if (isset($reservation['rating']) && $reservation['rating'] != null) {
                     $rating = $rating + $reservation['rating'];
                     $rating_divider++;
                 }
@@ -1215,18 +1255,40 @@ class Reservation extends ResourcePresenter
     {
         $request = $this->request->getPost();
 
-        $requestData = [
-            'total_people' => $request['total_people'],
-        ];
-
-        $check_package = $this->packageModel->check_package_api($homestay_id, $package_id)->getRowArray();
-        if (empty($check_package)) {
+        $package = $this->packageModel->get_package_by_id_api($homestay_id, $package_id)->getRowArray();
+        if (empty($package)) {
             return redirect()->to(base_url('web/reservation'));
         }
 
-        $addPackage = $this->reservationModel->add_package_api($requestData, $reservation_id, $homestay_id, $package_id);
+        $total_people = $request['total_people'] ?? 0;
+        $min_capacity = $package['min_capacity'] ?? 1;
+        $price = $package['price'] ?? 0;
+
+        $packageOrder = 0;
+        if ($min_capacity > 0) {
+            $packageOrder = $total_people / $min_capacity;
+            if ($packageOrder < 1) {
+                $packageOrder = 1;
+            } elseif (($total_people % $min_capacity <= $min_capacity / 2) && ($total_people % $min_capacity > 0)) {
+                $packageOrder = floor($packageOrder) + 0.5;
+            } elseif ($total_people % $min_capacity > $min_capacity / 2) {
+                $packageOrder = floor($packageOrder) + 1;
+            }
+        }
+
+        $package_total_price = $packageOrder * $price;
+
+        $packageData = [
+            'reservation_id' => $reservation_id,
+            'package_id' => $package_id,
+            'package_order' => $packageOrder,
+            'package_total_price' => $package_total_price
+        ];
+        $addPackage = $this->reservationPackageDetailModel->add_package($packageData);
 
         if ($addPackage) {
+            // Recalculate total price after adding a package
+            $this->updateReservationTotalPrice($reservation_id);
             return redirect()->to(base_url('web/reservation/detail/' . $reservation_id));
         } else {
             return redirect()->back()->withInput();
@@ -1235,9 +1297,17 @@ class Reservation extends ResourcePresenter
 
     public function deletePackage($reservation_id = null)
     {
-        $delPackage = $this->reservationModel->del_package_api($reservation_id);
+        // We need to know which package to delete.
+        // Assuming one package per reservation for now.
+        $reservation_package = $this->reservationPackageDetailModel->get_packages_by_rid($reservation_id);
+        if (empty($reservation_package)) {
+            return redirect()->back()->with('error', 'No package to delete.');
+        }
+        $delPackage = $this->reservationPackageDetailModel->delete_package($reservation_id, $reservation_package[0]['package_id']);
 
         if ($delPackage) {
+            // Recalculate total price after deleting a package
+            $this->updateReservationTotalPrice($reservation_id);
             return redirect()->to(base_url('web/reservation/detail/' . $reservation_id));
         } else {
             return redirect()->back()->withInput();
@@ -1453,6 +1523,21 @@ class Reservation extends ResourcePresenter
         }
     }
 
+    public function addAccountRefund()
+    {
+        $request = $this->request->getPost();
+        $reservationId = $request['reservation_id'];
+        $accountRefund = $request['account_refund'];
+
+        $updateData = ['account_refund' => $accountRefund];
+        $updated = $this->reservationModel->update($reservationId, $updateData);
+
+        if ($updated) {
+            return redirect()->to(base_url('web/reservation/detail/' . $reservationId))->with('success', 'Bank account for refund has been saved.');
+        }
+        return redirect()->back()->with('error', 'Failed to save bank account.');
+    }
+
     public function createBankAccount()
     {
         $request = $this->request->getPost();
@@ -1490,10 +1575,82 @@ class Reservation extends ResourcePresenter
         $request = $this->request->getPost();
         $request['additional_amenities_id'] = substr($request['additional_amenities_id'], 0, 2);
 
+<<<<<<< Updated upstream
         $add = $this->reservationHomestayAdditionalAmenitiesDetailModel->add_detail_haa($request);
+=======
+        if (!isset($request['additional_amenities_id'])) {
+            session()->setFlashdata('error', 'Please select an amenity.');
+            return redirect()->back()->withInput();
+        }
+
+        $data = [
+            'reservation_id' => $request['reservation_id'],
+            'homestay_id' => $request['homestay_id'],
+            'additional_amenities_id' => $request['additional_amenities_id'],
+            'total_order' => $request['total_order'] ?? 1,
+            'total_price' => $request['total_price'] ?? 0,
+            'day_order' => $request['day_order'] ?? 0,
+            'person_order' => $request['person_order'] ?? 0,
+            'room_order' => $request['room_order'] ?? 0,
+        ];
+
+        $add = $this->reservationHomestayAdditionalAmenitiesDetailModel->add_detail_haa($data);
+
+        $this->updateReservationTotalPrice($request['reservation_id']);
+
+        if ($add) {
+            session()->setFlashdata('success', 'Additional amenity added successfully.');
+        } else {
+            session()->setFlashdata('error', 'Failed to add additional amenity.');
+        }
+>>>>>>> Stashed changes
 
         return redirect()->to(base_url('web/reservation/detail/' . $request['reservation_id']));
     }
+
+    public function updateAmenities()
+    {
+        $request = $this->request->getPost();
+        $reservationId = $request['reservation_id'];
+        $amenityId = $request['additional_amenities_id'];
+
+        $data = [
+            'total_order' => $request['total_order'] ?? 1,
+            'total_price' => $request['total_price'] ?? 0,
+            'day_order' => $request['day_order'] ?? 0,
+            'person_order' => $request['person_order'] ?? 0,
+            'room_order' => $request['room_order'] ?? 0,
+        ];
+
+        $update = $this->reservationHomestayAdditionalAmenitiesDetailModel->update_detail_haa($reservationId, $amenityId, $data);
+
+        $this->updateReservationTotalPrice($reservationId);
+
+        if ($update) {
+            session()->setFlashdata('success', 'Additional amenity updated successfully.');
+        } else {
+            session()->setFlashdata('error', 'Failed to update additional amenity.');
+        }
+
+        return redirect()->to(base_url('web/reservation/detail/' . $reservationId));
+    }
+
+    public function deleteAmenities($reservation_id = null, $homestay_id = null, $amenity_id = null)
+    {
+        $delete = $this->reservationHomestayAdditionalAmenitiesDetailModel->del_haa_by_id_api($homestay_id, $amenity_id, $reservation_id);
+
+        $this->updateReservationTotalPrice($reservation_id);
+
+        if ($delete) {
+            session()->setFlashdata('success', 'Additional amenity removed successfully.');
+        } else {
+            session()->setFlashdata('error', 'Failed to remove additional amenity.');
+        }
+
+        return redirect()->to(base_url('web/reservation/detail/' . $reservation_id));
+    }
+
+
     public function addActivity()
     {
         $request = $this->request->getPost();
@@ -1509,6 +1666,132 @@ class Reservation extends ResourcePresenter
         }
 
         return redirect()->to(base_url('web/reservation/detail/' . $request['reservation_id']));
+    }
+
+    public function extendReservation($id = null)
+    {
+        $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
+        if (empty($reservation)) {
+            return redirect()->to(base_url('web/reservation'))->with('error', 'Reservation not found.');
+        }
+
+        // Get current reservation details
+        $reservation_details = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($id)->getResultArray();
+        $homestay_id = $reservation_details[0]['homestay_id'] ?? null;
+        $unit_type = $reservation_details[0]['unit_type'] ?? null;
+
+        $unit_numbers = array_unique(array_column($reservation_details, 'unit_number'));
+        $existing_dates = array_unique(array_column($reservation_details, 'date'));
+        $day_of_stay = count($existing_dates);
+        $check_out = date("Y-m-d", strtotime($reservation['check_in'] . ' + ' . $day_of_stay . ' days'));
+
+        $data = [
+            'title' => 'Extend Reservation',
+            'reservation' => $reservation,
+            'homestay_id' => $homestay_id,
+            'unit_type' => $unit_type,
+            'unit_numbers' => $unit_numbers,
+            'day_of_stay' => $day_of_stay,
+            'check_out' => $check_out,
+        ];
+
+        return view('web/reservation_extend_form', $data);
+    }
+
+    public function processExtendReservation($id = null)
+    {
+        $request = $this->request->getPost();
+        $extend_days = (int)$request['extend_day'];
+
+        if ($extend_days <= 0) {
+            return redirect()->back()->with('error', 'Extend day must be a positive number.');
+        }
+
+        $reservation = $this->reservationModel->get_reservation_by_id($id)->getRowArray();
+        $reservation_details = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($id)->getResultArray();
+
+        $homestay_id = $reservation_details[0]['homestay_id'];
+        $unit_type = $reservation_details[0]['unit_type'];
+        $unit_numbers = array_unique(array_column($reservation_details, 'unit_number'));
+        $day_of_stay = count(array_unique(array_column($reservation_details, 'date')));
+        $last_date = date('Y-m-d', strtotime($reservation['check_in'] . ' + ' . ($day_of_stay - 1) . ' days'));
+
+        // Check availability for the new dates
+        for ($i = 1; $i <= $extend_days; $i++) {
+            $new_date = date('Y-m-d', strtotime($last_date . " +{$i} days"));
+            foreach ($unit_numbers as $unit_number) {
+                $is_booked = $this->reservationHomestayUnitDetailModel->get_unit_number_not_available($homestay_id, $unit_type, $new_date)->getResultArray();
+                if (!empty($is_booked)) {
+                    foreach ($is_booked as $booked_unit) {
+                        if ($booked_unit['unit_number'] == $unit_number) {
+                            return redirect()->back()->with('error', "Unit {$unit_number} is not available on {$new_date}.");
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add new reservation details
+        for ($i = 1; $i <= $extend_days; $i++) {
+            $new_date = date('Y-m-d', strtotime($last_date . " +{$i} days"));
+            foreach ($unit_numbers as $unit_number) {
+                $detailData = [
+                    'reservation_id' => $id,
+                    'homestay_id' => $homestay_id,
+                    'unit_type' => $unit_type,
+                    'unit_number' => $unit_number,
+                    'date' => $new_date
+                ];
+                $this->reservationHomestayUnitDetailModel->insert($detailData, false);
+            }
+        }
+
+        // Recalculate total price and update reservation
+        $this->updateReservationTotalPrice($id);
+
+        // Reset payment status to allow for new payment
+        $updateData = [
+            'status' => '1', // Back to "Pay Deposit" status
+            'deposit_proof' => null,
+            'deposit_at' => null,
+            'deposit_confirmed_at' => null,
+            'full_paid_proof' => null,
+            'full_paid_at' => null,
+            'full_paid_confirmed_at' => null,
+        ];
+        $this->reservationModel->update($id, $updateData);
+
+        return redirect()->to(base_url('web/reservation/detail/' . $id))->with('success', 'Reservation extended successfully. Please proceed with the new payment.');
+    }
+
+    private function updateReservationTotalPrice($reservation_id)
+    {
+        $reservation = $this->reservationModel->find($reservation_id);
+        if (!$reservation) {
+            return false;
+        }
+
+        // Recalculate homestay unit price
+        $reservation_details = $this->reservationHomestayUnitDetailModel->get_reservation_by_id($reservation_id)->getResultArray();
+        $day_of_stay = count(array_unique(array_column($reservation_details, 'date')));
+        $unit_numbers = array_unique(array_column($reservation_details, 'unit_number'));
+
+        $unit_price = 0;
+        foreach ($unit_numbers as $unit_number) {
+            $unit = $this->homestayUnitModel->get_hu_by_id_api($reservation_details[0]['homestay_id'], $reservation_details[0]['unit_type'], $unit_number)->getRowArray();
+            $unit_price += $unit['price'] ?? 0;
+        }
+
+        $total_unit_price = $unit_price * $day_of_stay;
+
+        // Recalculate amenities price
+        $amenities_price = $this->reservationHomestayAdditionalAmenitiesDetailModel->get_total_price_by_rid($reservation_id);
+
+        // Recalculate package price
+        $package_price = $this->reservationPackageDetailModel->get_total_price_by_rid($reservation_id);
+
+        $new_total_price = $total_unit_price + $amenities_price + $package_price;
+        return $this->reservationModel->update($reservation_id, ['total_price' => $new_total_price]);
     }
 
     public function addReview($reservation_id = null)
@@ -1754,7 +2037,22 @@ class Reservation extends ResourcePresenter
         $confirm = $this->reservationModel->confirm_reservation($request, $reservation_id);
 
         if ($confirm) {
+<<<<<<< Updated upstream
             return redirect()->to(base_url('dashboard/reservation/' . $reservation_id));
+=======
+            if ($request['is_rejected'] == '0') {
+                $messageUser = 'Your reservation with ID ' . $id . ' at ' . $homestay['name'] . ' has been confirmed by the owner.';
+                $messageOwner = 'You have confirmed a reservation with ID ' . $id . ' from @' . $user['username'] . '.';
+                session()->setFlashdata('success', 'Reservation confirmed successfully.');
+            } else {
+                $messageUser = 'Your reservation with ID ' . $id . ' at ' . $homestay['name'] . ' has been rejected by the owner.';
+                $messageOwner = 'You have rejected a reservation with ID ' . $id . ' from @' . $user['username'] . '.';
+                session()->setFlashdata('error', 'Reservation rejected.');
+            }
+            $this->notification->sendMessage($user, $messageUser);
+            $this->notification->sendMessage($owner, $messageOwner);
+            return redirect()->to(base_url('dashboard/Reservation/detail/' . $id));
+>>>>>>> Stashed changes
         } else {
             return redirect()->back()->withInput();
         }
@@ -1839,7 +2137,7 @@ class Reservation extends ResourcePresenter
             $messageOwner = 'Upload deposit refund proof at reservation with ID ' . $reservation_id . ' from @' . $user['username'] . ' has been succeessful. Please wait the confirmation from customer.';
             $this->notification->sendMessage($user, $messageUser);
             $this->notification->sendMessage($owner, $messageOwner);
-            return redirect()->to(base_url('dashboard/reservation/' . $reservation_id));
+            return redirect()->to(base_url('dashboard/Reservation/detail/' . $reservation_id));
         } else {
             return redirect()->back()->withInput();
         }

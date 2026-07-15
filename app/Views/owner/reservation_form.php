@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form id="reservation-form" class="form form-vertical" action="/dashboard/reservation/<?= esc($homestayid); ?>" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                    <form id="reservation-form" class="form form-vertical" action="<?= base_url('dashboard/reservation/' . esc($homestayid)); ?>" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
                         <div class="form-body">
                             <div class="row">
                                 <div class="col-md-5 col-12" style="border-right: 1px dashed #333;">

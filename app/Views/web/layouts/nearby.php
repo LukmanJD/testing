@@ -74,3 +74,30 @@
         </div>
     </div>
 </div>
+
+<!-- Custom Route -->
+<div class="col-12" id="custom-route-col" style="display: none;">
+    <div class="card text-dark">
+        <div class="card-header">
+            <h5 class="card-title text-center">Custom Route</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-grid gap-2 mb-3">
+                <button class="btn btn-danger" onclick="clearCustomRoute()">Clear Route</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 table-lg text-dark">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Lat, Lng</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="custom-route-list">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -59,6 +59,26 @@ class ReservationHomestayAdditionalAmenitiesDetailModel extends Model
             ->insert($amenities);
         return $query;
     }
+
+    public function update_detail_haa($reservation_id, $additional_amenities_id, $data)
+    {
+        return $this->db->table($this->table)
+            ->where('reservation_id', $reservation_id)
+            ->where('additional_amenities_id', $additional_amenities_id)
+            ->update($data);
+    }
+
+    public function get_total_price_by_rid($reservation_id)
+    {
+        $query = $this->db->table($this->table)
+            ->selectSum('total_price')
+            ->where('reservation_id', $reservation_id)
+            ->get()
+            ->getRow();
+
+        return $query->total_price ?? 0;
+    }
+
     public function get_res_by_act_id($homestay_id = null, $homestay_activity_id = null)
     {
         $query = $this->db->table($this->table)

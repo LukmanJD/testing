@@ -24,6 +24,7 @@
     <link href="assets/lib/animate/animate.min.css" rel="stylesheet" />
     <link href="assets/lib/lightbox/css/lightbox.min.css" rel="stylesheet" />
     <link href="assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/landing-page/bootstrap.min.css" rel="stylesheet" />
@@ -78,10 +79,6 @@
             height: 100%;
             /* Fill the container */
             overflow: hidden;
-            /* Hide overflow when the image zooms */
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-size: cover;
         }
 
         .image-info-button {
@@ -139,6 +136,80 @@
             z-index: 1000001;
             /* Make sure it's on top of other elements */
         }
+
+        .header-carousel .owl-prev,
+        .header-carousel .owl-next {
+            pointer-events: auto;
+            position: static;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            font-size: 22px;
+            transition: .5s;
+            margin: 0 10px;
+            flex-shrink: 0;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .header-carousel .owl-prev {
+            order: 1;
+        }
+
+        .header-carousel .owl-next {
+            order: 3;
+        }
+
+        .header-carousel .owl-prev:hover,
+        .header-carousel .owl-next:hover {
+            background: var(--bs-primary);
+            color: #FFFFFF;
+        }
+
+        .header-carousel .owl-custom-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .header-carousel .owl-nav {
+            display: contents;
+        }
+
+        .header-carousel .owl-dots {
+            position: static;
+            transform: none;
+            order: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            width: auto !important;
+        }
+
+        .header-carousel .owl-dots .owl-dot {
+            width: 15px;
+            height: 15px;
+            margin: 0 5px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            transition: .5s;
+        }
+
+        .header-carousel .owl-dots .owl-dot.active {
+            background: var(--bs-primary);
+        }
     </style>
 </head>
 
@@ -184,7 +255,7 @@
             <!-- <div class="row g-0 flex-column-reverse flex-lg-row"> -->
             <div class="row g-0 flex-column-reverse flex-lg-row h-100">
                 <div class="col-lg-6 p-0 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="header-bg h-100 d-flex flex-column justify-content-center p-5" style="background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(media/photos/<?= $gallery[array_rand($gallery)]['url']; ?>) center center no-repeat; background-size: cover;">
+                    <div class="header-bg h-100 d-flex flex-column justify-content-center p-5" style="background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(<?= base_url('media/photos/' . $gallery[array_rand($gallery)]['url']); ?>) center center no-repeat; background-size: cover;">
                         <h2 class="display-6 text-light mb-2">
                             Welcome to
                         </h2>
@@ -203,13 +274,16 @@
                 <div class="col-lg-6 wow fadeIn h-100" data-wow-delay="0.5s">
                     <div class="owl-carousel header-carousel">
                         <?php foreach ($gallery as $item) : ?>
-                            <div class="owl-carousel-item" style="background-image: url('<?= base_url('media/photos/' . $item['url']); ?>')">
+                            <div class="owl-carousel-item">
+                                <a href="<?= base_url('media/photos/' . $item['url']); ?>" data-lightbox="carousel-gallery" data-title="<?= nl2br(esc($item['description'])); ?>">
+                                    <img src="<?= base_url('media/photos/' . $item['url']); ?>" alt="<?= esc($item['description']); ?>" class="w-100 h-100" style="object-fit: cover;">
+                                </a>
                                 <div class="image-info-button" title="About this image">
                                     <i class="fa-solid fa-circle-info"></i>
                                 </div>
                                 <div class="image-info-overlay">
                                     <div style="max-width: 80%;">
-                                        <p class="mb-0"><?= esc($item['description']); ?></p>
+                                        <p class="mb-0"><?= nl2br(esc($item['description'])); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -254,7 +328,7 @@
                             </span>
                         </h1>
                         <p class="mb-4">
-                            <?= $village['description']; ?>
+                            <?= nl2br(esc($village['description'])); ?>
                         </p>
                         <h5 class="mb-3">
                             <a href="#map" class="text-reset" onclick="showMap('at');">
@@ -348,25 +422,25 @@
                     <div class="col-6 col-sm-6 col-md-3 col-lg-3 container-strech mb-3">
                         <div class="mask-group-1 d-flex flex-row align-items-center justify-content-evenly text-center">
                             <strong class="">CLEANLINESS</strong>
-                            <img class="" src="https://chse.kemenparekraf.go.id/themes/chse-front/assets/landing/img/icons/clean.png">
+                            <img class="" src="<?= base_url('media/photos/landing-page/clean.png'); ?>">
                         </div>
                     </div>
                     <div class="col-6 col-sm-6 col-md-3 col-lg-3 container-strech mb-3">
                         <div class="mask-group-2 d-flex flex-row align-items-center justify-content-evenly text-center">
                             <strong class="">HEALTH</strong>
-                            <img class="" src="https://chse.kemenparekraf.go.id/themes/chse-front/assets/landing/img/icons/health.png">
+                            <img class="" src="<?= base_url('media/photos/landing-page/health.png'); ?>">
                         </div>
                     </div>
                     <div class="col-6 col-sm-6 col-md-3 col-lg-3 container-strech mb-3">
                         <div class="mask-group-3 d-flex flex-row align-items-center justify-content-evenly text-center">
                             <strong class="">SAFETY</strong>
-                            <img class="" src="https://chse.kemenparekraf.go.id/themes/chse-front/assets/landing/img/icons/safety.png">
+                            <img class="" src="<?= base_url('media/photos/landing-page/safety.png'); ?>">
                         </div>
                     </div>
                     <div class="col-6 col-sm-6 col-md-3 col-lg-3 container-strech mb-3">
                         <div class="mask-group-1 d-flex flex-row align-items-center justify-content-space text-center">
                             <strong class="">ENVIRONMENT SUSTAINABILITY</strong>
-                            <img class="" src="https://chse.kemenparekraf.go.id/themes/chse-front/assets/landing/img/icons/env.png">
+                            <img class="" src="<?= base_url('media/photos/landing-page/env.png'); ?>">
                         </div>
                     </div>
                 </div>
@@ -424,6 +498,93 @@
                         <a class="btn btn-link" href="#about">About</a>
                         <a class="btn btn-link" href="#award">Award</a>
                         <a class="btn btn-link" href="<?= base_url('login'); ?>">Login</a>
+<<<<<<< Updated upstream
+=======
+
+                        <div class="mt-3">
+                            <div id="google_translate_element"></div>
+                            <script type="text/javascript">
+                                // Prevent scroll to top when clicking Google Translate
+                                $(document).ready(function() {
+                                    $('#google_translate_element').on('click', 'a', function(e) {
+                                        e.preventDefault();
+                                    });
+                                });
+
+                                function googleTranslateElementInit() {
+                                    new google.translate.TranslateElement({
+                                        pageLanguage: 'en',
+                                        includedLanguages: 'ar,de,en,es,fr,id,ja,pt,ru,zh-CN,ko',
+                                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                                        autoDisplay: false
+                                    }, 'google_translate_element');
+                                }
+                            </script>
+                            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                            <style>
+                                #google_translate_element .goog-te-gadget-simple {
+                                    background-color: transparent !important;
+                                    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+                                    padding: 5px 10px !important;
+                                    border-radius: 4px !important;
+                                }
+
+                                .goog-te-gadget-icon {
+                                    display: none !important;
+                                }
+
+                                /* Hide all original text and spans inside the widget */
+                                #google_translate_element .goog-te-gadget-simple span,
+                                #google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
+                                    display: none !important;
+                                }
+
+                                /* Add the Globe Icon */
+                                #google_translate_element .goog-te-gadget-simple::before {
+                                    content: "\f0ac";
+                                    font-family: "Font Awesome 5 Free" !important;
+                                    font-weight: 900 !important;
+                                    color: #ffffff !important;
+                                    vertical-align: middle;
+                                    font-size: 14px !important;
+                                    margin-right: 8px;
+                                }
+
+                                /* Add "Language" text */
+                                #google_translate_element .goog-te-gadget-simple::after {
+                                    content: "Language";
+                                    font-family: "Open Sans", sans-serif !important;
+                                    font-weight: 500 !important;
+                                    color: #ffffff !important;
+                                    vertical-align: middle;
+                                    font-size: 14px !important;
+                                }
+
+                                .goog-te-banner-frame.skiptranslate {
+                                    display: none !important;
+                                }
+
+                                body {
+                                    top: 0px !important;
+                                }
+
+                                #goog-gt-tt {
+                                    display: none !important;
+                                }
+
+                                .goog-text-highlight {
+                                    background-color: transparent !important;
+                                    box-shadow: none !important;
+                                }
+                            </style>
+                            <!-- <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
+                            <script>
+                                Weglot.initialize({
+                                    api_key: 'wg_594606240d660c4f2b0253f9783968582'
+                                });
+                            </script> -->
+                        </div>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -452,6 +613,7 @@
     <script src="assets/lib/counterup/counterup.min.js"></script>
     <script src="assets/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="assets/lib/lightbox/js/lightbox.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script>
         window.onload = function() {

@@ -86,7 +86,7 @@ $users = in_array('users', $uri);
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a title="Detail Reservation" class="btn icon btn-outline-info btn-sm" href="reservation/<?= esc($item['id']); ?>">
+                                        <a title="Detail Reservation" class="btn icon btn-outline-info btn-sm" href="Reservation/detail/<?= esc($item['id']); ?>">
                                             <i class="fa-solid fa-circle-info"></i>
                                         </a>
                                         <?php if ((($item['status'] == null) && ($item['canceled_at'] == null)) || (($item['status'] == '1') && ($item['canceled_at'] == null) && ($item['is_rejected'] == '1'))) : ?>

@@ -37,17 +37,32 @@ class Upload extends ResourceController
     public function remove()
     {
         $folder = $this->request->getBody();
-        if ($folder != 'default.jpg') {
+        // Sanitize folder name to prevent directory traversal
+        $folder = basename($folder);
+
+        if ($folder && $folder !== 'default.jpg') {
             $filepath = WRITEPATH . 'uploads/' . $folder;
+
+            // Ensure the path is a directory before proceeding
+            if (!is_dir($filepath)) {
+                return $this->response->setStatusCode(404)->setHeader('Content-Type', 'text/plain')->setBody("Directory not found: " . $filepath);
+            }
+
             $deleteFile = delete_files($filepath);
             if (!$deleteFile) {
                 return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("Failed deleting files in directory: " . $filepath);
             }
+<<<<<<< Updated upstream
             $removeDir = rmdir($filepath);
             if (!$removeDir) {
                 return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(400)->setBody("Failed deleting directory: " . $filepath);
             }
             return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($filepath);
+=======
+            @rmdir($filepath); // Use @ to suppress warnings if it fails, as delete_files should handle it.
+
+            return $this->response->setStatusCode(200)->setHeader('Content-Type', 'text/plain')->setBody($filepath);
+>>>>>>> Stashed changes
         }
         return $this->response->setHeader('Content-Type', 'text/plain')->setStatusCode(200)->setBody($folder);
     }

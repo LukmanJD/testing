@@ -26,8 +26,23 @@
     <script src="<?= base_url('assets/js/extensions/sweetalert2.js'); ?>"></script>
     <script src="https://kit.fontawesome.com/de7d18ea4d.js" crossorigin="anonymous"></script>
 
+    <!-- Handle Google Maps Auth Errors -->
+    <script>
+        function gm_authFailure() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Google Maps Error',
+                text: 'Failed to load Google Maps. Please check your API Key configuration (Billing or Referrer restrictions).'
+            });
+        }
+    </script>
+
     <!-- Google Maps API and Custom JS -->
+<<<<<<< Updated upstream
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8B04MTIk7abJDVESr6SUF6f3Hgt1DPAY&libraries=drawing"></script>
+=======
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?= env('google.maps.apiKey') ?>&libraries=drawing"></script>
+>>>>>>> Stashed changes
     <script src="<?= base_url('js/web.js'); ?>"></script>
 </head>
 
@@ -107,6 +122,23 @@
             format: 'yyyy-mm-dd',
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#google_translate_element').on('click', 'a', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'ar,de,en,es,fr,id,ja,pt,ru,zh-CN,ko',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>

@@ -182,7 +182,11 @@ $datenow = $dateTime->format('Y-m-d H:i:s');
     <?php if ($reservation['is_refund'] == '1') : ?>
         <tr style="border:1px solid #000">
             <td width="78%" style="height: 20px"><strong>Refund</strong></td>
-            <td width="18%" style="height: 20px;text-align:right"><strong><?= 'Rp' . number_format(esc(50 / 100 * $reservation['deposit']), 0, ',', '.'); ?></strong></td>
+            <?php if ($reservation['status'] == 'Full Pay Successful' || ($reservation['canceled_at'] != null && $reservation['full_paid_at'] != null)): ?>
+                <td width="18%" style="height: 20px;text-align:right"><strong><?= 'Rp' . number_format(esc(50 / 100 * $reservation['total_price']), 0, ',', '.'); ?></strong></td>
+            <?php else: ?>
+                <td width="18%" style="height: 20px;text-align:right"><strong><?= 'Rp' . number_format(esc(50 / 100 * $reservation['deposit']), 0, ',', '.'); ?></strong></td>
+            <?php endif; ?>
         </tr>
     <?php elseif ($reservation['is_refund'] == '0') : ?>
         <tr style="border:1px solid #000">

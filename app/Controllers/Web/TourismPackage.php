@@ -209,7 +209,7 @@ class TourismPackage extends ResourcePresenter
         $rating = 0;
         $rating_divider = 0;
         foreach ($reservations as $reservation) {
-            if ($reservation['rating'] != null) {
+            if (isset($reservation['rating']) && $reservation['rating'] != null) {
                 $rating = $rating + $reservation['rating'];
                 $rating_divider++;
             }
@@ -309,7 +309,7 @@ class TourismPackage extends ResourcePresenter
             $rating = 0;
             $rating_divider = 0;
             foreach ($reservations as $reservation) {
-                if ($reservation['rating'] != null) {
+                if (isset($reservation['rating']) && $reservation['rating'] != null) {
                     $rating = $rating + $reservation['rating'];
                     $rating_divider++;
                 }
