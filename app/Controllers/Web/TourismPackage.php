@@ -6,21 +6,21 @@ use CodeIgniter\Files\File;
 use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\API\ResponseTrait;
 
-use App\Models\HomestayModel;
+use App\Models\Homestay\HomestayModel;
 use App\Models\PackageModel;
 use App\Models\PackageDetailModel;
 use App\Models\PackageServiceDetailModel;
 use App\Models\PackageDayModel;
 use App\Models\AttractionModel;
-use App\Models\CulinaryPlaceModel;
-use App\Models\SouvenirPlaceModel;
+use App\Models\Culinary\CulinaryPlaceModel;
+use App\Models\Souvenir\SouvenirPlaceModel;
 use App\Models\ServiceProviderModel;
-use App\Models\WorshipPlaceModel;
-use App\Models\HomestayExclusiveActivityModel;
+use App\Models\Worship\WorshipPlaceModel;
+use App\Models\Homestay\HomestayExclusiveActivityModel;
 use App\Models\EventModel;
 
-use App\Models\ReservationModel;
-use App\Models\ReservationHomestayUnitDetailModel;
+use App\Models\Reservation\ReservationModel;
+use App\Models\Reservation\ReservationHomestayUnitDetailModel;
 
 class TourismPackage extends ResourcePresenter
 {
@@ -203,8 +203,16 @@ class TourismPackage extends ResourcePresenter
             $homestay = $this->homestayModel->list_by_owner_api(user()->id)->getRowArray();
             $homestay_id = $homestay['id'];
         }
-        $homestay = $this->homestayModel->get_hs_by_id_api($homestay_id)->getRowArray();
         $data = $this->getPackageDetail($homestay_id, $package_id);
+        if (empty($data['data'])) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Package with ID: {$package_id} not found.");
+        }
+
+        $homestay = $this->homestayModel->get_hs_by_id_api($homestay_id)->getRowArray();
+        if (empty($homestay)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Homestay with ID: {$homestay_id} not found for this package.");
+        }
+
         $reservations = $this->reservationModel->get_reservation_by_cpid($homestay_id, $package_id)->getResultArray();
         $rating = 0;
         $rating_divider = 0;
@@ -234,6 +242,11 @@ class TourismPackage extends ResourcePresenter
     public function getPackageDetail($homestay_id = null, $package_id = null)
     {
         $package = $this->packageModel->get_package_by_id_api($homestay_id, $package_id)->getRowArray();
+        if (empty($package)) {
+            // Return an empty structure if the package is not found
+            return ['data' => null, 'list_day' => [], 'list_activity' => [], 'list_service' => []];
+        }
+
         $package['gallery'] = [$package['brochure_url']];
 
         $package_day = $this->packageDayModel->get_pd_by_pacakage_id_api($homestay_id, $package_id)->getResultArray();
@@ -243,46 +256,89 @@ class TourismPackage extends ResourcePresenter
             if (substr($list_activity[$i]['id_object'], 0, 1) === 'A') {
                 $list_activity[$i]['type'] = "Attraction";
                 $attraction = $this->attractionModel->get_at_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $attraction['name'];
-                $list_activity[$i]['price_for_package'] = $attraction['price_for_package'];
-                $list_activity[$i]['lat'] = $attraction['lat'];
-                $list_activity[$i]['lng'] = $attraction['lng'];
+                if ($attraction) {
+                    $list_activity[$i]['object_name'] = $attraction['name'];
+                    $list_activity[$i]['price_for_package'] = $attraction['price_for_package'];
+                    $list_activity[$i]['lat'] = $attraction['lat'];
+                    $list_activity[$i]['lng'] = $attraction['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    // Jika deskripsi sudah ada, gunakan itu. Jika tidak, baru tampilkan 'Object Not Found'.
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             } elseif (substr($list_activity[$i]['id_object'], 0, 1) === 'C') {
                 $list_activity[$i]['type'] = "Culinary";
                 $culinaryPlace = $this->culinaryPlaceModel->get_cp_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $culinaryPlace['name'];
-                $list_activity[$i]['lat'] = $culinaryPlace['lat'];
-                $list_activity[$i]['lng'] = $culinaryPlace['lng'];
+                if ($culinaryPlace) {
+                    $list_activity[$i]['object_name'] = $culinaryPlace['name'];
+                    $list_activity[$i]['lat'] = $culinaryPlace['lat'];
+                    $list_activity[$i]['lng'] = $culinaryPlace['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             } elseif (substr($list_activity[$i]['id_object'], 0, 1) === 'S') {
                 $list_activity[$i]['type'] = "Souvenir";
                 $souvenirPlace = $this->souvenirPlaceModel->get_sp_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $souvenirPlace['name'];
-                $list_activity[$i]['lat'] = $souvenirPlace['lat'];
-                $list_activity[$i]['lng'] = $souvenirPlace['lng'];
+                if ($souvenirPlace) {
+                    $list_activity[$i]['object_name'] = $souvenirPlace['name'];
+                    $list_activity[$i]['lat'] = $souvenirPlace['lat'];
+                    $list_activity[$i]['lng'] = $souvenirPlace['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             } elseif (substr($list_activity[$i]['id_object'], 0, 1) === 'V') {
                 $list_activity[$i]['type'] = "Service Provider";
                 $serviceProvider = $this->serviceProviderModel->get_sv_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $serviceProvider['name'];
-                $list_activity[$i]['lat'] = $serviceProvider['lat'];
-                $list_activity[$i]['lng'] = $serviceProvider['lng'];
+                if ($serviceProvider) {
+                    $list_activity[$i]['object_name'] = $serviceProvider['name'];
+                    $list_activity[$i]['lat'] = $serviceProvider['lat'];
+                    $list_activity[$i]['lng'] = $serviceProvider['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             } elseif (substr($list_activity[$i]['id_object'], 0, 1) === 'W') {
                 $list_activity[$i]['type'] = "Worship";
                 $worshipPlace = $this->worshipPlaceModel->get_wp_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $worshipPlace['name'];
-                $list_activity[$i]['lat'] = $worshipPlace['lat'];
-                $list_activity[$i]['lng'] = $worshipPlace['lng'];
+                if ($worshipPlace) {
+                    $list_activity[$i]['object_name'] = $worshipPlace['name'];
+                    $list_activity[$i]['lat'] = $worshipPlace['lat'];
+                    $list_activity[$i]['lng'] = $worshipPlace['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             } elseif (substr($list_activity[$i]['id_object'], 0, 1) === 'E') {
                 $list_activity[$i]['type'] = "Event";
                 $event = $this->eventModel->get_ev_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $event['name'];
-                $list_activity[$i]['lat'] = $event['lat'];
-                $list_activity[$i]['lng'] = $event['lng'];
+                if ($event) {
+                    $list_activity[$i]['object_name'] = $event['name'];
+                    $list_activity[$i]['lat'] = $event['lat'];
+                    $list_activity[$i]['lng'] = $event['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             } else {
                 $list_activity[$i]['type'] = "Homestay Activity";
                 $homestayActivity = $this->homestayExclusiveActivityModel->get_hea_by_id_api($list_activity[$i]['id_object'])->getRowArray();
-                $list_activity[$i]['object_name'] = $homestayActivity['name'];
-                $list_activity[$i]['lat'] = $homestayActivity['lat'];
-                $list_activity[$i]['lng'] = $homestayActivity['lng'];
+                if ($homestayActivity) {
+                    $list_activity[$i]['object_name'] = $homestayActivity['name'];
+                    $list_activity[$i]['lat'] = $homestayActivity['lat'];
+                    $list_activity[$i]['lng'] = $homestayActivity['lng'];
+                } else {
+                    $list_activity[$i]['lat'] = 0;
+                    $list_activity[$i]['lng'] = 0;
+                    $list_activity[$i]['object_name'] = !empty($list_activity[$i]['description']) ? '' : 'Object Not Found';
+                }
             }
         }
 

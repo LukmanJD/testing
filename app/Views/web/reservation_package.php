@@ -104,15 +104,10 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <form class="form form-vertical" action="/web/reservation/package/buy/<?= esc($h_id) ?>/<?= esc($reservation_id) ?>/<?= esc($item['id']) ?>" method="post" onsubmit="checkRequired()" enctype="multipart/form-data">
+                                <form class="form form-vertical" action="/web/reservation/package/buy/<?= esc($h_id) ?>/<?= esc($reservation_id) ?>/<?= esc($item['id']) ?>" method="post" enctype="multipart/form-data">
+                                    <?= csrf_field() ?>
                                     <div class="form-body">
-                                        <div class="form-group">
-                                            <label for="price" class="mb-2">Total People</label>
-                                            <div class="input-group">
-                                                <input type="number" value="<?= esc($total_people); ?>" id="total_people" class="form-control" name="total_people" placeholder="Total People" aria-label="Price" aria-describedby="price" min="1" onchange="getPrice(this.value,'<?= esc($item['min_capacity']); ?>','<?= esc($item['price']); ?>','<?= esc($item['id']); ?>')" readonly required>
-                                                <span class="input-group-text">people</span>
-                                            </div>
-                                        </div>
+                                        <input type="hidden" name="total_people" value="<?= esc($total_people); ?>">
                                         <button type="submit" class="btn btn-primary me-1 my-3">Add</button>
                                     </div>
                                 </form>
@@ -121,46 +116,11 @@
                     </div>
                 </div>
             </div>
-            <script>
-                $(document).ready(function() {
-                    getPrice('<?= esc($total_people); ?>', '<?= esc($item['min_capacity']); ?>', '<?= esc($item['price']); ?>', '<?= esc($item['id']); ?>')
-                });
-            </script>
         <?php endforeach; ?>
     <?php endif; ?>
 </section>
 
 <?= $this->endSection() ?>
-
 <?= $this->section('javascript') ?>
-<script>
-    function getPrice(val, min_capacity, price, id) {
 
-        let packageOrderVal = val / min_capacity;
-
-        if (packageOrderVal < 1) {
-            packageOrderVal = 1;
-        } else if (val % min_capacity <= min_capacity / 2 && val % min_capacity > 0) {
-            packageOrderVal = Math.floor(packageOrderVal) + 0.5;
-        } else if (val % min_capacity > min_capacity / 2) {
-            packageOrderVal = Math.floor(packageOrderVal) + 1;
-        }
-
-        let totalPriceVal = packageOrderVal * price;
-
-        setPrice(packageOrderVal, totalPriceVal, id);
-
-        console.log(packageOrderVal);
-        console.log(totalPriceVal);
-
-    }
-
-    function setPrice(packageOrderVal, totalPriceVal, id) {
-        const packageOrder = document.getElementById("package_order[" + id + "]");
-        const totalPrice = document.getElementById("total_price[" + id + "]");
-
-        packageOrder.value = packageOrderVal;
-        totalPrice.value = totalPriceVal;
-    }
-</script>
 <?= $this->endSection() ?>

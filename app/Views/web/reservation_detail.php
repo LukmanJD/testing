@@ -5,7 +5,6 @@
 <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/filepond-plugin-media-preview@1.0.11/dist/filepond-plugin-media-preview.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/css/pages/form-element-select.css'); ?>">
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= config('Midtrans')->clientKey; ?>"></script>
 <style>
     .filepond--root {
         width: 100%;
@@ -122,7 +121,7 @@
                                             <div class="card border mb-3">
                                                 <div class="row g-0">
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center">
-                                                        <img width="500px" src="/media/photos/<?= esc($item['galleries'][0]) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
+                                                        <img width="500px" src="<?= base_url('media/photos/' . esc($item['galleries'][0])) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
                                                     </div>
                                                     <div class="col-md-9">
                                                         <div class="card-body">
@@ -153,7 +152,7 @@
                                 </h2>
                                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
                                     <div class="accordion-body">
-                                        <?php if (empty($package)) : ?>
+                                        <?php if (empty($packages)) : ?>
                                             <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
                                                 <a title="Choose Package" class="btn icon btn-primary btn-sm" href="/web/reservation/package/<?= esc($homestay['id']) ?>/<?= esc($reservation['id']) ?>">
                                                     <i class="fa-solid fa-plus"></i> Choose Package
@@ -162,40 +161,89 @@
                                                 <span>No package chosen</span>
                                             <?php endif; ?>
                                         <?php else : ?>
-                                            <div class="card border mb-3">
-                                                <div class="row g-0">
-                                                    <div class="col-md-3 d-flex align-items-center justify-content-center">
-                                                        <img width="500px" src="/media/photos/<?= esc($package['brochure_url']) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">
-                                                                <?= esc($package['name']) ?>
-                                                                <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
-                                                                    <a class="text-danger float-end" onclick="deletePackage('<?= esc($reservation['id']); ?>')"><i class="fa-solid fa-trash"></i></a>
-                                                                <?php endif; ?>
-                                                                <a class="text-info float-end me-2" target="_blank" href="/web/homestayPackage/detail/<?= esc($package['homestay_id']) ?>/<?= esc($package['id']) ?>"><i class="fa-solid fa-circle-info"></i></a>
-                                                            </h5>
-                                                            <p class="card-text">
-                                                                Package Day: <?= esc($package['total_day']) ?> day <br>
-                                                                Minimum Capacity: <?= esc($package['min_capacity']) ?> people
-                                                            </p>
-                                                            <p class="card-text"><small class="text-dark"><?= esc("Rp " . number_format($package['price'], 0, ',', '.')); ?></small></p>
+                                            <?php foreach ($packages as $package) : ?>
+                                                <div class="card border mb-3">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center">
+                                                            <img width="500px" src="/media/photos/<?= esc($package['brochure_url']) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">
+                                                                    <?= esc($package['name']) ?>
+                                                                    <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
+                                                                        <a class="text-danger float-end" onclick="deletePackage('<?= esc($reservation['id']); ?>')"><i class="fa-solid fa-trash"></i></a>
+                                                                    <?php endif; ?>
+                                                                    <a class="text-info float-end me-2" target="_blank" href="/web/homestayPackage/detail/<?= esc($package['homestay_id']) ?>/<?= esc($package['id']) ?>"><i class="fa-solid fa-circle-info"></i></a>
+                                                                </h5>
+                                                                <p class="card-text">
+                                                                    Package Day: <?= esc($package['total_day']) ?> day <br>
+                                                                    Minimum Capacity: <?= esc($package['min_capacity']) ?> people
+                                                                </p>
+                                                                <p class="card-text"><small class="text-dark"><?= esc("Rp " . number_format($package['price'], 0, ',', '.')); ?></small></p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <?php
-                                            $package_total_price = $package['price'];
-                                            if (isset($package['package_order'])) {
-                                                $package_total_price = $package['price'] * $package['package_order'];
-                                            }
-                                            ?>
-                                            <span>Package total price = <?= esc("Rp " . number_format($package_total_price, 0, ',', '.')) ?></span>
+                                                <?php
+                                                $package_total_price = $package['price'];
+                                                if (isset($package['package_order'])) {
+                                                    $package_total_price = $package['price'] * $package['package_order'];
+                                                }
+                                                ?>
+                                                <span>Package total price = <?= esc("Rp " . number_format($package_total_price, 0, ',', '.')); ?></span>
+                                            <?php endforeach; ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
+                            <?php if (empty($packages) && !empty($available_packages) && ($reservation['status'] == null || $reservation['status'] == '0' || $reservation['status'] == '1')) : ?>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                                            Available Packages
+                                        </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                                        <div class="accordion-body">
+                                            <?php foreach ($available_packages as $ap) : ?>
+                                                <div class="card border mb-3">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center">
+                                                            <img width="500px" src="/media/photos/<?= esc($ap['brochure_url']) ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover; height: 150px;">
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">
+                                                                    <?= esc($ap['name']) ?>
+                                                                    <a class="text-info float-end me-2" target="_blank" href="/web/homestayPackage/detail/<?= esc($ap['homestay_id']) ?>/<?= esc($ap['id']) ?>"><i class="fa-solid fa-circle-info"></i></a>
+                                                                </h5>
+                                                                <p class="card-text">
+                                                                    Package Day: <?= esc($ap['total_day']) ?> day <br>
+                                                                    Minimum Capacity: <?= esc($ap['min_capacity']) ?> people
+                                                                </p>
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <p class="card-text mb-0"><small class="text-dark fw-bold"><?= esc("Rp " . number_format($ap['price'], 0, ',', '.')); ?></small></p>
+                                                                    <form action="/web/reservation/package/buy/<?= esc($homestay['id']) ?>/<?= esc($reservation['id']) ?>/<?= esc($ap['id']) ?>" method="post">
+                                                                        <?= csrf_field() ?>
+                                                                        <input type="hidden" name="total_people" value="<?= esc($reservation['total_people']); ?>">
+                                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                                            <i class="fa-solid fa-plus"></i> Add to Reservation
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                            <a title="Custom Package" class="btn icon btn-outline-primary btn-sm" href="/web/reservation/package/custom/<?= esc($homestay['id']) ?>/<?= esc($reservation['id']) ?>">
+                                                <i class="fa-solid fa-plus"></i> Create Custom Package
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($homestay_unit[0]['unit_type'] != "3") : ?>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="panelsStayOpen-headingFour">
@@ -319,22 +367,6 @@
         $refund = ($reservation['is_refund'] == '1') ? ($deposit * 0.50) : 0; // 50% of deposit if refundable
         ?>
 
-        <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
-            <div class="row">
-                <div class="col">
-                    <?php if (($reservation['reservation_type'] == 1)) : ?>
-                        <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-3 float-end" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($deposit); ?>','<?= esc($total_price); ?>','<?= esc($coin); ?>')">
-                            <i class="fa-solid fa-check"></i> Done
-                        </a>
-                    <?php elseif (($reservation['reservation_type'] == 2)) : ?>
-                        <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-3 float-end" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($reservation['deposit']); ?>','<?= esc($reservation['total_price']); ?>','<?= esc($coin); ?>')">
-                            <i class="fa-solid fa-check"></i> Done
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        <?php endif; ?>
-
         <div class="row">
             <div class="card">
                 <div class="card-header text-center">
@@ -415,7 +447,6 @@
                                 <!-- <script>
                                     usedCoinText();
                                 </script> -->
-
                                 <?php if ((($reservation['status'] == 'Deposit Successful') || ($reservation['status'] == 'Full Pay Pending') || ($reservation['status'] == 'Full Pay Successful')) && ($reservation['canceled_at'] == null)) : ?>
                                     <?php if (($reservation['reservation_type'] == 1 && $reservation['coin_use'] == 0)) : ?>
                                         <tr>
@@ -595,17 +626,41 @@
                                         <hr class="hr">
                                     </td>
                                 </tr>
-                                <?php if ((($reservation['status'] == '1') || ($reservation['status'] == 'Deposit Pending')) && ($reservation['canceled_at'] == null) && ($reservation['is_rejected'] != '1')) : ?>
+                                <?php if (($reservation['status'] == null) && ($reservation['canceled_at'] == null)) : ?>
                                     <tr>
                                         <td colspan="2">
                                             <span class="fw-bold">To Do : </span>
-                                            Pay deposit by click button bellow
+                                            Finish reservation by click button below
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a class="btn icon btn-primary btn-sm mb-1 mt-3" id="pay-button">
+                                            <?php if (($reservation['reservation_type'] == 1)) : ?>
+                                                <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-1 mt-3" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($deposit); ?>','<?= esc($total_price); ?>','<?= esc($coin); ?>')">
+                                                    <i class="fa-solid fa-check"></i> Done
+                                                </a>
+                                            <?php elseif (($reservation['reservation_type'] == 2)) : ?>
+                                                <a title="Finish Reservation" class="btn icon btn-success btn-sm mb-1 mt-3" onclick="confirmDone('<?= esc($reservation['id']); ?>','<?= esc($reservation['deposit']); ?>','<?= esc($reservation['total_price']); ?>','<?= esc($coin); ?>')">
+                                                    <i class="fa-solid fa-check"></i> Done
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                                <?php if ((($reservation['status'] == '1') || ($reservation['status'] == 'Deposit Pending')) && ($reservation['canceled_at'] == null) && ($reservation['is_rejected'] != '1')) : ?>
+                                    <tr>
+                                        <td colspan="2">
+                                            <span class="fw-bold">To Do : </span>
+                                            Pay deposit or full price by click button bellow
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <a href="javascript:void(0)" onclick="processPayment('<?= esc($reservation['id']) ?>', 'deposit')" class="btn icon btn-primary btn-sm mb-1 mt-3">
                                                 Pay Deposit
+                                            </a>
+                                            <a href="javascript:void(0)" onclick="processPayment('<?= esc($reservation['id']) ?>', 'full')" class="btn icon btn-success btn-sm mb-1 mt-3 ms-1">
+                                                Pay Full
                                             </a>
                                         </td>
                                     </tr>
@@ -619,7 +674,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a class="btn icon btn-primary btn-sm mb-1 mt-3" id="pay-button">
+                                            <a href="javascript:void(0)" onclick="processPayment('<?= esc($reservation['id']) ?>', 'full')" class="btn icon btn-primary btn-sm mb-1 mt-3">
                                                 Pay Full Price
                                             </a>
                                         </td>
@@ -736,13 +791,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="card-body text-dark">
-                        <form class="form form-vertical" action="/web/reservation/addAmenities" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                        <form class="form form-vertical" action="<?= base_url('web/reservation/addAmenities'); ?>" method="post" enctype="multipart/form-data" onsubmit="checkRequired(event)">
+                            <?= csrf_field() ?>
                             <div class="form-body">
                                 <input type="hidden" name="reservation_id" value="<?= esc($reservation['id']); ?>">
                                 <fieldset class="form-group mb-4">
-                                    <script>
-                                        getListAdditionalAmenities('<?= esc($reservation['id']); ?>', '<?= esc($homestay['id']) ?>');
-                                    </script>
                                     <label for="serviceSelect" class="mb-2">Additional Amenities</label>
                                     <select class="form-select" id="serviceSelect" name="additional_amenities_id" onchange="getOrderField(this.value, '<?= esc($homestay['id']) ?>','<?= esc($reservation['day_of_stay']) ?>','<?= esc($reservation['total_people']) ?>','<?= esc(count($homestay_unit)) ?>')" required>
                                     </select>
@@ -753,6 +806,24 @@
                                 <button type="submit" class="btn btn-primary me-1 mt-5">Add</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Checkout -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkoutModalLabel">Checkout</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="ratio ratio-1x1" style="min-height: 600px;">
+                        <iframe id="checkoutFrame" src="" style="border: none; width: 100%; height: 100%;" allow="payment"></iframe>
                     </div>
                 </div>
             </div>
@@ -774,7 +845,7 @@
                             <div class="card mb-3" style="max-width: 1000px;">
                                 <div class="row g-0">
                                     <div class="col-md-6 d-flex align-items-center justify-content-center">
-                                        <img width="1000px" src="<?= base_url('media/photos'); ?>/<?= esc($activity['image_url']); ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover;" height="250px">
+                                        <img width="1000px" src="<?= base_url('media/photos/' . esc($activity['image_url'])); ?>" class="img-fluid rounded-start" alt="..." style="object-fit: cover;" height="250px">
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card-body">
@@ -851,7 +922,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="card-body text-dark">
-                            <img src="/media/photos/<?= esc($reservation['refund_proof']) ?>" class="img-fluid" alt="...">
+                            <img src="<?= base_url('media/photos/' . esc($reservation['refund_proof'])) ?>" class="img-fluid" alt="...">
                             <form class="form form-vertical" action="/web/reservation/refund/confirm/<?= esc($reservation['id']); ?>" method="post" enctype="multipart/form-data">
                                 <div class="form-body">
                                     <div class="form-group ">
@@ -893,15 +964,23 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?= base_url('web/reservation/package/delete/') ?>" + reservation_id,
+                    url: `<?= base_url('web/reservation/package/delete') ?>/${reservation_id}`,
                     type: "POST",
                     data: {
-                        '_method': 'DELETE'
+                        '_method': 'DELETE',
+                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' // Tambahkan CSRF Token
                     },
                     success: function(response) {
-                        Swal.fire("Deleted!", "The package has been removed from your reservation.", "success").then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: 'The package has been removed from your reservation.',
+                        }).then(() => {
                             location.reload();
                         });
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'Failed to delete package. ' + error, 'error');
                     }
                 });
             }
@@ -944,8 +1023,6 @@
             });
         }
     }
-<<<<<<< Updated upstream
-=======
 
     function processPayment(reservationId, type) {
         console.log('Opening Unified Checkout Popup');
@@ -966,7 +1043,26 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/web/reservation/amenities/delete/${reservation_id}/${homestay_id}/${amenity_id}`;
+                $.ajax({
+                    url: `<?= base_url('web/reservation/amenities/delete') ?>/${reservation_id}/${homestay_id}/${amenity_id}`,
+                    type: 'POST', // Gunakan POST untuk method spoofing
+                    data: {
+                        '_method': 'DELETE', // Method spoofing untuk CodeIgniter
+                        '<?= csrf_token() ?>': '<?= csrf_hash() ?>' // CSRF Token
+                    },
+                    success: function(response) {
+                        Swal.fire(
+                            'Deleted!',
+                            'The amenity has been removed.',
+                            'success'
+                        ).then(() => {
+                            location.reload(); // Muat ulang halaman setelah berhasil
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'Failed to delete amenity.', 'error');
+                    }
+                });
             }
         })
     }
@@ -1084,7 +1180,6 @@
 
     // Initialize amenities list
     getListAdditionalAmenities('<?= esc($reservation['id']); ?>', '<?= esc($homestay['id']) ?>');
->>>>>>> Stashed changes
 </script>
 <script>
     function calculatePriceEdit(amenityId, totalOrder, price) {
@@ -1136,49 +1231,6 @@
 <script src="https://cdn.jsdelivr.net/npm/filepond-plugin-media-preview@1.0.11/dist/filepond-plugin-media-preview.min.js"></script>
 <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
 <script src="<?= base_url('assets/js/extensions/form-element-select.js'); ?>"></script>
-<?php
-$cancelDeadline = date("d F Y, H:i", strtotime($reservation['check_in'] . ' - 1 days'));
-
-if (strtotime(date("d F Y, H:i")) < strtotime($cancelDeadline)) {
-    $text = "You will get back 50% of the deposit you have paid!";
-} else {
-    $text = "Cancellation after 1 day before checking in, you will not get a refund!";
-}
-
-?>
-<?php if (isset($snapToken)) : ?>
-    <script type="text/javascript">
-        var payButton = document.getElementById('pay-button');
-
-        payButton.addEventListener('click', function() {
-
-            console.log('<?= $snapToken; ?>');
-            snap.pay('<?= $snapToken; ?>', {
-                // Optional callback after payment success
-                onSuccess: function(result) {
-                    console.log('Payment Success:', result);
-                    // Refresh the page after success
-                    location.reload();
-                },
-                // Optional callback when payment is pending
-                onPending: function(result) {
-                    console.log('Payment Pending:', result);
-                    // Refresh the page for pending status as well
-                    location.reload();
-                },
-                // Optional callback when payment fails
-                onError: function(result) {
-                    console.log('Payment Error:', result);
-                    alert('Payment failed. Please try again.');
-                },
-                // Optional callback when user closes the payment window
-                onClose: function() {
-                    alert('You closed the payment window without finishing the payment.');
-                }
-            }); // Use the Snap token from the controller
-        });
-    </script>
-<?php endif; ?>
 <script>
     function confirmCancelReservation(reservation_id) {
         Swal.fire({
@@ -1322,5 +1374,22 @@ if (strtotime(date("d F Y, H:i")) < strtotime($cancelDeadline)) {
     window.onload = function() {
         usedCoinText();
     };
+
+    // Listen for messages from the payment iframe
+    window.addEventListener('message', function(event) {
+        // IMPORTANT: Check the origin of the message for security
+        // The origin should be your web's base URL
+        if (event.origin !== window.location.origin) {
+            console.warn('Ignored message from unknown origin:', event.origin);
+            return;
+        }
+
+        if (event.data === 'paymentSuccess') {
+            $('#checkoutModal').modal('hide');
+            Swal.fire("Payment Successful!", "Your reservation has been updated.", "success").then(() => {
+                location.reload();
+            });
+        }
+    }, false);
 </script>
 <?= $this->endSection() ?>

@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 4.9.0.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Nov 29, 2025 at 03:25 PM
--- Server version: 8.0.40
--- PHP Version: 8.1.32
+-- Host: sql211.infinityfree.com
+-- Generation Time: Jul 15, 2026 at 11:54 AM
+-- Server version: 11.4.12-MariaDB
+-- PHP Version: 7.2.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `harau`
+-- Database: `if0_42068249_harau`
 --
 
 -- --------------------------------------------------------
@@ -29,9 +30,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `announcement` (
   `id` varchar(5) NOT NULL,
-  `admin_id` int UNSIGNED DEFAULT NULL,
-  `announcement` text,
-  `status` tinyint DEFAULT NULL
+  `admin_id` int(10) UNSIGNED DEFAULT NULL,
+  `announcement` text DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -48,15 +49,15 @@ INSERT INTO `announcement` (`id`, `admin_id`, `announcement`, `status`) VALUES
 --
 
 CREATE TABLE `attraction` (
-  `id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `id` varchar(3) NOT NULL,
   `attraction_category` varchar(2) NOT NULL DEFAULT '2',
   `name` varchar(40) NOT NULL,
   `address` text NOT NULL,
   `open` time NOT NULL,
   `close` time NOT NULL,
-  `price` int NOT NULL DEFAULT '0',
-  `employee_name` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `phone` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `price` int(11) NOT NULL DEFAULT 0,
+  `employee_name` varchar(25) DEFAULT NULL,
+  `phone` varchar(13) DEFAULT NULL,
   `description` text NOT NULL,
   `video_url` varchar(30) NOT NULL,
   `lat` decimal(10,8) NOT NULL,
@@ -71,12 +72,12 @@ CREATE TABLE `attraction` (
 --
 
 INSERT INTO `attraction` (`id`, `attraction_category`, `name`, `address`, `open`, `close`, `price`, `employee_name`, `phone`, `description`, `video_url`, `lat`, `lng`, `geom`, `created_at`, `updated_at`) VALUES
-('A14', '2', 'Air Terjun Sarasah Bunta', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, NULL, NULL, 'Air terjun Sarasah Bunta merupakan air terjun alami yang terbentuk akibat patahan ', 'A4-V.mp4', -0.10859590, 100.67764144, 0xe610000001030000000100000006000000b8cd337a5e2b5940baccfadef0ccbbbf3be9d89c5e2b5940d0dbaf6d17bbbbbf470ac09a5e2b5940a82bc864abaabbbf27c286a7572b5940f4d7af645cabbbbf5a8184d5562b5940b1d018f730c5bbbfb8cd337a5e2b5940baccfadef0ccbbbf, '2023-11-26 09:19:36', '2023-12-22 04:38:25'),
-('A15', '2', 'Panorama Aka Barayun', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, NULL, NULL, 'Panorama Aka Barayun merupakan objek wisata dengan daya tarik air terjun dan tebing lembah harau yang ditumbuhi oleh tumbuhan merambat.', '', -0.10107162, 100.66675139, 0xe61000000103000000010000000600000034a7050eac2a594046287466d4dfb9bf6790cc34ab2a59403bce44438cf8b9bf0e67026eab2a5940e0ca23c9bd0ababf66c71da1ac2a594015634ff16e1bbabf9c9d561bad2a59403c56dfafb8eeb9bf34a7050eac2a594046287466d4dfb9bf, '2023-11-26 09:26:07', '2023-12-22 04:31:35'),
-('A16', '2', 'Harau Dream Park', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '09:00:00', '17:00:00', 30000, 'Kampuang Sarosah', '081360813344', 'Harau Dream Park merupakan tempat wisata hits di Sumatera Barat yang dilengkapi dengan replika ikon sejumlah negara di dunia. Objek-objek wisata yang terdapat pada Kampuang Sarosah yaitu Kampung Eropa,  Kampuang Korea, Kampung Jepang dan Kampung Sarosah', '', -0.11329513, 100.66964846, 0xe61000000103000000010000002a00000013e13685db2a5940be6425dee800bdbf4c99e5fcde2a5940a4efc1adb308bdbf5d4cf931e22a5940a594a510a717bdbfa2e9b2b9e62a59401372103a0921bdbfa1fa202eed2a5940b569cfd9c025bdbfafae4cf0f42a59402b61960bcf2abdbf7beea941fd2a5940474cbb5ebb30bdbf72de62f2042b5940b0206a2e7934bdbfb57691f80b2b5940c62a4aae0738bdbf20d79f27122b5940cf294c08eb39bdbf05fcf93a192b5940dd342a2e963bbdbf0a915f81202b5940773340f5513ebdbfce18492f282b594044c0847e6442bdbf5339b37e2f2b59406eb2fcaf2946bdbfe761d310362b59401b6f6568c049bdbfba17f3ce3c2b5940f131f546ef4cbdbffe8c3d41432b59401102d1176b4dbdbf4c112a82492b5940c26e758c6d4abdbf42226de34f2b5940f21850359b43bdbfbc5983f7552b594083f30c8e503bbdbf01ffced55a2b5940cff197370333bdbfd63a71395e2b594024f1f274ae28bdbfc350e2ce602b59403e97461f351ebdbf92674de2622b5940fc7a74d99e0fbdbf67cb5e5b642b59406db30ccc65febcbf6d5a84bd642b594024c44b265de9bcbf974ffb52642b594087a5a22dbed3bcbf927e56f4622b5940de731e1d70c0bcbf8dc756e1602b5940cae6a20846b1bcbffffe39715e2b594002be3676e4a3bcbf6c4bd3565b2b5940b66fa422049abcbf8626e4de572b59408884ade13b94bcbfb7a283e4532b5940ea96fcd33693bcbfcb7b41b04f2b594004a1061dbe96bcbfbc7e1c284b2b5940ecc6b3b21a9ebcbf416fe0c4462b59404c38b2fa3ca9bcbf97f2107c422b5940b42506dc4eb6bcbf2d93e1783e2b5940f19b679192c3bcbfdcba9ba73a2b59400cace3f8a1d2bcbf3d450e11372b5940f08b4b55dae2bcbfecc8ec87332b5940fca65599cef3bcbf13e13685db2a5940be6425dee800bdbf, '2023-11-26 09:27:54', '2023-12-22 04:23:38'),
-('A17', '1', 'Geopark Lembah Harau', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, 'Edo', '081261499095', 'Geopark Lembah Harau dikenal karena beragam formasi batuan yang unik. Situs geologi di kawasan ini memberikan pandangan yang menarik tentang sejarah geologi dan proses alam yang terjadi selama jutaan tahun.<br><br> Kawasan geopark ini ditandai oleh tebing-tebing curam yang mengelilingi lembah, menciptakan pemandangan spektakuler. Keberadaan tebing yang tinggi dan terjal memberikan sentuhan dramatis pada lanskap alam.<br><br> Ketinggian tebing batu pada Geopark Lembah Harau berkisar antara 30m - 100m. Batuan pada tebing merupakan perselingan konglomerat dan batupasir dengan ketinggian ± 100 meter termasuk ke dalam formasi <i>Brani</i> berumur <i>Oligosen (34-23 juta tahun lalu)</i> serta mencirikan endapan fluvial dari sungai purba.<br><br> Terbentuknya lembah harau dikarenakan adanya patahan turun atau block yang turun membentuk lembah yang cukup luas dan datar. Salah satu tanda-tanda atau untuk melihat dimana lokasi patahannya adalah dengan adanya air terjun. Dengan begitu, dapat disimpulkan bahwa dahulu ada sungai yang kemudian terpotong akibat adanya patahan turun, sehingga membentuk air terjun. ', 'geopark_lembah_harau.mp4', -0.10422544, 100.67413855, 0xe61000000103000000010000002f000000434e0416252b5940e01136b884aebabf1bb73de6282b59404f3dd2e0b6b6babfa22f18b72c2b5940e26def6481c0babf8294336f302b5940ceb0074955c9babf8ceb2983342b5940869f49acd6d3babf07fb65e6382b59409a1c88765fdfbabfd54d18833d2b5940ce1ced139beababf26dea6e4412b594090c4268d2cf4babf4d6551d8452b594043fc68ddabfbbabfbd564277492b594075e789e76c01bbbf5ce3d81f4d2b5940c8f610436106bbbfcb619c64502b5940739b15f6590abbbffff5c07d532b5940a02ef76e980dbbbf6f18607a562b5940b598e9a8b40fbbbf79d1b249592b59402c0fd253e410bbbf4e5d9e735c2b59400e68e90ab611bbbf52e3ef285f2b5940dbb5ce09eb10bbbf21e0b5f0612b5940b1fe2a1b310ebbbf02a72d64642b59409e95b4e21b0abbbf905841c2662b5940b06e6182bf04bbbffad74d84682b5940c1e84da0e3febabf59f157126a2b59407d6f78e68af7babfbd5708066b2b5940c061fdfa7cefbabfed65db696b2b59402b306475abe7babf5245f12a6b2b59406e22e9899ddfbabfedde40376a2b5940ed20c033ebd6babfc54ec296682b594084a7469edacfbabf96010c70662b5940f0f1ae1f07cababfa3b899c0632b59406e6b0bcf4bc5babfabe001af602b59408819750877c2babf53bb15785d2b59409e67a2be1bc1babfd2d160095a2b5940d7f6764b72c0babf57bf886c562b59404e0e9f7422c1babfa0c211a4522b594030c676ad73c2babf8aa658da4e2b59402e24bb2decc4babfb0743e3c4b2b594065cf543ebac7babf58c51b99472b59400f15996f33cbbabf4e0f6503442b59404ed76e168acfbabf80153b75402b5940ff756eda8cd3babfff428f183d2b59404214820b68d8babfa1bc8fa3392b5940aded3724ffddbabf61ab5f44362b594018096d3997e2babfb6700ff8322b5940eb47d455cbe7babf2f9974a52f2b5940f7b64f7dd6ebbabf2511d0332c2b59400426cba4e1efbabf80db6edd282b594053fa53f4d1f3babf434e0416252b5940e01136b884aebabf, '2023-12-21 20:40:13', '2023-12-21 20:40:13'),
-('A18', '2', 'Air Terjun Sarasah Aie Luluih', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, NULL, NULL, 'Air terjun Sarasah Bunta merupakan air terjun alami yang terbentuk akibat patahan ', '', -0.10811163, 100.67513731, 0xe6100000010300000001000000050000009ab01e73352b59400fd12a2b34adbbbf4f3a36a7372b59400fd12a2b34adbbbf4f3a36a7372b5940e67d56781bc4bbbf9ab01e73352b5940e67d56781bc4bbbf9ab01e73352b59400fd12a2b34adbbbf, '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
-('A19', '2', 'Harau Sky Dream World', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '09:00:00', '17:00:00', 30000, 'Harau Sky', '081212229832', 'Wisata Harau Sky Dream World menyuguhkan wahana waterpark, kemudian spot foto dream land, spot mini world di negeri air Venezia dan Swiss. Selain itu,  juga ada Lounge Sunset Wonderland Harau atau ruang santai untuk melihat keindahan sunset dengan view Lembah Harau.', '', -0.10369996, 100.66563991, 0xe610000001030000000100000011000000311723d8992a5940f5e7cba0148cbabf8743c2399b2a594074939c3cfa99babf2008f3cb9e2a5940e7340bb43ba4babf41182e61a32a5940e6a617c627aebabf9eaffe74a82a5940ea549ee51eb7babf48b6042aad2a59404f519a722abebabf1637c9eab12a59409d83674293c4babf3771cd78b62a5940e797778b76cbbabf2fe708cfba2a59406f34db70b3d3babf872062debe2a594069caa9f81addbabf2668dd50c22a594086a11f5734e7babf065acbaec52a59400a20c6b5ebefbabfd5e0c7e2c82a594084c8337914f8babf38e27fe1cb2a59403e59315c1d00bbbf4fa5b09cce2a5940311a434afd06bbbf2af16f86d12a59409af27c618d0ebbbf311723d8992a5940f5e7cba0148cbabf, '2023-12-22 04:49:58', '2023-12-22 04:49:58');
+('A14', '2', 'Air Terjun Sarasah Bunta', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, NULL, NULL, 'Air terjun Sarasah Bunta merupakan air terjun alami yang terbentuk akibat patahan ', 'A4-V.mp4', '-0.10859590', '100.67764144', 0xe610000001030000000100000006000000b8cd337a5e2b5940baccfadef0ccbbbf3be9d89c5e2b5940d0dbaf6d17bbbbbf470ac09a5e2b5940a82bc864abaabbbf27c286a7572b5940f4d7af645cabbbbf5a8184d5562b5940b1d018f730c5bbbfb8cd337a5e2b5940baccfadef0ccbbbf, '2023-11-26 09:19:36', '2023-12-22 04:38:25'),
+('A15', '2', 'Panorama Aka Barayun', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, NULL, NULL, 'Panorama Aka Barayun merupakan objek wisata dengan daya tarik air terjun dan tebing lembah harau yang ditumbuhi oleh tumbuhan merambat.', '', '-0.10107162', '100.66675139', 0xe61000000103000000010000000600000034a7050eac2a594046287466d4dfb9bf6790cc34ab2a59403bce44438cf8b9bf0e67026eab2a5940e0ca23c9bd0ababf66c71da1ac2a594015634ff16e1bbabf9c9d561bad2a59403c56dfafb8eeb9bf34a7050eac2a594046287466d4dfb9bf, '2023-11-26 09:26:07', '2023-12-22 04:31:35'),
+('A16', '2', 'Harau Dream Park', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '09:00:00', '17:00:00', 30000, 'Kampuang Sarosah', '081360813344', 'Harau Dream Park merupakan tempat wisata hits di Sumatera Barat yang dilengkapi dengan replika ikon sejumlah negara di dunia. Objek-objek wisata yang terdapat pada Kampuang Sarosah yaitu Kampung Eropa,  Kampuang Korea, Kampung Jepang dan Kampung Sarosah', '', '-0.11329513', '100.66964846', 0xe61000000103000000010000002a00000013e13685db2a5940be6425dee800bdbf4c99e5fcde2a5940a4efc1adb308bdbf5d4cf931e22a5940a594a510a717bdbfa2e9b2b9e62a59401372103a0921bdbfa1fa202eed2a5940b569cfd9c025bdbfafae4cf0f42a59402b61960bcf2abdbf7beea941fd2a5940474cbb5ebb30bdbf72de62f2042b5940b0206a2e7934bdbfb57691f80b2b5940c62a4aae0738bdbf20d79f27122b5940cf294c08eb39bdbf05fcf93a192b5940dd342a2e963bbdbf0a915f81202b5940773340f5513ebdbfce18492f282b594044c0847e6442bdbf5339b37e2f2b59406eb2fcaf2946bdbfe761d310362b59401b6f6568c049bdbfba17f3ce3c2b5940f131f546ef4cbdbffe8c3d41432b59401102d1176b4dbdbf4c112a82492b5940c26e758c6d4abdbf42226de34f2b5940f21850359b43bdbfbc5983f7552b594083f30c8e503bbdbf01ffced55a2b5940cff197370333bdbfd63a71395e2b594024f1f274ae28bdbfc350e2ce602b59403e97461f351ebdbf92674de2622b5940fc7a74d99e0fbdbf67cb5e5b642b59406db30ccc65febcbf6d5a84bd642b594024c44b265de9bcbf974ffb52642b594087a5a22dbed3bcbf927e56f4622b5940de731e1d70c0bcbf8dc756e1602b5940cae6a20846b1bcbffffe39715e2b594002be3676e4a3bcbf6c4bd3565b2b5940b66fa422049abcbf8626e4de572b59408884ade13b94bcbfb7a283e4532b5940ea96fcd33693bcbfcb7b41b04f2b594004a1061dbe96bcbfbc7e1c284b2b5940ecc6b3b21a9ebcbf416fe0c4462b59404c38b2fa3ca9bcbf97f2107c422b5940b42506dc4eb6bcbf2d93e1783e2b5940f19b679192c3bcbfdcba9ba73a2b59400cace3f8a1d2bcbf3d450e11372b5940f08b4b55dae2bcbfecc8ec87332b5940fca65599cef3bcbf13e13685db2a5940be6425dee800bdbf, '2023-11-26 09:27:54', '2023-12-22 04:23:38'),
+('A17', '1', 'Geopark Lembah Harau', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, 'Edo', '081261499095', 'Geopark Lembah Harau dikenal karena beragam formasi batuan yang unik. Situs geologi di kawasan ini memberikan pandangan yang menarik tentang sejarah geologi dan proses alam yang terjadi selama jutaan tahun.<br><br> Kawasan geopark ini ditandai oleh tebing-tebing curam yang mengelilingi lembah, menciptakan pemandangan spektakuler. Keberadaan tebing yang tinggi dan terjal memberikan sentuhan dramatis pada lanskap alam.<br><br> Ketinggian tebing batu pada Geopark Lembah Harau berkisar antara 30m - 100m. Batuan pada tebing merupakan perselingan konglomerat dan batupasir dengan ketinggian ± 100 meter termasuk ke dalam formasi <i>Brani</i> berumur <i>Oligosen (34-23 juta tahun lalu)</i> serta mencirikan endapan fluvial dari sungai purba.<br><br> Terbentuknya lembah harau dikarenakan adanya patahan turun atau block yang turun membentuk lembah yang cukup luas dan datar. Salah satu tanda-tanda atau untuk melihat dimana lokasi patahannya adalah dengan adanya air terjun. Dengan begitu, dapat disimpulkan bahwa dahulu ada sungai yang kemudian terpotong akibat adanya patahan turun, sehingga membentuk air terjun. ', 'geopark_lembah_harau.mp4', '-0.10422544', '100.67413855', 0xe61000000103000000010000002f000000434e0416252b5940e01136b884aebabf1bb73de6282b59404f3dd2e0b6b6babfa22f18b72c2b5940e26def6481c0babf8294336f302b5940ceb0074955c9babf8ceb2983342b5940869f49acd6d3babf07fb65e6382b59409a1c88765fdfbabfd54d18833d2b5940ce1ced139beababf26dea6e4412b594090c4268d2cf4babf4d6551d8452b594043fc68ddabfbbabfbd564277492b594075e789e76c01bbbf5ce3d81f4d2b5940c8f610436106bbbfcb619c64502b5940739b15f6590abbbffff5c07d532b5940a02ef76e980dbbbf6f18607a562b5940b598e9a8b40fbbbf79d1b249592b59402c0fd253e410bbbf4e5d9e735c2b59400e68e90ab611bbbf52e3ef285f2b5940dbb5ce09eb10bbbf21e0b5f0612b5940b1fe2a1b310ebbbf02a72d64642b59409e95b4e21b0abbbf905841c2662b5940b06e6182bf04bbbffad74d84682b5940c1e84da0e3febabf59f157126a2b59407d6f78e68af7babfbd5708066b2b5940c061fdfa7cefbabfed65db696b2b59402b306475abe7babf5245f12a6b2b59406e22e9899ddfbabfedde40376a2b5940ed20c033ebd6babfc54ec296682b594084a7469edacfbabf96010c70662b5940f0f1ae1f07cababfa3b899c0632b59406e6b0bcf4bc5babfabe001af602b59408819750877c2babf53bb15785d2b59409e67a2be1bc1babfd2d160095a2b5940d7f6764b72c0babf57bf886c562b59404e0e9f7422c1babfa0c211a4522b594030c676ad73c2babf8aa658da4e2b59402e24bb2decc4babfb0743e3c4b2b594065cf543ebac7babf58c51b99472b59400f15996f33cbbabf4e0f6503442b59404ed76e168acfbabf80153b75402b5940ff756eda8cd3babfff428f183d2b59404214820b68d8babfa1bc8fa3392b5940aded3724ffddbabf61ab5f44362b594018096d3997e2babfb6700ff8322b5940eb47d455cbe7babf2f9974a52f2b5940f7b64f7dd6ebbabf2511d0332c2b59400426cba4e1efbabf80db6edd282b594053fa53f4d1f3babf434e0416252b5940e01136b884aebabf, '2023-12-21 20:40:13', '2023-12-21 20:40:13'),
+('A18', '2', 'Air Terjun Sarasah Aie Luluih', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '00:00:00', '23:59:00', 0, NULL, NULL, 'Air terjun Sarasah Bunta merupakan air terjun alami yang terbentuk akibat patahan ', '', '-0.10811163', '100.67513731', 0xe6100000010300000001000000050000009ab01e73352b59400fd12a2b34adbbbf4f3a36a7372b59400fd12a2b34adbbbf4f3a36a7372b5940e67d56781bc4bbbf9ab01e73352b5940e67d56781bc4bbbf9ab01e73352b59400fd12a2b34adbbbf, '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
+('A19', '2', 'Harau Sky Dream World', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia,', '09:00:00', '17:00:00', 30000, 'Harau Sky', '081212229832', 'Wisata Harau Sky Dream World menyuguhkan wahana waterpark, kemudian spot foto dream land, spot mini world di negeri air Venezia dan Swiss. Selain itu,  juga ada Lounge Sunset Wonderland Harau atau ruang santai untuk melihat keindahan sunset dengan view Lembah Harau.', '', '-0.10369996', '100.66563991', 0xe610000001030000000100000011000000311723d8992a5940f5e7cba0148cbabf8743c2399b2a594074939c3cfa99babf2008f3cb9e2a5940e7340bb43ba4babf41182e61a32a5940e6a617c627aebabf9eaffe74a82a5940ea549ee51eb7babf48b6042aad2a59404f519a722abebabf1637c9eab12a59409d83674293c4babf3771cd78b62a5940e797778b76cbbabf2fe708cfba2a59406f34db70b3d3babf872062debe2a594069caa9f81addbabf2668dd50c22a594086a11f5734e7babf065acbaec52a59400a20c6b5ebefbabfd5e0c7e2c82a594084c8337914f8babf38e27fe1cb2a59403e59315c1d00bbbf4fa5b09cce2a5940311a434afd06bbbf2af16f86d12a59409af27c618d0ebbbf311723d8992a5940f5e7cba0148cbabf, '2023-12-22 04:49:58', '2023-12-22 04:49:58');
 
 -- --------------------------------------------------------
 
@@ -86,7 +87,7 @@ INSERT INTO `attraction` (`id`, `attraction_category`, `name`, `address`, `open`
 
 CREATE TABLE `attraction_category` (
   `id` varchar(2) NOT NULL,
-  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `name` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -104,7 +105,7 @@ INSERT INTO `attraction_category` (`id`, `name`) VALUES
 --
 
 CREATE TABLE `attraction_facility` (
-  `id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `id` varchar(3) NOT NULL,
   `name` varchar(25) NOT NULL,
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NOT NULL
@@ -125,11 +126,26 @@ INSERT INTO `attraction_facility` (`id`, `name`, `created_at`, `updated_at`) VAL
 --
 
 CREATE TABLE `attraction_facility_detail` (
-  `attraction_id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `attraction_facility_id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `attraction_id` varchar(3) NOT NULL,
+  `attraction_facility_id` varchar(3) NOT NULL,
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `attraction_facility_detail`
+--
+
+INSERT INTO `attraction_facility_detail` (`attraction_id`, `attraction_facility_id`, `created_at`, `updated_at`) VALUES
+('A14', '01', '2023-12-22 04:38:25', '2023-12-22 04:38:25'),
+('A14', '02', '2023-12-22 04:38:25', '2023-12-22 04:38:25'),
+('A15', '01', '2023-12-22 04:31:35', '2023-12-22 04:31:35'),
+('A15', '02', '2023-12-22 04:31:35', '2023-12-22 04:31:35'),
+('A16', '01', '2023-12-22 04:23:38', '2023-12-22 04:23:38'),
+('A18', '01', '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
+('A18', '02', '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
+('A19', '01', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('A19', '02', '2023-12-22 04:49:58', '2023-12-22 04:49:58');
 
 -- --------------------------------------------------------
 
@@ -138,12 +154,66 @@ CREATE TABLE `attraction_facility_detail` (
 --
 
 CREATE TABLE `attraction_gallery` (
-  `id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `attraction_id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `id` varchar(3) NOT NULL,
+  `attraction_id` varchar(3) NOT NULL,
   `url` text NOT NULL,
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `attraction_gallery`
+--
+
+INSERT INTO `attraction_gallery` (`id`, `attraction_id`, `url`, `created_at`, `updated_at`) VALUES
+('001', 'A16', 'A6-1.jpg', '2023-12-22 04:23:38', '2023-12-22 04:23:38'),
+('002', 'A16', 'A6-2.jpg', '2023-12-22 04:23:38', '2023-12-22 04:23:38'),
+('003', 'A16', 'A6-3.jpg', '2023-12-22 04:23:38', '2023-12-22 04:23:38'),
+('006', 'A15', 'A5-1.jpg', '2023-12-22 04:31:35', '2023-12-22 04:31:35'),
+('007', 'A15', 'A5-2.jpg', '2023-12-22 04:31:35', '2023-12-22 04:31:35'),
+('008', 'A15', 'A5-3.jpg', '2023-12-22 04:31:35', '2023-12-22 04:31:35'),
+('009', 'A14', 'A4-1.jpg', '2023-12-22 04:38:25', '2023-12-22 04:38:25'),
+('010', 'A14', 'A4-2.jpg', '2023-12-22 04:38:25', '2023-12-22 04:38:25'),
+('011', 'A18', 'A8-1.jpg', '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
+('012', 'A18', 'A8-2.jpg', '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
+('013', 'A18', 'A8-3.jpg', '2023-12-22 04:41:50', '2023-12-22 04:41:50'),
+('014', 'A19', 'A9-1.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('015', 'A19', 'A9-2.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('016', 'A17', 'A7-1.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('017', 'A17', 'A7-2.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('018', 'A17', 'A7-3.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('019', 'A17', 'A7-4.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('020', 'A17', 'A7-5.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('021', 'A14', 'A4-3.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58'),
+('022', 'A19', 'A9-3.jpg', '2023-12-22 04:49:58', '2023-12-22 04:49:58');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `attraction_ticket_price`
+--
+
+CREATE TABLE `attraction_ticket_price` (
+  `id` varchar(2) NOT NULL,
+  `attraction_id` varchar(2) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `price` int(10) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Dumping data for table `attraction_ticket_price`
+--
+
+INSERT INTO `attraction_ticket_price` (`id`, `attraction_id`, `name`, `price`, `created_at`, `updated_at`) VALUES
+('01', 'A6', 'Kampuang Sarosah', 5000, '2023-11-30 19:00:34', '2023-11-30 19:00:34'),
+('02', 'A6', 'Asian Heritage', 20000, '2023-11-30 19:01:02', '2023-11-30 19:01:02'),
+('03', 'A6', 'Kampung Eropa', 20000, '2023-11-30 19:01:24', '2023-11-30 19:01:24'),
+('04', 'A6', 'Secret Garden', 15000, '2023-11-30 19:01:41', '2023-11-30 19:01:41'),
+('05', 'A6', 'Paket Terusan', 40000, '2023-11-30 19:02:37', '2023-11-30 19:02:37'),
+('06', 'A9', 'Tiket Masuk Pengunjung ', 35000, '2024-01-11 14:15:23', '2024-01-11 14:15:23'),
+('07', 'A9', 'Tiket Masuk Anak Usia 2 Tahun ke Bawah', 0, '2024-01-11 14:17:11', '2024-01-11 14:17:11');
 
 -- --------------------------------------------------------
 
@@ -152,12 +222,12 @@ CREATE TABLE `attraction_gallery` (
 --
 
 CREATE TABLE `auth_activation_attempts` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `ip_address` varchar(255) NOT NULL,
   `user_agent` varchar(255) NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- --------------------------------------------------------
 
@@ -166,10 +236,10 @@ CREATE TABLE `auth_activation_attempts` (
 --
 
 CREATE TABLE `auth_groups` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `auth_groups`
@@ -187,9 +257,9 @@ INSERT INTO `auth_groups` (`id`, `name`, `description`) VALUES
 --
 
 CREATE TABLE `auth_groups_permissions` (
-  `group_id` int UNSIGNED NOT NULL DEFAULT '0',
-  `permission_id` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `permission_id` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- --------------------------------------------------------
 
@@ -198,9 +268,9 @@ CREATE TABLE `auth_groups_permissions` (
 --
 
 CREATE TABLE `auth_groups_users` (
-  `group_id` int UNSIGNED NOT NULL DEFAULT '0',
-  `user_id` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `group_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `auth_groups_users`
@@ -217,6 +287,7 @@ INSERT INTO `auth_groups_users` (`group_id`, `user_id`) VALUES
 (1, 32),
 (1, 48),
 (1, 49),
+(1, 50),
 (2, 9),
 (2, 13),
 (2, 14),
@@ -233,7 +304,9 @@ INSERT INTO `auth_groups_users` (`group_id`, `user_id`) VALUES
 (2, 25),
 (2, 29),
 (3, 7),
-(3, 7);
+(3, 7),
+(3, 8),
+(3, 8);
 
 -- --------------------------------------------------------
 
@@ -242,13 +315,13 @@ INSERT INTO `auth_groups_users` (`group_id`, `user_id`) VALUES
 --
 
 CREATE TABLE `auth_logins` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `ip_address` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
-  `user_id` int UNSIGNED DEFAULT NULL,
+  `user_id` int(10) UNSIGNED DEFAULT NULL,
   `date` datetime NOT NULL,
   `success` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `auth_logins`
@@ -1079,7 +1152,88 @@ INSERT INTO `auth_logins` (`id`, `ip_address`, `email`, `user_id`, `date`, `succ
 (821, '::1', 'nightbaron.369@gmail.com', 48, '2025-07-26 02:24:56', 1),
 (822, '::1', 'lukmanjunedd@gmail.com', 49, '2025-07-26 02:25:36', 1),
 (823, '::1', 'lukmanjunedd@gmail.com', 49, '2025-07-29 00:40:16', 1),
-(824, '::1', 'nightbaron.369@gmail.com', 48, '2025-11-23 00:09:33', 1);
+(824, '::1', 'nightbaron.369@gmail.com', 48, '2025-11-23 00:09:33', 1),
+(825, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-04 06:23:32', 1),
+(826, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-04 22:13:04', 1),
+(827, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-05 04:53:12', 1),
+(828, '::1', 'homestayharausyafiq', NULL, '2025-12-05 04:57:47', 0),
+(829, '::1', 'homestayharausyafiq', NULL, '2025-12-05 04:58:09', 0),
+(830, '::1', 'homestayharausyafiq@gmail.com', 9, '2025-12-05 04:59:23', 1),
+(831, '::1', 'homestayharausyafiq@gmail.com', 9, '2025-12-15 01:01:57', 1),
+(832, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-15 01:03:03', 1),
+(833, '::1', 'homestayharausyafiq@gmail.com', 9, '2025-12-15 01:04:06', 1),
+(834, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-15 02:23:41', 1),
+(835, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-16 05:29:03', 1),
+(836, '::1', 'homestayharausyafiq@gmail.com', 9, '2025-12-16 05:30:08', 1),
+(837, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-16 05:30:40', 1),
+(838, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-30 04:29:11', 1),
+(839, '::1', 'homestayharausyafiq@gmail.com', 9, '2025-12-30 04:31:29', 1),
+(840, '::1', 'nightbaron.369@gmail.com', 48, '2025-12-30 04:32:05', 1),
+(841, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-04 20:44:11', 1),
+(842, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 04:25:39', 1),
+(843, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-08 04:28:08', 1),
+(844, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 04:28:56', 1),
+(845, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-08 05:51:44', 1),
+(846, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 05:52:16', 1),
+(847, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-08 06:53:07', 1),
+(848, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 06:53:27', 1),
+(849, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-08 08:07:14', 1),
+(850, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 08:08:05', 1),
+(851, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-08 08:08:40', 1),
+(852, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 08:09:54', 1),
+(853, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-08 08:12:00', 1),
+(854, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 08:14:25', 1),
+(855, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 08:36:03', 1),
+(856, '::1', 'nightbaron.369@gmail.com', 48, '2026-01-08 08:45:14', 1),
+(857, '::1', 'dragon4feast@gmail.com', 50, '2026-01-11 23:06:15', 0),
+(858, '::1', 'dragon4feast@gmail.com', NULL, '2026-01-11 23:15:25', 0),
+(859, '::1', 'dragon4feast@gmail.com', NULL, '2026-01-11 23:15:30', 0),
+(860, '::1', 'dragon4feast@gmail.com', 50, '2026-01-11 23:15:33', 1),
+(861, '::1', 'dragon4feast@gmail.com', 50, '2026-01-11 23:37:21', 1),
+(862, '::1', 'dragon4feast@gmail.com', 50, '2026-01-12 00:07:37', 1),
+(863, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-12 00:08:18', 1),
+(864, '::1', 'dragon4feast@gmail.com', 50, '2026-01-12 00:08:26', 1),
+(865, '::1', 'dragon4feast@gmail.com', 50, '2026-01-12 23:44:20', 1),
+(866, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-14 04:28:45', 1),
+(867, '::1', 'dragon4feast@gmail.com', 50, '2026-01-14 04:31:21', 1),
+(868, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-01-14 04:31:52', 1),
+(869, '::1', 'dragon4feast@gmail.com', 50, '2026-01-14 04:32:06', 1),
+(870, '::1', 'dragon4feast@gmail.com', 50, '2026-01-20 23:44:41', 1),
+(871, '::1', 'dragon4feast@gmail.com', 50, '2026-01-26 00:28:24', 1),
+(872, '::1', 'dragon4feast@gmail.com', 50, '2026-01-26 22:57:15', 1),
+(873, '::1', 'dragon4feast@gmail.com', 50, '2026-01-27 06:47:58', 1),
+(874, '::1', 'dragon4feast@gmail.com', NULL, '2026-02-12 04:54:16', 0),
+(875, '::1', 'dragon4feast@gmail.com', 50, '2026-02-12 04:54:21', 1),
+(876, '::1', 'dragon4feast@gmail.com', NULL, '2026-02-13 03:25:17', 0),
+(877, '::1', 'dragon4feast@gmail.com', 50, '2026-02-13 03:25:22', 1),
+(878, '::1', 'nightbaron.369@gmail.com', 48, '2026-05-27 01:43:18', 1),
+(879, '::1', 'homestayharausyafiq@gmail.com', 9, '2026-05-27 01:47:38', 1),
+(880, '::1', 'dragon4feast@gmail.com', NULL, '2026-05-27 01:48:04', 0),
+(881, '::1', 'dragon4feast@gmail.com', 50, '2026-05-27 01:48:09', 1),
+(882, '::1', 'dragon4feast@gmail.com', 50, '2026-05-27 01:48:24', 1),
+(883, '114.10.95.40', 'nightbaron.369@gmail.com', 48, '2026-06-14 09:17:30', 1),
+(884, '114.10.95.40', 'accadmin1', NULL, '2026-06-14 09:43:14', 0),
+(885, '114.10.95.40', 'accadmin1', NULL, '2026-06-14 09:43:23', 0),
+(886, '114.10.95.40', 'nightbaron.369@gmail.com', 48, '2026-06-14 09:58:54', 1),
+(887, '114.10.95.14', 'nightbaron.369@gmail.com', 48, '2026-06-17 23:31:21', 1),
+(888, '114.10.94.175', 'dragon4feast@gmail.com', NULL, '2026-07-13 03:52:09', 0),
+(889, '114.10.94.175', 'dragon4feast@gmail.com', NULL, '2026-07-13 03:54:35', 0),
+(890, '114.10.94.175', 'dragon4feast@gmail.com', NULL, '2026-07-13 03:55:04', 0),
+(891, '114.10.94.175', 'dragon4feast@gmail.com', NULL, '2026-07-13 03:55:15', 0),
+(892, '114.10.94.175', 'dragon4feast@gmail.com', 50, '2026-07-13 03:55:26', 1),
+(893, '114.10.94.175', 'homestayharausyafiqaccount', NULL, '2026-07-13 03:59:36', 0),
+(894, '114.10.94.175', 'homestayharausyafiq@gmail.com', 9, '2026-07-13 03:59:52', 1),
+(895, '114.10.94.175', 'pokdarwispariangan1@gmail.com', NULL, '2026-07-13 04:10:24', 0),
+(896, '114.10.94.175', 'accadmin1@email.com', NULL, '2026-07-13 04:11:04', 0),
+(897, '114.10.94.175', 'accadmin1@email.com', 8, '2026-07-13 04:13:06', 1),
+(898, '114.10.94.175', 'accadmin1@email.com', 8, '2026-07-13 04:18:39', 1),
+(899, '114.10.94.175', 'dragon4feast@gmail.com', 50, '2026-07-13 22:30:07', 1),
+(900, '114.10.94.175', 'homestayharausyafiq@gmail.com', 9, '2026-07-13 22:30:47', 1),
+(901, '114.10.94.175', 'homestayharausyafiq@gmail.com', 9, '2026-07-14 02:42:50', 1),
+(902, '114.10.94.238', 'homestayharausyafiq@gmail.com', 9, '2026-07-14 21:18:07', 1),
+(903, '114.10.94.238', 'dragon4feast@gmail.com', 50, '2026-07-14 21:35:59', 1),
+(904, '114.10.94.175', 'nightbaron.369@gmail.com', 48, '2026-07-15 03:18:54', 1),
+(905, '114.10.94.175', 'dragon4feast@gmail.com', 50, '2026-07-15 03:21:24', 1);
 
 -- --------------------------------------------------------
 
@@ -1088,10 +1242,10 @@ INSERT INTO `auth_logins` (`id`, `ip_address`, `email`, `user_id`, `date`, `succ
 --
 
 CREATE TABLE `auth_permissions` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1100,13 +1254,13 @@ CREATE TABLE `auth_permissions` (
 --
 
 CREATE TABLE `auth_reset_attempts` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `email` varchar(255) NOT NULL,
   `ip_address` varchar(255) NOT NULL,
   `user_agent` varchar(255) NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1115,12 +1269,12 @@ CREATE TABLE `auth_reset_attempts` (
 --
 
 CREATE TABLE `auth_tokens` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `selector` varchar(255) NOT NULL,
   `hashedValidator` varchar(255) NOT NULL,
-  `user_id` int UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
   `expires` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1129,9 +1283,9 @@ CREATE TABLE `auth_tokens` (
 --
 
 CREATE TABLE `auth_users_permissions` (
-  `user_id` int UNSIGNED NOT NULL DEFAULT '0',
-  `permission_id` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `permission_id` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1143,7 +1297,7 @@ CREATE TABLE `city` (
   `id` varchar(3) NOT NULL,
   `name` varchar(35) NOT NULL,
   `geom` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `city`
@@ -1180,7 +1334,7 @@ CREATE TABLE `country` (
   `id` varchar(3) NOT NULL,
   `name` varchar(25) NOT NULL,
   `geom` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `country`
@@ -1199,47 +1353,41 @@ INSERT INTO `country` (`id`, `name`, `geom`) VALUES
 --
 
 CREATE TABLE `culinary_place` (
-  `id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `id` varchar(3) NOT NULL,
   `village_id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `name` varchar(50) NOT NULL,
   `address` varchar(100) DEFAULT NULL,
-  `employee_name` varchar(25) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `phone` varchar(13) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `employee_name` varchar(25) DEFAULT NULL,
+  `phone` varchar(13) DEFAULT NULL,
   `open` time DEFAULT NULL,
   `close` time DEFAULT NULL,
   `geom` geometry DEFAULT NULL,
   `lat` decimal(10,8) NOT NULL,
   `lng` decimal(11,8) NOT NULL,
-  `description` text,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `culinary_place`
 --
 
 INSERT INTO `culinary_place` (`id`, `village_id`, `name`, `address`, `employee_name`, `phone`, `open`, `close`, `geom`, `lat`, `lng`, `description`, `created_at`, `updated_at`) VALUES
-('C1', '1', 'Kawa Daun Tanjuang Indah', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Putra', '082284978004', '09:00:00', '22:00:00', 0xe61000000103000000010000000600000042504c54fe1e5940c34e13d80286dcbf4350ac7bfe1e5940300ea234bf87dcbf44504c35ff1e59409e3268715f89dcbf43506ce6001f59408f995252e988dcbf42500c38001f5940fc6eaf18b485dcbf42504c54fe1e5940c34e13d80286dcbf, -0.44577259, 100.48435148, 'Kawa Daun Tanjung Indah is a charming traditional café offering a wide variety of food and beverages. Strategically located, this café provides breathtaking views, making it an ideal spot to relax and enjoy the scenery.', '2024-10-25 04:34:18', '2025-01-10 01:15:57'),
-('C11', NULL, 'Bintang Fajar', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Dewi', '081261884909', '12:00:00', '18:00:00', 0xe6100000010300000001000000050000007db664a6a52a5940be47b3767bc2babf7cb6446ba62a5940440584962cc4babf7cb604e7a62a59400446e196d5c0babf7cb64411a62a5940bc680d9740bfbabf7db664a6a52a5940be47b3767bc2babf, -0.10451833, 100.66639869, 'Bintang Fajar adalah tempat kuliner yang menghadirkan keajaiban rasa melalui kreasinya, yaitu Rakik Kacang. Ini bukan sekadar camilan, melainkan sebuah seni kuliner yang meramu kacang pilihan menjadi gurih dan renyah dengan sentuhan rahasia yang memikat lidah.', '2023-12-01 18:13:25', '2023-12-03 09:13:39'),
-('C12', NULL, 'Warung Yuniar', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Yuniar', '082267248766', '10:00:00', '18:00:00', 0xe610000001030000000100000005000000b161818ea12a59404a3a82f9e2e9b9bfb161410aa22a5940320dbef999e7b9bfb16141fca02a5940d568fef923e5b9bfb261c18ba02a5940f6d7b4f9f3e7b9bfb161818ea12a59404a3a82f9e2e9b9bf, -0.10118887, 100.66609454, NULL, '2023-12-01 18:29:02', '2023-12-01 18:29:02'),
-('C13', NULL, 'Bhumi Harau Cafe & Resto', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '19:00:00', '23:00:00', 0xe610000001030000000100000005000000b5d63fc46b2a5940c989df167062bebfb6d67f916d2a5940de7f05176261bebfb6d69fda6d2a594016eb3a160267bebfb6d67ffc6b2a5940ce131896f967bebfb5d63fc46b2a5940c989df167062bebf, -0.11872374, 100.66289125, NULL, '2023-12-02 05:33:23', '2023-12-02 06:14:54'),
-('C14', NULL, 'Nasi Kapau Josi', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '21:00:00', 0xe61000000103000000010000000500000015f95d376b2a594030b78ee9ac46bebf15f91d676c2a59408bd8a7e9f845bebf15f93db06c2a5940e922e868554bbebf15f91d866b2a5940351abc68904cbebf15f95d376b2a594030b78ee9ac46bebf, -0.11830548, 100.66283889, NULL, '2023-12-02 06:18:41', '2023-12-02 06:18:41'),
-('C15', NULL, 'Leven Coffe & Eatery', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '14:00:00', '22:00:00', 0xe6100000010300000001000000050000003759b3a5a12a594009b92ecdc5d2babf3759f364a22a5940f2d8aecd33cebabf37593335a12a5940f29dfdcd63cbbabf3659738ca02a594020aa78cd22d0babf3759b3a5a12a594009b92ecdc5d2babf, -0.10472231, 100.66610544, NULL, '2023-12-02 06:22:18', '2023-12-02 06:22:18'),
-('C16', NULL, 'Kedai 4s', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000005000000c4ace737382b5940da31c6ae33e5bbbfc4aca767392b5940458acbae06e5bbbfc4aca767392b5940d62826af09e2bbbfc3ac6721382b5940d62826af09e2bbbfc4ace737382b5940da31c6ae33e5bbbf, -0.10894195, 100.67533983, NULL, '2023-12-02 06:25:11', '2023-12-02 06:25:11'),
-('C17', NULL, 'Kedai Nasi Keyla', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe6100000010300000001000000050000007b3079a33d2b5940315af9817cedbbbf7c30f9213f2b59406f630982f5ecbbbf7b30b9e93e2b594072f4ae8282e7bbbf7b30b9813d2b59405df29e8209e8bbbf7b3079a33d2b5940315af9817cedbbbf, -0.10904691, 100.67567869, NULL, '2023-12-02 06:27:05', '2023-12-02 06:27:05'),
-('C18', NULL, 'Warung Kawa Daun Sarasah Aie Luluih', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000005000000af50f425382b594056f4ed7a2dc0bbbfaf50b428392b59401ab9c37a95c1bbbfaf5034e5382b59403cea697a92c4bbbfaf50f4cb372b59401de68e7a57c3bbbfaf50f425382b594056f4ed7a2dc0bbbf, -0.10843468, 100.67532213, NULL, '2023-12-02 06:30:53', '2023-12-02 06:30:53'),
-('C19', NULL, 'Warung Iyef', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000006000000e14399013a2b59402e0da94318c6bbbfe14399013a2b5940984d644361c8bbbfe043d9ed3a2b5940af97694334c8bbbfe043d9ed3a2b594050fcb0c3d4c5bbbfe14399013a2b59402e0da94318c6bbbfe14399013a2b59402e0da94318c6bbbf, -0.10850686, 100.67544358, NULL, '2023-12-02 07:32:48', '2023-12-02 07:33:08'),
-('C2', '1', 'Kawa Daun  Tanjuang Putuih', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Nasrudin', '081272053141', '09:00:00', '20:00:00', 0xe610000001030000000100000005000000e326fb26001f59402b10e9e49f85dcbfe2267bf1001f5940bd9e5f9eeb88dcbfe2261b32021f5940fb07073f9788dcbfe2263bd5021f5940d1c39026ca84dcbfe326fb26001f59402b10e9e49f85dcbf, -0.44573090, 100.48446610, 'Kawa Daun Tanjuang Putuih is a traditional café that offers a wide selection of food and beverages. Conveniently located, this café boasts stunning views, making it a perfect destination for relaxation and enjoyment.', '2024-10-25 04:38:34', '2025-01-10 01:16:29'),
-('C20', NULL, 'Nasi Ampera & Sate Zal', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000006000000848dd8cb402b5940ae0049b0abdfbbbf848dd8cb402b59409a1be9afd5e2bbbf858d58c3412b59406e70eeafa8e2bbbf848d18b8412b5940985a3eb005e0bbbf848dd8cb402b594063ae3b301ce0bbbf848dd8cb402b5940ae0049b0abdfbbbf, -0.10890583, 100.67585935, NULL, '2023-12-02 07:36:44', '2023-12-03 09:15:09'),
-('C21', NULL, 'Sarapan Pagi M.Upik', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '07:00:00', '18:00:00', 0xe61000000103000000010000000500000098ad45d8412b594047997c5ff4debbbf98ad45d8412b59405ebefc5e2ce3bbbf97adc5a2422b59403413025fffe2bbbf97ad8597422b594047997c5ff4debbbf98ad45d8412b594047997c5ff4debbbf, -0.10890295, 100.67591799, NULL, '2023-12-02 08:04:36', '2023-12-03 09:15:48'),
-('C22', NULL, 'Warung Uni Nita', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000005000000d934ff0b442b5940a5d7d09a4fe8bbbfda347f30452b5940b8d9e09ac8e7bbbfda34bf68452b59402cc4f59984efbbbfd9343f44442b5940c26bf099b1efbbbfd934ff0b442b5940a5d7d09a4fe8bbbf, -0.10906584, 100.67606983, NULL, '2023-12-02 08:06:30', '2023-12-03 09:16:40'),
-('C23', NULL, 'Kini Cheese Tea Sarbun', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '14:00:00', '20:00:00', 0xe61000000103000000010000000500000069e2adbb472b5940084496d790dfbbbf68e22dd2472b5940f25e36d7bae2bbbf68e22de0482b59409d0841d760e2bbbf67e26dbe482b59404936b6d782debbbf69e2adbb472b5940084496d790dfbbbf, -0.10889619, 100.67628811, NULL, '2023-12-02 08:08:34', '2023-12-03 09:17:36'),
-('C24', NULL, 'Yorafa Food & Drink', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe61000000103000000010000000500000067c15490442b5940274639d3a8f5bbbf66c1d4e1452b59408e5649d321f5bbbf67c114ed452b594069c89dd2c1fabbbf67c114df442b5940d60c93d21bfbbbbf67c15490442b5940274639d3a8f5bbbf, -0.10925477, 100.67610138, NULL, '2023-12-02 08:10:00', '2023-12-02 08:10:00'),
-('C3', '1', 'Kawa Daun A & F', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Masril', NULL, '10:00:00', '18:00:00', 0xe61000000103000000010000000900000022318b27041f59401db8000c1f85dcbf20318b46031f5940f1b5218b8f85dcbf21316bd0021f5940cf88a6c94e86dcbf21316bd0021f5940a4f083676287dcbf2131eb6d031f594033f98184e688dcbf2131eb2f051f59406d19d024bf88dcbf21312b0e051f59406c3aff28a386dcbf21312b87041f59402877596b7385dcbf22318b27041f59401db8000c1f85dcbf, -0.44574041, 100.48461918, 'Kawa Daun A & F is a traditional café offering a variety of food and beverages. The café also features an ampera dining area and showcases breathtaking views, making it an inviting spot for guests.', '2024-10-25 05:39:16', '2025-01-10 01:17:14'),
-('C4', '1', 'Kawa Daun Puncak Mortir', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Hesti', NULL, '10:00:00', '20:00:00', 0xe610000001030000000100000006000000824285b9011f5940346f4dad1081dcbf8142c52c031f594014ae4def0d80dcbf81426540041f5940a14221b1217fdcbf81424505051f5940db9e9b8fe67fdcbf8142a5e3021f5940b23a204aab82dcbf824285b9011f5940346f4dad1081dcbf, -0.44536745, 100.48458085, 'Kawa Daun Puncak Mortir is a traditional café that offers stunning views. The café serves a variety of food and beverages, making it a delightful place to unwind and enjoy the scenery.', '2024-10-25 05:51:32', '2025-01-10 01:17:45'),
-('C5', '1', 'Puncak Kawa Gudester', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Hana', '082283529664', '09:00:00', '20:00:00', 0xe6100000010300000001000000070000005d90c88b101f5940181d2855f496dcbf5e9068830f1f59405754f2af9199dcbf5e902867111f5940ca16d60c219bdcbf5d90886f121f594057ec3eafeb99dcbf5d90c8a7121f5940abc6bfb22998dcbf5d90e83c121f59407e5fdb559a96dcbf5d90c88b101f5940181d2855f496dcbf, -0.44683020, 100.48541775, 'Puncak Kawa Gudester is a traditional café offering a wide range of food and beverages. It also features breathtaking views, making it a perfect spot to relax and enjoy nature\'s beauty.', '2024-10-25 06:11:07', '2025-01-10 01:18:12'),
-('C6', '1', 'Sako Minang Cafe', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Zainul', '082122886454', '09:00:00', '18:00:00', 0xe61000000103000000010000000700000062582f14001f594036000374836cdcbf0086115f011f5940be25be27da6bdcbf008611e6011f5940417cad4bda69dcbfff85714b001f5940fefbb38e5068dcbfff859178fe1e594083abcbadc668dcbf0086119dff1e59402738c987d46bdcbf62582f14001f594036000374836cdcbf, -0.44399500, 100.48438628, 'Cafe ini menyediakan berbagai macam makanan dan minuman. Lokasi dari cafe ini diapit oleh pepohonan yang rimbun dan menyuguhi pemandangan yang indah.', '2024-10-25 06:16:41', '2024-10-25 06:16:41');
+('C11', '1', 'Bintang Fajar', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Dewi', '081261884909', '12:00:00', '18:00:00', 0xe6100000010300000001000000050000007db664a6a52a5940be47b3767bc2babf7cb6446ba62a5940440584962cc4babf7cb604e7a62a59400446e196d5c0babf7cb64411a62a5940bc680d9740bfbabf7db664a6a52a5940be47b3767bc2babf, '-0.10451833', '100.66639869', 'Bintang Fajar adalah tempat kuliner yang menghadirkan keajaiban rasa melalui kreasinya, yaitu Rakik Kacang. Ini bukan sekadar camilan, melainkan sebuah seni kuliner yang meramu kacang pilihan menjadi gurih dan renyah dengan sentuhan rahasia yang memikat lidah.', '2023-12-01 18:13:25', '2023-12-03 09:13:39'),
+('C12', '1', 'Warung Yuniar', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Yuniar', '082267248766', '10:00:00', '18:00:00', 0xe610000001030000000100000005000000b161818ea12a59404a3a82f9e2e9b9bfb161410aa22a5940320dbef999e7b9bfb16141fca02a5940d568fef923e5b9bfb261c18ba02a5940f6d7b4f9f3e7b9bfb161818ea12a59404a3a82f9e2e9b9bf, '-0.10118887', '100.66609454', NULL, '2023-12-01 18:29:02', '2023-12-01 18:29:02'),
+('C13', '1', 'Bhumi Harau Cafe & Resto', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '19:00:00', '23:00:00', 0xe610000001030000000100000005000000b5d63fc46b2a5940c989df167062bebfb6d67f916d2a5940de7f05176261bebfb6d69fda6d2a594016eb3a160267bebfb6d67ffc6b2a5940ce131896f967bebfb5d63fc46b2a5940c989df167062bebf, '-0.11872374', '100.66289125', NULL, '2023-12-02 05:33:23', '2023-12-02 06:14:54'),
+('C14', '1', 'Nasi Kapau Josi', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '21:00:00', 0xe61000000103000000010000000500000015f95d376b2a594030b78ee9ac46bebf15f91d676c2a59408bd8a7e9f845bebf15f93db06c2a5940e922e868554bbebf15f91d866b2a5940351abc68904cbebf15f95d376b2a594030b78ee9ac46bebf, '-0.11830548', '100.66283889', NULL, '2023-12-02 06:18:41', '2023-12-02 06:18:41'),
+('C15', '1', 'Leven Coffe & Eatery', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '14:00:00', '22:00:00', 0xe6100000010300000001000000050000003759b3a5a12a594009b92ecdc5d2babf3759f364a22a5940f2d8aecd33cebabf37593335a12a5940f29dfdcd63cbbabf3659738ca02a594020aa78cd22d0babf3759b3a5a12a594009b92ecdc5d2babf, '-0.10472231', '100.66610544', NULL, '2023-12-02 06:22:18', '2023-12-02 06:22:18'),
+('C16', '1', 'Kedai 4s', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000005000000c4ace737382b5940da31c6ae33e5bbbfc4aca767392b5940458acbae06e5bbbfc4aca767392b5940d62826af09e2bbbfc3ac6721382b5940d62826af09e2bbbfc4ace737382b5940da31c6ae33e5bbbf, '-0.10894195', '100.67533983', NULL, '2023-12-02 06:25:11', '2023-12-02 06:25:11'),
+('C17', '1', 'Kedai Nasi Keyla', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe6100000010300000001000000050000007b3079a33d2b5940315af9817cedbbbf7c30f9213f2b59406f630982f5ecbbbf7b30b9e93e2b594072f4ae8282e7bbbf7b30b9813d2b59405df29e8209e8bbbf7b3079a33d2b5940315af9817cedbbbf, '-0.10904691', '100.67567869', NULL, '2023-12-02 06:27:05', '2023-12-02 06:27:05'),
+('C18', '1', 'Warung Kawa Daun Sarasah Aie Luluih', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000005000000af50f425382b594056f4ed7a2dc0bbbfaf50b428392b59401ab9c37a95c1bbbfaf5034e5382b59403cea697a92c4bbbfaf50f4cb372b59401de68e7a57c3bbbfaf50f425382b594056f4ed7a2dc0bbbf, '-0.10843468', '100.67532213', NULL, '2023-12-02 06:30:53', '2023-12-02 06:30:53'),
+('C19', '1', 'Warung Iyef', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000006000000e14399013a2b59402e0da94318c6bbbfe14399013a2b5940984d644361c8bbbfe043d9ed3a2b5940af97694334c8bbbfe043d9ed3a2b594050fcb0c3d4c5bbbfe14399013a2b59402e0da94318c6bbbfe14399013a2b59402e0da94318c6bbbf, '-0.10850686', '100.67544358', NULL, '2023-12-02 07:32:48', '2023-12-02 07:33:08'),
+('C20', '1', 'Nasi Ampera & Sate Zal', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000006000000848dd8cb402b5940ae0049b0abdfbbbf848dd8cb402b59409a1be9afd5e2bbbf858d58c3412b59406e70eeafa8e2bbbf848d18b8412b5940985a3eb005e0bbbf848dd8cb402b594063ae3b301ce0bbbf848dd8cb402b5940ae0049b0abdfbbbf, '-0.10890583', '100.67585935', NULL, '2023-12-02 07:36:44', '2023-12-03 09:15:09'),
+('C21', '1', 'Sarapan Pagi M.Upik', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '07:00:00', '18:00:00', 0xe61000000103000000010000000500000098ad45d8412b594047997c5ff4debbbf98ad45d8412b59405ebefc5e2ce3bbbf97adc5a2422b59403413025fffe2bbbf97ad8597422b594047997c5ff4debbbf98ad45d8412b594047997c5ff4debbbf, '-0.10890295', '100.67591799', NULL, '2023-12-02 08:04:36', '2023-12-03 09:15:48'),
+('C22', '1', 'Warung Uni Nita', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe610000001030000000100000005000000d934ff0b442b5940a5d7d09a4fe8bbbfda347f30452b5940b8d9e09ac8e7bbbfda34bf68452b59402cc4f59984efbbbfd9343f44442b5940c26bf099b1efbbbfd934ff0b442b5940a5d7d09a4fe8bbbf, '-0.10906584', '100.67606983', NULL, '2023-12-02 08:06:30', '2023-12-03 09:16:40'),
+('C23', '1', 'Kini Cheese Tea Sarbun', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '14:00:00', '20:00:00', 0xe61000000103000000010000000500000069e2adbb472b5940084496d790dfbbbf68e22dd2472b5940f25e36d7bae2bbbf68e22de0482b59409d0841d760e2bbbf67e26dbe482b59404936b6d782debbbf69e2adbb472b5940084496d790dfbbbf, '-0.10889619', '100.67628811', NULL, '2023-12-02 08:08:34', '2023-12-03 09:17:36'),
+('C24', '1', 'Yorafa Food & Drink', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, '10:00:00', '18:00:00', 0xe61000000103000000010000000500000067c15490442b5940274639d3a8f5bbbf66c1d4e1452b59408e5649d321f5bbbf67c114ed452b594069c89dd2c1fabbbf67c114df442b5940d60c93d21bfbbbbf67c15490442b5940274639d3a8f5bbbf, '-0.10925477', '100.67610138', NULL, '2023-12-02 08:10:00', '2023-12-02 08:10:00');
 
 -- --------------------------------------------------------
 
@@ -1270,8 +1418,8 @@ INSERT INTO `culinary_place_facility` (`id`, `name`, `created_at`, `updated_at`)
 --
 
 CREATE TABLE `culinary_place_facility_detail` (
-  `culinary_place_id` varchar(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `culinary_place_facility_id` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `culinary_place_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `culinary_place_facility_id` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -1279,21 +1427,48 @@ CREATE TABLE `culinary_place_facility_detail` (
 --
 
 INSERT INTO `culinary_place_facility_detail` (`culinary_place_id`, `culinary_place_facility_id`) VALUES
-('C1', '01'),
-('C2', '01'),
-('C3', '01'),
-('C4', '01'),
-('C5', '01'),
-('C1', '02'),
-('C2', '02'),
-('C3', '02'),
-('C4', '02'),
-('C5', '02'),
-('C1', '03'),
-('C2', '03'),
-('C3', '03'),
-('C4', '03'),
-('C5', '03');
+('C11', '01'),
+('C12', '01'),
+('C13', '01'),
+('C14', '01'),
+('C15', '01'),
+('C16', '01'),
+('C17', '01'),
+('C18', '01'),
+('C19', '01'),
+('C20', '01'),
+('C21', '01'),
+('C22', '01'),
+('C23', '01'),
+('C24', '01'),
+('C11', '02'),
+('C12', '02'),
+('C13', '02'),
+('C14', '02'),
+('C15', '02'),
+('C16', '02'),
+('C17', '02'),
+('C18', '02'),
+('C19', '02'),
+('C20', '02'),
+('C21', '02'),
+('C22', '02'),
+('C23', '02'),
+('C24', '02'),
+('C11', '03'),
+('C12', '03'),
+('C13', '03'),
+('C14', '03'),
+('C15', '03'),
+('C16', '03'),
+('C17', '03'),
+('C18', '03'),
+('C19', '03'),
+('C20', '03'),
+('C21', '03'),
+('C22', '03'),
+('C23', '03'),
+('C24', '03');
 
 -- --------------------------------------------------------
 
@@ -1302,30 +1477,33 @@ INSERT INTO `culinary_place_facility_detail` (`culinary_place_id`, `culinary_pla
 --
 
 CREATE TABLE `culinary_place_gallery` (
-  `id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `culinary_place_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `url` text,
+  `id` varchar(3) NOT NULL,
+  `culinary_place_id` varchar(3) NOT NULL,
+  `url` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `culinary_place_gallery`
 --
 
 INSERT INTO `culinary_place_gallery` (`id`, `culinary_place_id`, `url`, `created_at`, `updated_at`) VALUES
-('013', 'C6', '1729880115_bcebc18c9c5b742cc42f.jpg', '2024-10-25 06:16:41', '2024-10-25 06:16:41'),
-('014', 'C6', '1729880107_871a7281a4a1d176bf16.jpg', '2024-10-25 06:16:41', '2024-10-25 06:16:41'),
-('029', 'C1', '1736518521_118d7bd6d8dd99e3590d.jpg', '2025-01-10 01:15:57', '2025-01-10 01:15:57'),
-('030', 'C1', '1736518521_166e697f9b3d239b18ea.jpg', '2025-01-10 01:15:57', '2025-01-10 01:15:57'),
-('031', 'C2', '1736518572_a3a0ad100204e1b33cfa.jpg', '2025-01-10 01:16:29', '2025-01-10 01:16:29'),
-('032', 'C2', '1736518572_ff2a7420181606d07117.jpg', '2025-01-10 01:16:29', '2025-01-10 01:16:29'),
-('033', 'C3', '1736518598_53297d5f59c7948ad905.jpg', '2025-01-10 01:17:14', '2025-01-10 01:17:14'),
-('034', 'C3', '1736518598_8bcb7efbfb17e7ad4196.jpg', '2025-01-10 01:17:14', '2025-01-10 01:17:14'),
-('035', 'C4', '1736518648_c9884e8e4f259ee67876.jpg', '2025-01-10 01:17:45', '2025-01-10 01:17:45'),
-('036', 'C4', '1736518648_fd4f369595d3ecb29cdc.jpg', '2025-01-10 01:17:45', '2025-01-10 01:17:45'),
-('037', 'C5', '1736518675_4588aa1167012bee595d.jpg', '2025-01-10 01:18:12', '2025-01-10 01:18:12'),
-('038', 'C5', '1736518675_4827bdca2875e31a172a.jpg', '2025-01-10 01:18:12', '2025-01-10 01:18:12');
+('004', 'C12', 'C2-1.jpg', '2023-12-01 18:29:02', '2023-12-01 18:29:02'),
+('005', 'C13', 'C3-1.jpg', '2023-12-02 06:14:54', '2023-12-02 06:14:54'),
+('006', 'C14', 'C4-1.jpg', '2023-12-02 06:18:41', '2023-12-02 06:18:41'),
+('007', 'C15', 'C5-1.jpg', '2023-12-02 06:22:18', '2023-12-02 06:22:18'),
+('008', 'C16', 'C6-1.jpg', '2023-12-02 06:25:11', '2023-12-02 06:25:11'),
+('009', 'C17', 'C7-1.jpg', '2023-12-02 06:27:05', '2023-12-02 06:27:05'),
+('010', 'C18', 'C8-1.jpg', '2023-12-02 06:30:53', '2023-12-02 06:30:53'),
+('011', 'C19', 'C9-1.jpg', '2023-12-02 07:33:08', '2023-12-02 07:33:08'),
+('012', 'C11', 'C1-1.jpg', '2023-12-03 09:13:40', '2023-12-03 09:13:40'),
+('013', 'C11', 'C1-2.jpg', '2023-12-03 09:13:40', '2023-12-03 09:13:40'),
+('015', 'C20', 'C10-1.jpg', '2023-12-03 09:15:09', '2023-12-03 09:15:09'),
+('016', 'C21', 'C11-1.jpg', '2023-12-03 09:15:48', '2023-12-03 09:15:48'),
+('017', 'C22', 'C12-1.jpg', '2023-12-03 09:16:40', '2023-12-03 09:16:40'),
+('018', 'C23', 'C13-1.jpg', '2023-12-03 09:17:36', '2023-12-03 09:17:36'),
+('019', 'C23', 'C13-2.jpg', '2023-12-03 09:17:36', '2023-12-03 09:17:36');
 
 -- --------------------------------------------------------
 
@@ -1338,27 +1516,30 @@ CREATE TABLE `culinary_product` (
   `name` varchar(50) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `culinary_product`
 --
 
 INSERT INTO `culinary_product` (`id`, `name`, `created_at`, `updated_at`) VALUES
-('01', 'Kawa Daun', '2024-10-25 20:24:26', '2024-10-25 20:24:26'),
-('02', 'Nasi Goreng', '2024-10-25 20:24:34', '2024-10-25 20:24:34'),
-('03', 'Mie Goreng', '2024-10-25 20:24:41', '2024-10-25 20:24:41'),
-('04', 'Mie Rebus', '2024-10-25 20:24:47', '2024-10-25 20:25:46'),
-('05', 'Mienas', '2024-10-25 20:24:53', '2024-10-25 20:24:53'),
-('06', 'Kopi Hitam', '2024-10-25 20:25:00', '2024-10-25 20:25:00'),
-('07', 'Gorengan', '2024-10-25 20:25:07', '2024-10-25 20:25:07'),
+('01', 'Nasi Goreng', '2023-11-09 17:51:16', '2023-12-02 08:10:30'),
+('02', 'Rakik Kacang', '2023-11-10 12:00:55', '2023-11-10 12:00:55'),
+('03', 'Roti Bakar', '2023-11-11 12:01:31', '2023-11-11 12:01:31'),
+('04', 'Cheese Tea', '2023-12-02 08:12:39', '2023-12-02 08:12:39'),
+('05', 'Mie Goreng', '2024-10-25 20:24:41', '2024-10-25 20:24:41'),
+('06', 'Mie Rebus', '2024-10-25 20:24:47', '2024-10-25 20:25:46'),
+('07', 'Mienas', '2024-10-25 20:24:53', '2024-10-25 20:24:53'),
 ('08', 'Jus', '2024-10-25 20:25:12', '2024-10-25 20:25:12'),
 ('09', 'Teh Es', '2024-10-25 20:25:39', '2024-10-25 20:25:39'),
 ('10', 'Teh Hangat', '2024-10-25 20:25:53', '2024-10-25 20:25:58'),
 ('11', 'Cappucino', '2024-10-25 20:26:04', '2024-10-25 20:26:04'),
 ('12', 'Pop Mie', '2024-10-25 20:26:18', '2024-10-25 20:26:18'),
 ('13', 'Kopi Susu', '2025-01-11 04:16:10', '2025-01-11 04:16:10'),
-('14', 'Kawa Daun Susu', '2025-01-11 04:16:20', '2025-01-11 04:16:20');
+('14', 'Kawa Daun', '2024-10-25 20:24:26', '2024-10-25 20:24:26'),
+('15', 'Kawa Daun Susu', '2025-01-11 04:16:20', '2025-01-11 04:16:20'),
+('16', 'Kopi Hitam', '2024-10-25 20:25:00', '2024-10-25 20:25:00'),
+('17', 'Gorengan', '2024-10-25 20:25:07', '2024-10-25 20:25:07');
 
 -- --------------------------------------------------------
 
@@ -1367,37 +1548,112 @@ INSERT INTO `culinary_product` (`id`, `name`, `created_at`, `updated_at`) VALUES
 --
 
 CREATE TABLE `culinary_product_detail` (
-  `culinary_place_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `culinary_place_id` varchar(3) NOT NULL,
   `culinary_product_id` varchar(2) NOT NULL,
-  `price` int UNSIGNED NOT NULL,
-  `image_url` text,
-  `description` text,
+  `price` int(10) UNSIGNED NOT NULL,
+  `image_url` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `culinary_product_detail`
 --
 
 INSERT INTO `culinary_product_detail` (`culinary_place_id`, `culinary_product_id`, `price`, `image_url`, `description`, `created_at`, `updated_at`) VALUES
-('C1', '01', 7000, '1729931538_13fb5a9f880781ca59e9.webp', 'Minuman khas minang yang terbuat dari daun kopi', '2024-10-25 20:32:34', '2024-10-25 20:32:34'),
-('C1', '02', 15000, '1729931626_9d941b2a491f24c460b3.jpg', 'Nasi goreng dengan telur\r\n', '2024-10-25 20:33:13', '2024-10-25 20:33:49'),
-('C1', '03', 15000, '1729931608_f9d768cb5a469b73f149.jpeg', 'Mie goreng dengan sayuran dan telur\r\n', '2024-10-25 20:33:38', '2024-10-25 20:33:38'),
-('C1', '04', 15000, '1729931718_9ecabc7ce38cdd9fdd76.webp', 'Mie rebus dengan sayuran dan telur', '2024-10-25 20:35:20', '2024-10-25 20:35:20'),
-('C1', '05', 15000, '1729931735_d70317cae68d45ca4294.jpg', 'Percampuran antara nasi goreng dan mie goreng dan diberikan telur\r\n', '2024-10-25 20:35:52', '2024-10-25 20:35:52'),
-('C1', '06', 5000, '1729931766_94d896c52956db5aaad3.jpg', 'Kopi hitam asli pariangan\r\n', '2024-10-25 20:36:17', '2024-10-25 20:36:17'),
-('C1', '07', 1500, '1729931791_697674f518b52a2163e8.jpg', 'Berbagai macam gorengan\r\n', '2024-10-25 20:36:39', '2024-10-25 20:36:39'),
-('C1', '08', 12000, '1729931813_1b38704500d350baa03e.jpg', 'Aneka macam jus buah', '2024-10-25 20:36:59', '2024-10-25 20:36:59'),
-('C1', '09', 7000, '1729931831_1254a68a5065b3f61722.jpg', 'Kesegaran teh dipadukan dengan es batu\r\n', '2024-10-25 20:37:27', '2024-10-25 20:37:27'),
-('C1', '10', 5000, '1729931857_0bc0788503a16a54c1e0.jpeg', 'Teh hangat memerikan kehangatan di cuaca yang sejuk seperti di pariangan', '2024-10-25 20:38:05', '2024-10-25 20:38:05'),
-('C1', '11', 10000, '1729931900_504b51f5398bd9643b40.jpg', 'Cappucino ', '2024-10-25 20:38:37', '2024-10-25 20:38:37'),
-('C1', '12', 10000, '1729931929_83dec133a260492bbc09.jpg', 'Pop Mie dan Mie Sedap Cup\r\n', '2024-10-25 20:39:08', '2024-10-25 20:39:08'),
-('C2', '01', 5000, '1736615992_deac373ba9cdae5c723d.webp', 'Kawa Daun', '2025-01-11 04:19:59', '2025-01-11 04:19:59'),
-('C3', '01', 5000, '1736616052_d0579a4b0b6e58db4da8.webp', 'Kawa Daun', '2025-01-11 04:21:01', '2025-01-11 04:21:01'),
-('C4', '01', 5000, '1736616077_2093d9ab503a056850c1.webp', 'Kawa Daun\r\n', '2025-01-11 04:21:21', '2025-01-11 04:21:21'),
-('C5', '01', 5000, '1736616100_f85e7158c5f5862dbf64.webp', 'Kawa Daun', '2025-01-11 04:21:43', '2025-01-11 04:21:43'),
-('C6', '01', 5000, '1736616118_b64dcc8f3aebf90b48e2.webp', 'Kawa Daun', '2025-01-11 04:22:05', '2025-01-11 04:22:05');
+('C11', '02', 5000, 'C1P-1.jpg', NULL, '2023-12-01 18:23:06', '2023-12-01 18:23:06'),
+('C11', '05', 15000, '1729931608_f9d768cb5a469b73f149.jpeg', 'Mie goreng dengan sayuran dan telur\r\n', '2024-10-25 13:33:38', '2024-10-25 13:33:38'),
+('C11', '06', 15000, '1729931718_9ecabc7ce38cdd9fdd76.webp', 'Mie rebus dengan sayuran dan telur', '2024-10-25 13:35:20', '2024-10-25 13:35:20'),
+('C11', '07', 15000, '1729931735_d70317cae68d45ca4294.jpg', 'Percampuran antara nasi goreng dan mie goreng dan diberikan telur\r\n', '2024-10-25 13:35:52', '2024-10-25 13:35:52'),
+('C11', '08', 12000, '1729931813_1b38704500d350baa03e.jpg', 'Aneka macam jus buah', '2024-10-25 13:36:59', '2024-10-25 13:36:59'),
+('C11', '09', 7000, '1729931831_1254a68a5065b3f61722.jpg', 'Kesegaran teh dipadukan dengan es batu\r\n', '2024-10-25 13:37:27', '2024-10-25 13:37:27'),
+('C11', '10', 5000, '1729931857_0bc0788503a16a54c1e0.jpeg', 'Teh hangat memerikan kehangatan di cuaca yang sejuk seperti di pariangan', '2024-10-25 13:38:05', '2024-10-25 13:38:05'),
+('C11', '11', 10000, '1729931900_504b51f5398bd9643b40.jpg', 'Cappucino ', '2024-10-25 13:38:37', '2024-10-25 13:38:37'),
+('C11', '12', 10000, '1729931929_83dec133a260492bbc09.jpg', 'Pop Mie dan Mie Sedap Cup\r\n', '2024-10-25 13:39:08', '2024-10-25 13:39:08'),
+('C11', '14', 7000, '1729931538_13fb5a9f880781ca59e9.webp', 'Minuman khas minang yang terbuat dari daun kopi', '2024-10-25 13:32:34', '2024-10-25 13:32:34'),
+('C11', '16', 5000, '1729931766_94d896c52956db5aaad3.jpg', 'Kopi hitam asli pariangan\r\n', '2024-10-25 13:36:17', '2024-10-25 13:36:17'),
+('C11', '17', 1500, '1729931791_697674f518b52a2163e8.jpg', 'Berbagai macam gorengan\r\n', '2024-10-25 13:36:39', '2024-10-25 13:36:39'),
+('C12', '14', 5000, '1736615992_deac373ba9cdae5c723d.webp', 'Kawa Daun', '2025-01-10 21:19:59', '2025-01-10 21:19:59'),
+('C13', '14', 5000, '1736616052_d0579a4b0b6e58db4da8.webp', 'Kawa Daun', '2025-01-10 21:21:01', '2025-01-10 21:21:01'),
+('C14', '14', 5000, '1736616077_2093d9ab503a056850c1.webp', 'Kawa Daun\r\n', '2025-01-10 21:21:21', '2025-01-10 21:21:21'),
+('C15', '14', 5000, '1736616100_f85e7158c5f5862dbf64.webp', 'Kawa Daun', '2025-01-10 21:21:43', '2025-01-10 21:21:43'),
+('C16', '14', 5000, '1736616118_b64dcc8f3aebf90b48e2.webp', 'Kawa Daun', '2025-01-10 21:22:05', '2025-01-10 21:22:05'),
+('C23', '04', 20000, 'C13P-1.jpg', NULL, '2023-12-02 08:17:05', '2023-12-02 08:17:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event`
+--
+
+CREATE TABLE `event` (
+  `id` varchar(3) NOT NULL,
+  `name` varchar(40) NOT NULL,
+  `description` text DEFAULT NULL,
+  `ticket_price` int(11) DEFAULT 0,
+  `event_organizer` varchar(50) DEFAULT NULL,
+  `phone` varchar(13) DEFAULT NULL,
+  `geom` geometry DEFAULT NULL,
+  `lat` decimal(10,8) NOT NULL,
+  `lng` decimal(11,8) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Dumping data for table `event`
+--
+
+INSERT INTO `event` (`id`, `name`, `description`, `ticket_price`, `event_organizer`, `phone`, `geom`, `lat`, `lng`, `created_at`, `updated_at`) VALUES
+('E01', 'Panjat Tebing', 'Event ini menyediakan ruang untuk edukasi dan promosi keamanan dalam beraktivitas panjat tebing. Terdapat workshop dan sesi diskusi yang melibatkan para ahli panjat tebing, bertujuan untuk meningkatkan pemahaman peserta tentang keselamatan dan teknik panjat tebing yang benar.', 100000, 'Komunitas Merah Putih', '082268090256', 0xe6100000010300000001000000050000002a5cb4b1b62a59403a5c92c6a615bdbf295cb4b7b02a5940bd73c0c22e33bdbf2a5cb40bb72a5940cce149c16e3ebdbf2a5cb49dbb2a594078fda9c3262cbdbf2a5cb4b1b62a59403a5c92c6a615bdbf, '-0.10116888', '100.66670607', '2023-12-12 18:35:07', '2024-01-20 12:36:29'),
+('E02', 'Art and Culture Festival', 'Art and Culture Festival di Lembah Harau adalah sebuah perayaan yang memukau, merayakan kekayaan warisan seni dan budaya yang khas dari daerah ini. Terletak di tengah-tengah keindahan alam Lembah Harau, acara ini menggabungkan keunikan seni, musik, tarian, dan warisan budaya untuk menciptakan pengalaman yang tak terlupakan.', 0, 'Nagari Lembah Harau', '081261499095', 0xe610000001030000000100000005000000c3df818e672a5940979c44a4d5d9bebfc4df815e6a2a5940f00c31a45cdabebfc4df815e6a2a594001844ca383e0bebfc3df81bb672a594001844ca383e0bebfc3df818e672a5940979c44a4d5d9bebf, '-0.12056235', '100.66265643', '2024-01-19 19:22:26', '2024-01-19 19:22:26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_date`
+--
+
+CREATE TABLE `event_date` (
+  `event_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `date` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `event_date`
+--
+
+INSERT INTO `event_date` (`event_id`, `date`) VALUES
+('E01', '2023-12-14'),
+('E01', '2023-12-20'),
+('E01', '2024-01-16'),
+('E01', '2024-01-18'),
+('E02', '2024-01-16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_gallery`
+--
+
+CREATE TABLE `event_gallery` (
+  `id` varchar(3) NOT NULL,
+  `event_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `url` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `event_gallery`
+--
+
+INSERT INTO `event_gallery` (`id`, `event_id`, `url`, `created_at`, `updated_at`) VALUES
+('003', 'E02', 'E2-1.jpg', '2024-01-19 19:22:26', '2024-01-19 19:22:26'),
+('004', 'E02', 'E2-2.jpg', '2024-01-19 19:22:26', '2024-01-19 19:22:26'),
+('005', 'E02', 'E2-3.jpg', '2024-01-19 19:22:26', '2024-01-19 19:22:26'),
+('006', 'E01', 'E1-1.jpg', '2024-01-20 12:36:29', '2024-01-20 12:36:29');
 
 -- --------------------------------------------------------
 
@@ -1414,33 +1670,33 @@ CREATE TABLE `homestay` (
   `geom` geometry DEFAULT NULL,
   `lat` decimal(10,8) NOT NULL,
   `lng` decimal(11,8) NOT NULL,
-  `owner` int UNSIGNED NOT NULL,
+  `owner` int(10) UNSIGNED NOT NULL,
   `open` time DEFAULT NULL,
   `close` time DEFAULT NULL,
-  `max_people_for_event` int NOT NULL,
-  `description` text,
-  `video_url` text,
+  `max_people_for_event` int(11) NOT NULL,
+  `description` text DEFAULT NULL,
+  `video_url` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `profil_link` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `profil_link` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `homestay`
 --
 
 INSERT INTO `homestay` (`id`, `village_id`, `name`, `category`, `address`, `geom`, `lat`, `lng`, `owner`, `open`, `close`, `max_people_for_event`, `description`, `video_url`, `created_at`, `updated_at`, `profil_link`) VALUES
-('H01', '1', 'Homestay Harau Syafiq', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe6100000010300000001000000090000005a4b0163b62a5940655a3f7f85dbbcbf594b4149bd2a59403e620c7ca8f4bcbf594bc11ec22a5940d697c6796906bdbf594b4173c02a59405a28cbf80e0ebdbf584b81cabf2a594040dd65782211bdbf594ba146ba2a594085b2737a2301bdbf4a390f21b32a594040c41cc5abe5bcbf4b398f48b12a5940b949544617dcbcbf5a4b0163b62a5940655a3f7f85dbbcbf, -0.11313367, 100.66758434, 9, '10:00:00', '18:00:00', 50, 'Homestay Harau Syafiq adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 05:22:25', '2024-02-26 05:22:25', ''),
-('H02', '1', 'Homestay Aura', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000005000000a11a276c9c2a59402e8eeb5bbdf5babf1f8afa0b9a2a59405ae8b59fadffbabf74515f5c8b2a594000fb2af16715bbbf74515f5c8b2a5940b1fb2bb7f636bbbfa11a276c9c2a59402e8eeb5bbdf5babf, -0.10531219, 100.66579727, 13, '10:00:00', '18:00:00', 50, 'Homestay Aura adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 05:59:05', '2024-02-26 07:05:06', ''),
-('H03', '1', 'Meliya Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000007000000e68ee5fa8a2a594095ac92e1db68bbbff74920eb8a2a594040ca5f8c0e69bbbf428922e68a2a5940e83f1836d26bbbbfd13fc1c58a2a594030383932456fbbbf131f2b3a8a2a59400b9e0092026ebbbf3c42b4f3892a5940e8e6b0353a6bbbbfe68ee5fa8a2a594095ac92e1db68bbbf, -0.10706877, 100.66473267, 14, '10:00:00', '18:00:00', 50, 'Meliya Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 08:58:36', '2024-02-26 08:58:36', ''),
-('H04', '1', 'Abyan Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000007000000e2101e2b802a5940ffe1b6cf8d5dbcbfcf394fa7822a5940fe4bad52d55fbcbf34d5f623832a59401c4552e2a561bcbf81545072832a5940bf1e7ec4d066bcbf82889a09822a59403cb7d806516bbcbf417d0db9802a5940e542277c9d71bcbfe2101e2b802a5940ffe1b6cf8d5dbcbf, -0.11080252, 100.66407278, 15, '10:00:00', '18:00:00', 50, 'Abyan Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:04:25', '2024-02-26 09:06:12', ''),
-('H05', '1', 'Homestay Bilza', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000c0000009eeca862912a59405ad3ddf1fd3fbdbfea584a3b9a2a594012aacc7b393fbdbf2d36f7a19c2a59402d8c5f3e7a3fbdbf4aac73a99d2a59409a842416a542bdbf2008f3cb9e2a59404d4233993b44bdbf251eb360a02a59405e82b6490347bdbf771f1539a32a5940e01ed7c8a643bdbf5d40bb85a62a59404b08b18e3e41bdbfa2889854a52a594032c92b84933cbdbfe87ed279a22a5940e8d5e707013bbdbfa075095e9f2a5940774044302f3cbdbf9eeca862912a59405ad3ddf1fd3fbdbf, -0.11425769, 100.66512362, 16, '10:00:00', '18:00:00', 50, 'Homestay Bilza adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:12:45', '2024-02-26 09:12:45', ''),
-('H06', '1', 'Homestay IBU', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000500000052a9a7c96b2a594094d385f5d256bebf633c73a46d2a59401619fc819b5abebf351191f56f2a5940e5e1904fc05dbebfab5d55ee6c2a594078f3af404f5ebebf52a9a7c96b2a594094d385f5d256bebf, -0.11851233, 100.66282884, 17, '10:00:00', '18:00:00', 50, 'Homestay IBU adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:24:11', '2024-02-26 09:24:11', ''),
-('H07', '1', 'Dangau Pitossa', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000700000051e58b28f32a59401e579f822ea7bcbfb32a8031f42a59400b1d6427f6afbcbf6ec6a333f42a5940069c4aabc6b7bcbf8f709c0cf52a59402f19852c24c3bcbf8d86c6f2f22a5940681f6d1440cebcbf0856d5cbef2a5940f09183c8d8bfbcbf51e58b28f32a59401e579f822ea7bcbf, -0.11192599, 100.67109121, 18, '10:00:00', '18:00:00', 50, 'Dangau pitossa adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:36:27', '2024-02-26 09:36:27', ''),
-('H08', '1', 'Oston Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe6100000010300000001000000050000003ff6404cfe2a5940fdab9efe793bbcbf3973f66bfe2a594051df1199e23fbcbfbd92818f032b5940f7eac293064cbcbf89349ec6052b5940dfe29f213550bcbf3ff6404cfe2a5940fdab9efe793bbcbf, -0.11028254, 100.67177111, 19, '10:00:00', '18:00:00', 50, 'Oston Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:43:34', '2024-02-26 09:43:34', ''),
-('H09', '1', 'Megahomestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000005000000fdba57d60b2b59402760016d2721bcbfe7fea8550d2b594043f969797124bcbf2efc64b50e2b5940085231e77c25bcbff6b7c2c30d2b59402a5b3d8ae72abcbffdba57d60b2b59402760016d2721bcbf, -0.10988089, 100.67259749, 20, '10:00:00', '18:00:00', 50, 'Oston Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:47:02', '2024-02-26 09:47:02', ''),
-('H10', '1', 'Dangau Abah Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000b000000221741082d2b5940bb2e368c0619bcbfceb7d310342b5940da5e24171018bcbf65acd3d4342b59401f9b6880a016bcbf82d9eb7a352b594002b859bc5818bcbf3b23a534362b59403fbd0098be19bcbf43b14fdf362b5940017bb73f381bbcbf5edfe23c372b594017c38b74f519bcbf05eb0fff362b5940f7065f984c15bcbf680e62ca342b59409d9771f0d811bcbf54c2d9ce332b5940ba25a4fb5a13bcbf221741082d2b5940bb2e368c0619bcbf, -0.10975686, 100.67462355, 21, '10:00:00', '18:00:00', 50, 'Oston Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:55:41', '2024-02-26 09:55:41', ''),
-('H11', '1', 'Limpato Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe6100000010300000001000000050000002b229aab6c2a594084443df15a11bebf0363f9ca6e2a5940256793897c13bebf1eaecdad6d2a59408a394a562c1bbebf63c5fc1e6d2a59405ae8d6ad9622bebf2b229aab6c2a594084443df15a11bebf, -0.11745232, 100.66288271, 22, '10:00:00', '18:00:00', 50, 'Limpato Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 12:17:47', '2024-02-26 12:20:24', '');
+('H01', '1', 'Homestay Harau Syafiq', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe6100000010300000001000000090000005a4b0163b62a5940655a3f7f85dbbcbf594b4149bd2a59403e620c7ca8f4bcbf594bc11ec22a5940d697c6796906bdbf594b4173c02a59405a28cbf80e0ebdbf584b81cabf2a594040dd65782211bdbf594ba146ba2a594085b2737a2301bdbf4a390f21b32a594040c41cc5abe5bcbf4b398f48b12a5940b949544617dcbcbf5a4b0163b62a5940655a3f7f85dbbcbf, '-0.11313367', '100.66758434', 9, '10:00:00', '18:00:00', 50, 'Homestay Harau Syafiq adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 05:22:25', '2024-02-26 05:22:25', ''),
+('H02', '1', 'Homestay Aura', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000005000000a11a276c9c2a59402e8eeb5bbdf5babf1f8afa0b9a2a59405ae8b59fadffbabf74515f5c8b2a594000fb2af16715bbbf74515f5c8b2a5940b1fb2bb7f636bbbfa11a276c9c2a59402e8eeb5bbdf5babf, '-0.10531219', '100.66579727', 13, '10:00:00', '18:00:00', 50, 'Homestay Aura adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 05:59:05', '2024-02-26 07:05:06', ''),
+('H03', '1', 'Meliya Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000007000000e68ee5fa8a2a594095ac92e1db68bbbff74920eb8a2a594040ca5f8c0e69bbbf428922e68a2a5940e83f1836d26bbbbfd13fc1c58a2a594030383932456fbbbf131f2b3a8a2a59400b9e0092026ebbbf3c42b4f3892a5940e8e6b0353a6bbbbfe68ee5fa8a2a594095ac92e1db68bbbf, '-0.10706877', '100.66473267', 14, '10:00:00', '18:00:00', 50, 'Meliya Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 08:58:36', '2024-02-26 08:58:36', ''),
+('H04', '1', 'Abyan Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000007000000e2101e2b802a5940ffe1b6cf8d5dbcbfcf394fa7822a5940fe4bad52d55fbcbf34d5f623832a59401c4552e2a561bcbf81545072832a5940bf1e7ec4d066bcbf82889a09822a59403cb7d806516bbcbf417d0db9802a5940e542277c9d71bcbfe2101e2b802a5940ffe1b6cf8d5dbcbf, '-0.11080252', '100.66407278', 15, '10:00:00', '18:00:00', 50, 'Abyan Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:04:25', '2024-02-26 09:06:12', ''),
+('H05', '1', 'Homestay Bilza', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000c0000009eeca862912a59405ad3ddf1fd3fbdbfea584a3b9a2a594012aacc7b393fbdbf2d36f7a19c2a59402d8c5f3e7a3fbdbf4aac73a99d2a59409a842416a542bdbf2008f3cb9e2a59404d4233993b44bdbf251eb360a02a59405e82b6490347bdbf771f1539a32a5940e01ed7c8a643bdbf5d40bb85a62a59404b08b18e3e41bdbfa2889854a52a594032c92b84933cbdbfe87ed279a22a5940e8d5e707013bbdbfa075095e9f2a5940774044302f3cbdbf9eeca862912a59405ad3ddf1fd3fbdbf, '-0.11425769', '100.66512362', 16, '10:00:00', '18:00:00', 50, 'Homestay Bilza adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:12:45', '2024-02-26 09:12:45', ''),
+('H06', '1', 'Homestay IBU', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000500000052a9a7c96b2a594094d385f5d256bebf633c73a46d2a59401619fc819b5abebf351191f56f2a5940e5e1904fc05dbebfab5d55ee6c2a594078f3af404f5ebebf52a9a7c96b2a594094d385f5d256bebf, '-0.11851233', '100.66282884', 17, '10:00:00', '18:00:00', 50, 'Homestay IBU adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:24:11', '2024-02-26 09:24:11', ''),
+('H07', '1', 'Dangau Pitossa', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000700000051e58b28f32a59401e579f822ea7bcbfb32a8031f42a59400b1d6427f6afbcbf6ec6a333f42a5940069c4aabc6b7bcbf8f709c0cf52a59402f19852c24c3bcbf8d86c6f2f22a5940681f6d1440cebcbf0856d5cbef2a5940f09183c8d8bfbcbf51e58b28f32a59401e579f822ea7bcbf, '-0.11192599', '100.67109121', 18, '10:00:00', '18:00:00', 50, 'Dangau pitossa adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:36:27', '2024-02-26 09:36:27', ''),
+('H08', '1', 'Oston Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe6100000010300000001000000050000003ff6404cfe2a5940fdab9efe793bbcbf3973f66bfe2a594051df1199e23fbcbfbd92818f032b5940f7eac293064cbcbf89349ec6052b5940dfe29f213550bcbf3ff6404cfe2a5940fdab9efe793bbcbf, '-0.11028254', '100.67177111', 19, '10:00:00', '18:00:00', 50, 'Oston Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:43:34', '2024-02-26 09:43:34', ''),
+('H09', '1', 'Megahomestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe610000001030000000100000005000000fdba57d60b2b59402760016d2721bcbfe7fea8550d2b594043f969797124bcbf2efc64b50e2b5940085231e77c25bcbff6b7c2c30d2b59402a5b3d8ae72abcbffdba57d60b2b59402760016d2721bcbf, '-0.10988089', '100.67259749', 20, '10:00:00', '18:00:00', 50, 'Oston Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:47:02', '2024-02-26 09:47:02', ''),
+('H10', '1', 'Dangau Abah Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe61000000103000000010000000b000000221741082d2b5940bb2e368c0619bcbfceb7d310342b5940da5e24171018bcbf65acd3d4342b59401f9b6880a016bcbf82d9eb7a352b594002b859bc5818bcbf3b23a534362b59403fbd0098be19bcbf43b14fdf362b5940017bb73f381bbcbf5edfe23c372b594017c38b74f519bcbf05eb0fff362b5940f7065f984c15bcbf680e62ca342b59409d9771f0d811bcbf54c2d9ce332b5940ba25a4fb5a13bcbf221741082d2b5940bb2e368c0619bcbf, '-0.10975686', '100.67462355', 21, '10:00:00', '18:00:00', 50, 'Oston Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 09:55:41', '2024-02-26 09:55:41', ''),
+('H11', '1', 'Limpato Homestay', '2', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 0xe6100000010300000001000000050000002b229aab6c2a594084443df15a11bebf0363f9ca6e2a5940256793897c13bebf1eaecdad6d2a59408a394a562c1bbebf63c5fc1e6d2a59405ae8d6ad9622bebf2b229aab6c2a594084443df15a11bebf, '-0.11745232', '100.66288271', 22, '10:00:00', '18:00:00', 50, 'Limpato Homestay adalah sebuah penginapan yang nyaman dan bersahaja yang terletak di Lembah Harau, sebuah destinasi alam yang indah di Sumatera Barat, Indonesia. Penginapan ini menawarkan pengalaman menginap yang autentik dan dekat dengan alam, dengan pemandangan yang memukau dari tebing batu yang mengelilingi lembah.', NULL, '2024-02-26 12:17:47', '2024-02-26 12:20:24', '');
 
 -- --------------------------------------------------------
 
@@ -1451,19 +1707,31 @@ INSERT INTO `homestay` (`id`, `village_id`, `name`, `category`, `address`, `geom
 CREATE TABLE `homestay_additional_amenities` (
   `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `additional_amenities_id` varchar(3) NOT NULL,
-  `additional_amenities_type` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '1',
+  `additional_amenities_type` varchar(1) NOT NULL DEFAULT '1',
   `name` varchar(50) NOT NULL,
   `category` varchar(1) NOT NULL,
-  `price` int NOT NULL,
-  `is_order_count_per_day` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
-  `is_order_count_per_person` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
-  `is_order_count_per_room` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
-  `stock` int NOT NULL,
+  `price` int(11) NOT NULL,
+  `is_order_count_per_day` varchar(1) NOT NULL DEFAULT '0',
+  `is_order_count_per_person` varchar(1) NOT NULL DEFAULT '0',
+  `is_order_count_per_room` varchar(1) NOT NULL DEFAULT '0',
+  `stock` int(11) NOT NULL,
   `description` text NOT NULL,
   `image_url` text NOT NULL,
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `homestay_additional_amenities`
+--
+
+INSERT INTO `homestay_additional_amenities` (`homestay_id`, `additional_amenities_id`, `additional_amenities_type`, `name`, `category`, `price`, `is_order_count_per_day`, `is_order_count_per_person`, `is_order_count_per_room`, `stock`, `description`, `image_url`, `created_at`, `updated_at`) VALUES
+('H01', '01', '1', 'Breakfast', '2', 15000, '1', '1', '', 0, 'Sarapan dengan menu yang dapat dipilih ketika menginap', '1709108441_15e566c51441ddbb6f12.jpg', '2024-02-27 12:20:43', '2024-02-27 12:20:43'),
+('H01', '02', '1', 'Lunch', '2', 25000, '1', '1', '', 0, 'Makan siang dengan menu yang dapat dipilih ketika menginap', '1709108493_8acb29efb0b2f28978f1.jpg', '2024-02-27 12:21:42', '2024-02-27 12:21:42'),
+('H01', '03', '1', 'Dinner', '2', 25000, '1', '1', '', 0, 'Makan malam dengan menu yang dapat dipilih ketika menginap', '1709108535_ef01c134ee1e28296108.jpg', '2024-02-27 12:22:17', '2024-02-27 12:22:17'),
+('H01', '04', '1', 'Mattress', '1', 50000, '', '', '1', 5, 'Kasur tambahan', '1709108595_9cb67fef27d471f093ce.jpg', '2024-02-27 12:23:18', '2024-02-27 12:23:18'),
+('H01', '05', '1', 'Bathroom amenities', '1', 20000, '', '1', '', 0, 'Perlengkapan mandi', '1709108729_0c2892841396fba08924.jpeg', '2024-02-27 12:25:32', '2024-02-27 12:25:32'),
+('H01', '06', '1', 'Equipment for grilling', '1', 30000, '', '', '', 5, 'Perlengkapan untuk bakar-bakar', '1709108832_5a375e35ec18bb648e8f.jpg', '2024-02-27 12:27:20', '2024-02-27 12:27:20');
 
 -- --------------------------------------------------------
 
@@ -1473,13 +1741,13 @@ CREATE TABLE `homestay_additional_amenities` (
 
 CREATE TABLE `homestay_certification` (
   `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `certification_id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `certificate_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `certification_id` varchar(3) NOT NULL,
+  `certificate_name` varchar(200) NOT NULL,
   `certificate_num` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `certifying_agency` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `date` date NOT NULL,
-  `description` text,
-  `image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `description` text DEFAULT NULL,
+  `image_url` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1493,7 +1761,7 @@ CREATE TABLE `homestay_facility` (
   `name` varchar(50) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `homestay_facility`
@@ -1518,7 +1786,7 @@ CREATE TABLE `homestay_facility_detail` (
   `facility_id` varchar(2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `homestay_facility_detail`
@@ -1560,10 +1828,10 @@ INSERT INTO `homestay_facility_detail` (`homestay_id`, `facility_id`, `created_a
 CREATE TABLE `homestay_gallery` (
   `id` varchar(3) NOT NULL,
   `homestay_id` varchar(3) NOT NULL,
-  `url` text,
+  `url` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `homestay_gallery`
@@ -1627,11 +1895,11 @@ INSERT INTO `homestay_gallery` (`id`, `homestay_id`, `url`, `created_at`, `updat
 CREATE TABLE `homestay_unit` (
   `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `unit_type` varchar(2) NOT NULL,
-  `unit_number` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `unit_number` varchar(2) NOT NULL,
   `name` varchar(25) NOT NULL,
-  `price` int NOT NULL,
-  `capacity` int DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `price` int(11) NOT NULL,
+  `capacity` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -1703,9 +1971,9 @@ INSERT INTO `homestay_unit_facility` (`id`, `name`, `created_at`, `updated_at`) 
 CREATE TABLE `homestay_unit_facility_detail` (
   `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `unit_type` varchar(2) NOT NULL,
-  `unit_number` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `unit_number` varchar(2) NOT NULL,
   `facility_id` varchar(2) NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -1815,14 +2083,14 @@ INSERT INTO `homestay_unit_type` (`id`, `name`) VALUES
 --
 
 CREATE TABLE `migrations` (
-  `id` bigint UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
   `version` varchar(255) NOT NULL,
   `class` varchar(255) NOT NULL,
   `group` varchar(255) NOT NULL,
   `namespace` varchar(255) NOT NULL,
-  `time` int NOT NULL,
-  `batch` int UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  `time` int(11) NOT NULL,
+  `batch` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `migrations`
@@ -1873,13 +2141,151 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `package`
+--
+
+CREATE TABLE `package` (
+  `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `package_id` varchar(4) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `min_capacity` int(11) DEFAULT NULL,
+  `brochure_url` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `price` int(11) DEFAULT NULL,
+  `is_custom` char(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `package`
+--
+
+INSERT INTO `package` (`homestay_id`, `package_id`, `name`, `min_capacity`, `brochure_url`, `description`, `price`, `is_custom`, `created_at`, `updated_at`) VALUES
+('H01', 'P001', 'Explore Lembah Harau', 5, '1709092962_e08836f6f13adffb5d1d.jpg', 'Paket ini menawarkan perjalanan ke objek-objek wisata populer di lembah harau', 250000, '0', '2024-02-27 14:45:03', '2024-02-27 14:45:03'),
+('H01', 'P002', 'Explore Geopark Lembah Harau', 5, '1709107084_e539c652fa40cac62347.jpg', 'Menjelajahi semua objek yang berkaitan dengan geopark lembah harau', 100000, '0', '2024-02-27 18:23:54', '2024-02-27 18:23:54'),
+('H01', 'P003', 'Explore Geopark Lembah Harau extend by Dragon at 2026-07-15 19:50', 5, NULL, NULL, 100000, '1', '2026-07-16 02:50:45', '2026-07-16 02:50:45');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `package_day`
+--
+
+CREATE TABLE `package_day` (
+  `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `package_id` varchar(4) NOT NULL,
+  `day` char(1) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_base_for_extend` varchar(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `package_day`
+--
+
+INSERT INTO `package_day` (`homestay_id`, `package_id`, `day`, `description`, `is_base_for_extend`) VALUES
+('H01', 'P001', '1', 'Menikmati keindahan alam lembah harau', '0'),
+('H01', 'P001', '2', 'Menikmati keindahan alam dan budaya', '0'),
+('H01', 'P002', '1', 'Melihat tabing batu lembah harau', '0'),
+('H01', 'P003', '1', 'Melihat tabing batu lembah harau', '1');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `package_detail`
+--
+
+CREATE TABLE `package_detail` (
+  `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `package_id` varchar(4) NOT NULL,
+  `day` char(1) NOT NULL,
+  `activity` char(1) NOT NULL,
+  `activity_type` char(2) NOT NULL,
+  `id_object` varchar(5) NOT NULL,
+  `description` text NOT NULL,
+  `is_base_for_extend` varchar(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `package_detail`
+--
+
+INSERT INTO `package_detail` (`homestay_id`, `package_id`, `day`, `activity`, `activity_type`, `id_object`, `description`, `is_base_for_extend`) VALUES
+('H01', 'P001', '1', '1', 'A', 'A5', 'Melihat keindahan air tejun aka barayun', '0'),
+('H01', 'P001', '1', '2', 'A', 'A7', 'Melihat keidahaan tebing batu khas lembah harau', '0'),
+('H01', 'P001', '1', '3', 'A', 'A9', 'Bermain air dan berenang di waterpark', '0'),
+('H01', 'P001', '2', '1', 'A', 'A4', 'Melihat keindahan air terjun', '0'),
+('H01', 'P001', '2', '2', 'A', 'A6', 'Belajar  budaya dan melihat bangunan khas budaya minang, eropa, jepang, dan korea', '0'),
+('H01', 'P001', '2', '3', 'S', 'S2', 'Membeli oleh-oleh', '0'),
+('H01', 'P002', '1', '1', 'A', 'A5', 'Melihat air terjun aka barayun dan bermain air ', '0'),
+('H01', 'P002', '1', '2', 'A', 'A7', 'melihat keindahan tebing batu lembah harau ', '0'),
+('H01', 'P002', '1', '3', 'A', 'A4', 'Melihat air terjun dan tanaman-tanaman endemik lembah harau', '0'),
+('H01', 'P003', '1', '1', 'A', 'A5', 'Melihat air terjun aka barayun dan bermain air ', '1'),
+('H01', 'P003', '1', '2', 'A', 'A7', 'melihat keindahan tebing batu lembah harau ', '1'),
+('H01', 'P003', '1', '3', 'A', 'A4', 'Melihat air terjun dan tanaman-tanaman endemik lembah harau', '1');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `package_service`
+--
+
+CREATE TABLE `package_service` (
+  `id` varchar(2) NOT NULL,
+  `name` varchar(25) NOT NULL,
+  `price` int(11) NOT NULL,
+  `category` varchar(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `package_service`
+--
+
+INSERT INTO `package_service` (`id`, `name`, `price`, `category`) VALUES
+('1', 'Guide', 100000, '0'),
+('2', 'Welcome Drink', 10000, '1'),
+('3', 'Documentation', 10000, '1'),
+('4', 'Snack', 10000, '1'),
+('5', 'Transportation Mini MPV', 300000, '0'),
+('6', 'Sound System', 200000, '0');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `package_service_detail`
+--
+
+CREATE TABLE `package_service_detail` (
+  `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `package_id` varchar(4) NOT NULL,
+  `package_service_id` varchar(2) NOT NULL,
+  `status` char(1) NOT NULL,
+  `is_base_for_extend` varchar(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `package_service_detail`
+--
+
+INSERT INTO `package_service_detail` (`homestay_id`, `package_id`, `package_service_id`, `status`, `is_base_for_extend`) VALUES
+('H01', 'P001', '1', '1', '0'),
+('H01', 'P001', '3', '0', '0'),
+('H01', 'P001', '4', '1', '0'),
+('H01', 'P002', '1', '1', '0'),
+('H01', 'P002', '3', '0', '0'),
+('H01', 'P003', '1', '1', '1');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `province`
 --
 
 CREATE TABLE `province` (
-  `id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `geom` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+  `id` varchar(3) NOT NULL,
+  `name` varchar(25) NOT NULL,
+  `geom` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1901,38 +2307,101 @@ INSERT INTO `province` (`id`, `name`, `geom`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `recommendation`
+--
+
+CREATE TABLE `recommendation` (
+  `id` varchar(1) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Dumping data for table `recommendation`
+--
+
+INSERT INTO `recommendation` (`id`, `name`, `created_at`, `updated_at`) VALUES
+('1', 'Highly Recommended', '2023-10-28 15:51:29', '2023-10-28 15:51:29'),
+('2', 'Recommended', '2023-10-28 15:51:29', '2023-10-28 15:51:29'),
+('3', 'Less Recommended', '2023-10-28 15:51:29', '2023-10-28 15:51:29'),
+('4', 'Not Recommended', '2023-10-28 15:51:29', '2023-10-28 15:51:29'),
+('5', 'Maintenance', '2023-10-28 15:51:29', '2023-10-28 15:51:29');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `reservation`
 --
 
 CREATE TABLE `reservation` (
   `id` varchar(4) NOT NULL,
-  `customer_id` int UNSIGNED DEFAULT NULL,
+  `customer_id` int(10) UNSIGNED DEFAULT NULL,
   `reservation_type` varchar(1) NOT NULL DEFAULT '1',
   `request_date` datetime NOT NULL,
   `check_in` datetime NOT NULL,
-  `total_people` int DEFAULT NULL,
-  `review` text,
-  `rating` int DEFAULT NULL,
-  `bonus_coin` int DEFAULT NULL,
-  `coin_use` int DEFAULT NULL,
-  `total_price` int DEFAULT NULL,
-  `deposit` int DEFAULT NULL,
+  `total_people` int(11) DEFAULT NULL,
+  `review` text DEFAULT NULL,
+  `rating` int(11) DEFAULT NULL,
+  `bonus_coin` int(11) DEFAULT NULL,
+  `coin_use` int(11) DEFAULT NULL,
+  `total_price` int(11) DEFAULT NULL,
+  `deposit` int(11) DEFAULT NULL,
   `status` varchar(20) DEFAULT NULL,
-  `deposit_snap_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `pay_full_snap_token` text,
+  `deposit_snap_token` text DEFAULT NULL,
+  `pay_full_snap_token` text DEFAULT NULL,
   `reservation_finish_at` timestamp NULL DEFAULT NULL,
   `is_rejected` varchar(1) DEFAULT NULL,
   `confirmed_at` timestamp NULL DEFAULT NULL,
-  `feedback` text,
+  `feedback` text DEFAULT NULL,
   `canceled_at` timestamp NULL DEFAULT NULL,
-  `cancelation_reason` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `cancelation_reason` varchar(1) DEFAULT NULL,
   `is_refund` char(1) DEFAULT NULL,
   `refund_paid_at` timestamp NULL DEFAULT NULL,
-  `account_refund` text,
-  `refund_proof` text,
-  `is_refund_proof_correct` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `refund_paid_confirmed_at` timestamp NULL DEFAULT NULL
+  `account_refund` text DEFAULT NULL,
+  `refund_proof` text DEFAULT NULL,
+  `is_refund_proof_correct` varchar(1) DEFAULT NULL,
+  `refund_paid_confirmed_at` timestamp NULL DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `reservation`
+--
+
+INSERT INTO `reservation` (`id`, `customer_id`, `reservation_type`, `request_date`, `check_in`, `total_people`, `review`, `rating`, `bonus_coin`, `coin_use`, `total_price`, `deposit`, `status`, `deposit_snap_token`, `pay_full_snap_token`, `reservation_finish_at`, `is_rejected`, `confirmed_at`, `feedback`, `canceled_at`, `cancelation_reason`, `is_refund`, `refund_paid_at`, `account_refund`, `refund_proof`, `is_refund_proof_correct`, `refund_paid_confirmed_at`, `created_at`, `updated_at`) VALUES
+('R010', 48, '1', '2025-12-05 17:56:11', '2025-12-08 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '0', NULL, NULL, '2025-12-05 10:56:26', NULL, NULL, NULL, '2025-12-15 07:02:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R011', 48, '1', '2025-12-15 14:03:31', '2025-12-18 14:00:00', 1, NULL, NULL, NULL, 0, 700000, 140000, '1', NULL, NULL, '2025-12-15 07:03:42', '0', '2025-12-15 08:21:24', NULL, '2025-12-16 11:29:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R012', 48, '1', '2025-12-16 18:29:42', '2025-12-24 14:00:00', 1, NULL, NULL, NULL, 0, 700000, 140000, '1', NULL, NULL, '2025-12-16 11:29:53', '0', '2025-12-16 11:30:24', NULL, '2025-12-30 10:31:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R013', 48, '1', '2025-12-30 17:31:04', '2026-01-07 14:00:00', 1, NULL, NULL, NULL, 0, 1050000, 210000, '1', NULL, NULL, '2025-12-30 10:31:13', '0', '2025-12-30 10:31:50', NULL, '2026-01-05 07:10:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R014', 48, '1', '2026-01-08 17:26:16', '2026-01-13 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '1', NULL, NULL, '2026-01-08 10:26:33', '0', '2026-01-08 10:28:27', NULL, '2026-01-12 06:09:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R015', 48, '1', '2026-01-08 18:51:23', '2026-01-12 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '1', NULL, NULL, '2026-01-08 11:51:30', '0', '2026-01-08 11:51:59', NULL, '2026-01-12 06:09:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R016', 48, '1', '2026-01-08 19:54:57', '2026-01-12 14:00:00', 2, NULL, NULL, NULL, 0, 350000, 70000, '1', NULL, NULL, '2026-01-08 12:55:02', '0', '2026-01-08 12:55:22', NULL, '2026-01-12 06:09:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R017', 48, '1', '2026-01-08 20:01:00', '2026-01-14 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '1', NULL, NULL, '2026-01-08 13:01:04', '0', '2026-01-08 13:01:15', NULL, '2026-01-12 08:08:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R018', 48, '1', '2026-01-08 20:12:42', '2026-01-13 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '1', NULL, NULL, '2026-01-08 13:12:47', '0', '2026-01-08 13:13:02', NULL, '2026-01-12 06:09:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R019', 48, '1', '2026-01-08 20:21:32', '2026-01-14 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '1', NULL, NULL, '2026-01-08 13:21:37', '0', '2026-01-08 13:21:46', NULL, '2026-01-12 08:08:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R020', 48, '1', '2026-01-08 20:25:40', '2026-01-12 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-08 13:25:44', '0', '2026-01-08 13:25:51', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R022', 48, '1', '2026-01-08 21:08:27', '2026-01-17 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Deposit Successful', NULL, NULL, '2026-01-08 14:08:32', '0', '2026-01-08 14:08:53', NULL, '2026-06-15 05:29:00', '3', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R023', 50, '1', '2026-01-12 13:09:06', '2026-01-23 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-12 06:09:11', '0', '2026-01-12 06:09:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R024', 50, '1', '2026-01-12 13:22:07', '2026-01-24 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-12 06:22:15', '0', '2026-01-12 06:22:51', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R025', 50, '1', '2026-01-12 14:27:11', '2026-01-27 14:00:00', 1, NULL, NULL, NULL, 0, 400000, 80000, 'Done', NULL, NULL, '2026-01-12 08:08:33', '0', '2026-01-12 08:08:44', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R026', 50, '1', '2026-01-12 15:32:02', '2026-01-26 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-12 08:34:39', '0', '2026-01-12 08:34:51', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R027', 50, '1', '2026-01-14 17:33:21', '2026-01-30 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-14 10:33:32', '0', '2026-01-14 10:33:47', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R028', 50, '1', '2026-01-14 17:35:13', '2026-01-30 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-14 10:35:20', '0', '2026-01-14 10:35:31', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R029', 50, '1', '2026-01-14 17:45:51', '2026-01-28 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-14 10:45:58', '0', '2026-01-14 10:46:14', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R030', 50, '1', '2026-01-14 17:48:53', '2026-01-29 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-14 10:49:02', '0', '2026-01-14 10:49:11', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R031', 50, '1', '2026-01-14 17:56:27', '2026-01-28 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, 'Done', NULL, NULL, '2026-01-14 10:56:33', '0', '2026-01-14 10:56:44', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R032', 50, '2', '2026-01-21 12:45:32', '2026-01-25 14:00:00', 10, NULL, NULL, NULL, 0, 4635000, 927000, '0', NULL, NULL, '2026-01-21 05:45:54', NULL, NULL, NULL, '2026-07-13 22:57:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R033', 48, '1', '2026-06-14 22:29:14', '2026-06-18 14:00:00', 1, NULL, NULL, NULL, 0, 700000, 140000, '0', NULL, NULL, '2026-06-15 05:29:28', NULL, NULL, NULL, '2026-07-13 22:55:00', '2', '0', NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R034', 50, '1', '2026-07-14 10:31:27', '2026-07-18 14:00:00', 1, NULL, NULL, NULL, 0, 700000, 140000, 'Full Pay Successful', NULL, NULL, '2026-07-14 17:31:37', '0', '2026-07-14 17:32:01', NULL, '2026-07-15 00:29:00', '1', '1', '2026-07-15 16:33:42', 'qweqrr - qwe - 1235456', '1784082820_7a6f510760257d7e8a07.png', NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R035', 50, '1', '2026-07-14 14:15:20', '2026-07-18 14:00:00', 2, NULL, NULL, NULL, 0, 740000, 148000, '1', NULL, NULL, '2026-07-14 23:37:29', '0', '2026-07-14 23:37:44', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R036', 50, '1', '2026-07-14 16:28:40', '2026-07-22 14:00:00', 2, NULL, NULL, NULL, 0, 700000, 140000, '1', NULL, NULL, '2026-07-14 23:31:34', '0', '2026-07-14 23:31:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R037', 50, '1', '2026-07-14 16:34:32', '2026-07-25 14:00:00', 1, NULL, NULL, NULL, 0, 1420000, 140000, '1', NULL, NULL, '2026-07-14 23:34:38', '0', '2026-07-14 23:34:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R038', 50, '1', '2026-07-14 17:18:14', '2026-07-18 14:00:00', 1, NULL, NULL, NULL, 0, 350000, 70000, '0', NULL, NULL, '2026-07-15 00:18:22', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R039', 50, '1', '2026-07-15 09:54:48', '2026-07-31 14:00:00', 1, NULL, NULL, NULL, NULL, 700000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R040', 50, '1', '2026-07-15 10:16:27', '2026-07-31 14:00:00', 1, NULL, NULL, NULL, NULL, 700000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 03:41:08'),
+('R041', 50, '1', '2026-07-15 10:21:37', '2026-07-31 14:00:00', 1, NULL, NULL, NULL, NULL, 700000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-15 03:41:08', '2026-07-15 07:51:47');
 
 -- --------------------------------------------------------
 
@@ -1944,12 +2413,21 @@ CREATE TABLE `reservation_homestay_additional_amenities_detail` (
   `homestay_id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `additional_amenities_id` varchar(3) NOT NULL,
   `reservation_id` varchar(4) NOT NULL,
-  `day_order` int NOT NULL,
-  `person_order` int NOT NULL,
-  `room_order` int NOT NULL,
-  `total_order` int NOT NULL,
-  `total_price` int NOT NULL
+  `day_order` int(11) NOT NULL,
+  `person_order` int(11) NOT NULL,
+  `room_order` int(11) NOT NULL,
+  `total_order` int(11) NOT NULL,
+  `total_price` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `reservation_homestay_additional_amenities_detail`
+--
+
+INSERT INTO `reservation_homestay_additional_amenities_detail` (`homestay_id`, `additional_amenities_id`, `reservation_id`, `day_order`, `person_order`, `room_order`, `total_order`, `total_price`) VALUES
+('H01', '04', 'R025', 0, 0, 1, 1, 50000),
+('H01', '05', 'R035', 0, 2, 0, 1, 40000),
+('H01', '05', 'R037', 0, 1, 0, 1, 20000);
 
 -- --------------------------------------------------------
 
@@ -1965,6 +2443,37 @@ CREATE TABLE `reservation_homestay_unit_detail` (
   `reservation_id` varchar(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `reservation_homestay_unit_detail`
+--
+
+INSERT INTO `reservation_homestay_unit_detail` (`homestay_id`, `unit_type`, `unit_number`, `date`, `reservation_id`) VALUES
+('H01', '1', '1', '2026-01-12', 'R020'),
+('H01', '1', '1', '2026-01-23', 'R023'),
+('H01', '1', '1', '2026-01-24', 'R024'),
+('H01', '1', '1', '2026-01-27', 'R025'),
+('H01', '1', '1', '2026-01-26', 'R026'),
+('H01', '1', '1', '2026-01-30', 'R027'),
+('H01', '1', '2', '2026-01-30', 'R028'),
+('H01', '1', '1', '2026-01-28', 'R029'),
+('H01', '1', '1', '2026-01-29', 'R030'),
+('H01', '1', '2', '2026-01-28', 'R031'),
+('H01', '1', '2', '2026-07-18', 'R035'),
+('H01', '1', '2', '2026-07-19', 'R035'),
+('H01', '1', '1', '2026-07-22', 'R036'),
+('H01', '1', '1', '2026-07-23', 'R036'),
+('H01', '1', '1', '2026-07-25', 'R037'),
+('H01', '1', '1', '2026-07-26', 'R037'),
+('H01', '1', '1', '2026-07-27', 'R037'),
+('H01', '1', '1', '2026-07-28', 'R037'),
+('H01', '1', '3', '2026-07-18', 'R038'),
+('H01', '1', '1', '2026-07-31', 'R039'),
+('H01', '1', '1', '2026-08-01', 'R039'),
+('H01', '1', '2', '2026-07-31', 'R040'),
+('H01', '1', '2', '2026-08-01', 'R040'),
+('H01', '1', '3', '2026-07-31', 'R041'),
+('H01', '1', '3', '2026-08-01', 'R041');
+
 -- --------------------------------------------------------
 
 --
@@ -1979,6 +2488,146 @@ CREATE TABLE `reservation_homestay_unit_detail_backup` (
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `reservation_homestay_unit_detail_backup`
+--
+
+INSERT INTO `reservation_homestay_unit_detail_backup` (`homestay_id`, `unit_type`, `unit_number`, `reservation_id`, `date`) VALUES
+('H01', '1', '1', 'R010', '2025-12-08'),
+('H01', '1', '1', 'R011', '2025-12-18'),
+('H01', '1', '1', 'R011', '2025-12-19'),
+('H01', '1', '1', 'R012', '2025-12-24'),
+('H01', '1', '1', 'R012', '2025-12-25'),
+('H01', '1', '1', 'R013', '2026-01-07'),
+('H01', '1', '1', 'R013', '2026-01-08'),
+('H01', '1', '1', 'R013', '2026-01-09'),
+('H01', '1', '1', 'R014', '2026-01-13'),
+('H01', '1', '2', 'R015', '2026-01-12'),
+('H01', '1', '4', 'R016', '2026-01-12'),
+('H01', '1', '1', 'R017', '2026-01-14'),
+('H01', '1', '2', 'R018', '2026-01-13'),
+('H01', '1', '2', 'R019', '2026-01-14'),
+('H01', '1', '1', 'R022', '2026-01-17'),
+('H01', '1', '1', 'R032', '2026-01-25'),
+('H01', '1', '10', 'R032', '2026-01-25'),
+('H01', '1', '11', 'R032', '2026-01-25'),
+('H01', '1', '12', 'R032', '2026-01-25'),
+('H01', '1', '13', 'R032', '2026-01-25'),
+('H01', '1', '14', 'R032', '2026-01-25'),
+('H01', '1', '2', 'R032', '2026-01-25'),
+('H01', '1', '3', 'R032', '2026-01-25'),
+('H01', '1', '4', 'R032', '2026-01-25'),
+('H01', '1', '5', 'R032', '2026-01-25'),
+('H01', '1', '6', 'R032', '2026-01-25'),
+('H01', '1', '7', 'R032', '2026-01-25'),
+('H01', '1', '8', 'R032', '2026-01-25'),
+('H01', '1', '9', 'R032', '2026-01-25'),
+('H01', '1', '1', 'R033', '2026-06-18'),
+('H01', '1', '1', 'R033', '2026-06-19'),
+('H01', '1', '1', 'R034', '2026-07-18'),
+('H01', '1', '1', 'R034', '2026-07-19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reservation_package_detail`
+--
+
+CREATE TABLE `reservation_package_detail` (
+  `id` int(11) NOT NULL,
+  `reservation_id` varchar(255) NOT NULL,
+  `package_id` varchar(255) NOT NULL,
+  `package_order` float DEFAULT 1,
+  `package_total_price` int(11) DEFAULT 0,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service`
+--
+
+CREATE TABLE `service` (
+  `id` varchar(2) NOT NULL,
+  `service_provider_id` varchar(2) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `price` int(10) UNSIGNED NOT NULL,
+  `unit_price` varchar(25) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Dumping data for table `service`
+--
+
+INSERT INTO `service` (`id`, `service_provider_id`, `name`, `price`, `unit_price`, `created_at`, `updated_at`) VALUES
+('01', 'V1', 'Sewa Sepeda', 15000, 'jam', '2023-12-02 18:48:31', '2023-12-02 18:48:31'),
+('02', 'V2', 'Sewa Kuda', 10000, 'orang', '2023-12-02 18:52:28', '2023-12-02 18:52:28'),
+('03', 'V3', 'Sewa Tenda 200cm x 200cm', 40000, 'hari', '2023-12-02 18:59:28', '2023-12-02 19:01:28'),
+('04', 'V3', 'Sewa Tenda 300cm x 400cm', 60000, 'hari', '2023-12-02 19:00:08', '2023-12-02 19:01:16'),
+('05', 'V3', 'Sewa Lahan Camping 5m x 5m', 25000, 'hari', '2023-12-02 19:01:04', '2023-12-02 19:01:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service_provider`
+--
+
+CREATE TABLE `service_provider` (
+  `id` varchar(2) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `employee_name` varchar(25) DEFAULT NULL,
+  `phone` varchar(13) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `open` time DEFAULT NULL,
+  `close` time DEFAULT NULL,
+  `geom` geometry DEFAULT NULL,
+  `lat` decimal(10,8) NOT NULL,
+  `lng` decimal(11,8) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Dumping data for table `service_provider`
+--
+
+INSERT INTO `service_provider` (`id`, `name`, `address`, `employee_name`, `phone`, `description`, `open`, `close`, `geom`, `lat`, `lng`, `created_at`, `updated_at`) VALUES
+('V1', 'Sewa Sepeda KTH Aka Barayun', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, NULL, '09:00:00', '17:00:00', 0xe610000001030000000100000005000000b5134df8912a594079dd338736a8b9bfb413c58e922a594065c0f9e679aab9bfb41375c1912a5940afaeb7060cadb9bfb513f523912a5940d7ebf60696aab9bfb5134df8912a594079dd338736a8b9bf, '-0.10025986', '100.66515192', '2023-12-02 18:45:51', '2023-12-02 18:45:51'),
+('V2', 'Bintang Stable Sewa Kuda', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', NULL, NULL, NULL, '10:00:00', '17:00:00', 0xe610000001030000000100000009000000c42f1dfba42a59404e36d21ba4f3bcbfc32ffd54a72a59408efa611ae4febcbfc32fdd19a82a5940749eb21a6efcbcbfc32fdd54a92a5940dff7081bcbf9bcbfc22f7d00a92a5940b2007c1b47f6bcbfc32f7defaa2a5940880eec9bd9f2bcbfc42f5df2a92a5940c3b9ce1ce8ebbcbfc32f1d36a62a5940b1162e1cd4f0bcbfc42f1dfba42a59404e36d21ba4f3bcbf, '-0.11311949', '100.66650136', '2023-12-02 18:51:39', '2023-12-02 18:51:39'),
+('V3', 'Camping Ground Sarasah Bunta', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Ujang', '082383456008', NULL, '00:00:00', '23:59:00', 0xe610000001030000000100000005000000ef5b8355562b5940171ae3c16601bcbff05b437a532b594079bf7fc0000dbcbfee5b8336572b594047a1c4be6a1bbcbfef5bc3e4592b5940af2b6ac0b40dbcbfef5b8355562b5940171ae3c16601bcbf, '-0.10959487', '100.67716587', '2023-12-02 18:55:32', '2023-12-02 18:55:32');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service_provider_gallery`
+--
+
+CREATE TABLE `service_provider_gallery` (
+  `id` varchar(3) NOT NULL,
+  `service_provider_id` varchar(2) NOT NULL,
+  `url` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Dumping data for table `service_provider_gallery`
+--
+
+INSERT INTO `service_provider_gallery` (`id`, `service_provider_id`, `url`, `created_at`, `updated_at`) VALUES
+('001', 'V1', 'V1-1.jpg', '2023-12-02 18:45:51', '2023-12-02 18:45:51'),
+('002', 'V2', 'V2-1.jpg', '2023-12-02 18:51:39', '2023-12-02 18:51:39'),
+('003', 'V2', 'V2-2.jpg', '2023-12-02 18:51:39', '2023-12-02 18:51:39'),
+('004', 'V2', 'V2-3.jpg', '2023-12-02 18:51:39', '2023-12-02 18:51:39'),
+('005', 'V2', 'V2-4.jpg', '2023-12-02 18:51:39', '2023-12-02 18:51:39'),
+('006', 'V3', 'V3-1.jpg', '2023-12-02 18:55:32', '2023-12-02 18:55:32'),
+('007', 'V3', 'V3-2.jpg', '2023-12-02 18:55:32', '2023-12-02 18:55:32');
+
 -- --------------------------------------------------------
 
 --
@@ -1990,29 +2639,27 @@ CREATE TABLE `souvenir_place` (
   `village_id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `name` varchar(50) NOT NULL,
   `address` varchar(100) DEFAULT NULL,
-  `employee_name` varchar(25) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `phone` varchar(13) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `employee_name` varchar(25) DEFAULT NULL,
+  `phone` varchar(13) DEFAULT NULL,
   `open` time DEFAULT NULL,
   `close` time DEFAULT NULL,
   `geom` geometry DEFAULT NULL,
   `lat` decimal(10,8) NOT NULL,
   `lng` decimal(11,8) NOT NULL,
-  `description` text,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `souvenir_place`
 --
 
 INSERT INTO `souvenir_place` (`id`, `village_id`, `name`, `address`, `employee_name`, `phone`, `open`, `close`, `geom`, `lat`, `lng`, `description`, `created_at`, `updated_at`) VALUES
-('S1', '1', 'Galeri Seni', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Putri', '085267256677', '09:00:00', '18:00:00', 0xe610000001030000000100000005000000f91c9feb981f5940b693dd870756ddbff91c9f539a1f594090ba82c8b855ddbff91c5f759a1f59400d3d9306a556ddbffa1cff3f991f594098a50586e856ddbff91c9feb981f5940b693dd870756ddbf, -0.45839325, 100.49375546, 'Galeri Seni is a souvenir shop located in Nagari Tuo Pariangan. It offers a wide range of unique souvenirs that reflect the rich heritage of Nagari Tuo Pariangan.', '2024-10-25 03:51:07', '2025-01-10 01:18:45'),
-('S2', '1', 'Rumah UKM Batik Nagari Tuo Pariangan', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 'Martini', '081266124955', '21:00:00', '06:00:00', 0xe610000001030000000100000006000000bb04dbc2681f59403dbd097af00addbfbc043bf8691f59402b655f7ed408ddbfbc04fb276b1f59409c9d259ef008ddbfba04fb086c1f5940c77b3e1d6109ddbfbc041bbd6a1f5940961124b8dc0bddbfbb04dbc2681f59403dbd097af00addbf, -0.45375648, 100.49086903, 'Rumah UKM Batik Nagari Tuo Pariangan is a small business specializing in creating traditional batik unique to Nagari Tuo Pariangan. It offers a variety of distinctive batik patterns that showcase the cultural richness of Pariangan.', '2024-10-25 04:04:07', '2025-01-10 01:19:39'),
-('S5', NULL, 'Wida Gallery 99 Sarasah Bunta', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Wida', '082344125645', '10:00:00', '18:00:00', 0xe61000000103000000010000000500000086127dfd3a2b59400c2bed4b08e9bbbf8512fdf43b2b5940e17ff24bdbe8bbbf86127d0b3c2b5940517b374b02efbbbf8612bd083b2b5940232c424ba8eebbbf86127dfd3a2b59400c2bed4b08e9bbbf, -0.10906880, 100.67550766, 'Selamat datang di Wida Gallery 99, destinasi yang memukau untuk menemukan cinderamata istimewa, yang terletak di dekat Sarasah Bunta! Wida Gallery 99 merupakan surga bagi para pencinta souvenir, menawarkan pengalaman berbelanja yang tak terlupakan di tengah-tengah keindahan lokal yang khas.', '2023-12-01 14:13:53', '2023-12-01 16:15:15'),
-('S6', NULL, 'Harau Collection & Souvenir', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Iwan', '082267348821', '10:00:00', '18:00:00', 0xe610000001030000000100000006000000fa7e921d732a5940edfd04e0c8febcbffa7e0215752a59402e0a0a80a1febcbffa7e1223752a594030bc775f1703bdbffb7ed228732a59407f346c5f7103bdbffa7e921d732a5940edfd04e0c8febcbffa7e921d732a5940edfd04e0c8febcbf, -0.11329707, 100.66333778, 'Selamat datang di Harau Collection & Souvenir, destinasi yang memukau untuk menemukan cinderamata istimewa, yang terletak di Lembah Harau. Harau Collection & Souvenir merupakan surga bagi para pencinta souvenir, menawarkan pengalaman berbelanja yang tak terlupakan di tengah-tengah keindahan lokal yang khas.', '2023-12-01 16:44:52', '2023-12-01 16:45:32'),
-('S7', NULL, 'Harau Cell & Fashion', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Andi', '082211213349', '10:00:00', '18:00:00', 0xe610000001030000000100000006000000df514b7e4b2b5940b3e53046e1e0bbbfdd51b3524b2b594083f9ae252ae5bbbfdd5173554c2b5940c44d94250be6bbbfdd51f36b4c2b594095961926a6e1bbbfdf51b3ac4b2b5940dd902b460ee1bbbfdf514b7e4b2b5940b3e53046e1e0bbbf, -0.10893954, 100.67650588, 'Harau Cell & Fashion bukan hanya sekadar toko, melainkan pusat inspirasi yang memadukan kecantikan budaya dan fesyen terkini. Dengan atmosfer yang ramah dan penuh semangat, setiap pengunjung diundang untuk menjelajahi koleksi souvenir yang dipilih dengan cermat dan penuh cinta.', '2023-12-01 17:16:18', '2023-12-01 17:17:47'),
-('S8', NULL, 'Sarasah Bunta Garden', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Wan', '081287723412', '09:00:00', '18:00:00', 0xe61000000103000000010000000500000038c2b2224d2b5940e301fbf550e7bbbf37c2f2684e2b59407c50d0f5b8e8bbbf37c2f20e4e2b5940757455f5c3ecbbbf38c272ea4c2b5940d83990f5d4eabbbf38c2b2224d2b5940e301fbf550e7bbbf, -0.10903993, 100.67661517, 'Sarasah Bunta Garden bagaikan oase yang memelihara tanaman-tanaman endemik yang tumbuh subur di kawasan ini. Setiap sudut taman dipenuhi dengan keindahan alami dan aroma harum dari berbagai jenis tanaman yang khas. Dari flora yang langka hingga tanaman hias yang menawan, setiap pot dan wadah dipilih dengan hati untuk memamerkan keunikan dan keindahan masing-masing.', '2023-12-01 17:44:34', '2023-12-01 17:44:34');
+('S1', '1', 'Wida Gallery 99 Sarasah Bunta', 'Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Wida', '082344125645', '10:00:00', '18:00:00', 0xe61000000103000000010000000500000086127dfd3a2b59400c2bed4b08e9bbbf8512fdf43b2b5940e17ff24bdbe8bbbf86127d0b3c2b5940517b374b02efbbbf8612bd083b2b5940232c424ba8eebbbf86127dfd3a2b59400c2bed4b08e9bbbf, '-0.10906880', '100.67550766', 'Selamat datang di Wida Gallery 99, destinasi yang memukau untuk menemukan cinderamata istimewa, yang terletak di dekat Sarasah Bunta! Wida Gallery 99 merupakan surga bagi para pencinta souvenir, menawarkan pengalaman berbelanja yang tak terlupakan di tengah-tengah keindahan lokal yang khas.', '2023-12-01 14:13:53', '2023-12-01 16:15:15'),
+('S2', '1', 'Harau Collection & Souvenir', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Iwan', '082267348821', '10:00:00', '18:00:00', 0xe610000001030000000100000006000000fa7e921d732a5940edfd04e0c8febcbffa7e0215752a59402e0a0a80a1febcbffa7e1223752a594030bc775f1703bdbffb7ed228732a59407f346c5f7103bdbffa7e921d732a5940edfd04e0c8febcbffa7e921d732a5940edfd04e0c8febcbf, '-0.11329707', '100.66333778', 'Selamat datang di Harau Collection & Souvenir, destinasi yang memukau untuk menemukan cinderamata istimewa, yang terletak di Lembah Harau. Harau Collection & Souvenir merupakan surga bagi para pencinta souvenir, menawarkan pengalaman berbelanja yang tak terlupakan di tengah-tengah keindahan lokal yang khas.', '2023-12-01 16:44:52', '2023-12-01 16:45:32'),
+('S3', '1', 'Harau Cell & Fashion', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Andi', '082211213349', '10:00:00', '18:00:00', 0xe610000001030000000100000006000000df514b7e4b2b5940b3e53046e1e0bbbfdd51b3524b2b594083f9ae252ae5bbbfdd5173554c2b5940c44d94250be6bbbfdd51f36b4c2b594095961926a6e1bbbfdf51b3ac4b2b5940dd902b460ee1bbbfdf514b7e4b2b5940b3e53046e1e0bbbf, '-0.10893954', '100.67650588', 'Harau Cell & Fashion bukan hanya sekadar toko, melainkan pusat inspirasi yang memadukan kecantikan budaya dan fesyen terkini. Dengan atmosfer yang ramah dan penuh semangat, setiap pengunjung diundang untuk menjelajahi koleksi souvenir yang dipilih dengan cermat dan penuh cinta.', '2023-12-01 17:16:18', '2023-12-01 17:17:47'),
+('S4', '1', 'Sarasah Bunta Garden', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 'Wan', '081287723412', '09:00:00', '18:00:00', 0xe61000000103000000010000000500000038c2b2224d2b5940e301fbf550e7bbbf37c2f2684e2b59407c50d0f5b8e8bbbf37c2f20e4e2b5940757455f5c3ecbbbf38c272ea4c2b5940d83990f5d4eabbbf38c2b2224d2b5940e301fbf550e7bbbf, '-0.10903993', '100.67661517', 'Sarasah Bunta Garden bagaikan oase yang memelihara tanaman-tanaman endemik yang tumbuh subur di kawasan ini. Setiap sudut taman dipenuhi dengan keindahan alami dan aroma harum dari berbagai jenis tanaman yang khas. Dari flora yang langka hingga tanaman hias yang menawan, setiap pot dan wadah dipilih dengan hati untuk memamerkan keunikan dan keindahan masing-masing.', '2023-12-01 17:44:34', '2023-12-01 17:44:34');
 
 -- --------------------------------------------------------
 
@@ -2043,7 +2690,7 @@ INSERT INTO `souvenir_place_facility` (`id`, `name`, `created_at`, `updated_at`)
 
 CREATE TABLE `souvenir_place_facility_detail` (
   `souvenir_place_id` varchar(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `souvenir_place_facility_id` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `souvenir_place_facility_id` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -2053,8 +2700,12 @@ CREATE TABLE `souvenir_place_facility_detail` (
 INSERT INTO `souvenir_place_facility_detail` (`souvenir_place_id`, `souvenir_place_facility_id`) VALUES
 ('S1', '01'),
 ('S2', '01'),
+('S3', '01'),
+('S4', '01'),
 ('S1', '02'),
-('S2', '02');
+('S2', '02'),
+('S3', '02'),
+('S4', '02');
 
 -- --------------------------------------------------------
 
@@ -2063,26 +2714,28 @@ INSERT INTO `souvenir_place_facility_detail` (`souvenir_place_id`, `souvenir_pla
 --
 
 CREATE TABLE `souvenir_place_gallery` (
-  `id` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `id` varchar(3) NOT NULL,
   `souvenir_place_id` varchar(2) NOT NULL,
-  `url` text,
+  `url` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `souvenir_place_gallery`
 --
 
 INSERT INTO `souvenir_place_gallery` (`id`, `souvenir_place_id`, `url`, `created_at`, `updated_at`) VALUES
-('017', 'S1', '1736518713_0bb94d0165d062bff32d.jpg', '2025-01-10 01:18:45', '2025-01-10 01:18:45'),
-('018', 'S1', '1736518713_151743965a84e2270944.jpg', '2025-01-10 01:18:45', '2025-01-10 01:18:45'),
-('019', 'S1', '1736518713_a085e26c748369920488.jpg', '2025-01-10 01:18:45', '2025-01-10 01:18:45'),
-('020', 'S1', '1736518714_9d9d8f744c82d938754c.jpg', '2025-01-10 01:18:45', '2025-01-10 01:18:45'),
-('021', 'S1', '1736518713_0d1db409ef0555862542.jpg', '2025-01-10 01:18:45', '2025-01-10 01:18:45'),
-('022', 'S2', '1736518738_bd7481d7ede26aa9890b.jpg', '2025-01-10 01:19:39', '2025-01-10 01:19:39'),
-('023', 'S2', '1736518738_df399012aabff9994fd1.jpg', '2025-01-10 01:19:39', '2025-01-10 01:19:39'),
-('024', 'S2', '1736518738_baaf5e80ae69c2a0e729.jpg', '2025-01-10 01:19:39', '2025-01-10 01:19:39');
+('001', 'S1', 'S1-1.jpg', '2023-12-01 16:15:16', '2023-12-01 16:15:16'),
+('002', 'S1', 'S1-2.jpg', '2023-12-01 16:15:16', '2023-12-01 16:15:16'),
+('003', 'S2', 'S2-1.jpg', '2023-12-01 16:45:32', '2023-12-01 16:45:32'),
+('004', 'S2', 'S2-2.jpg', '2023-12-01 16:45:32', '2023-12-01 16:45:32'),
+('005', 'S2', 'S2-3.jpg', '2023-12-01 16:45:32', '2023-12-01 16:45:32'),
+('006', 'S3', 'S3-1.jpg', '2023-12-01 17:17:47', '2023-12-01 17:17:47'),
+('007', 'S3', 'S3-2.jpg', '2023-12-01 17:17:47', '2023-12-01 17:17:47'),
+('008', 'S4', 'S4-1.jpg', '2023-12-01 17:44:34', '2023-12-01 17:44:34'),
+('009', 'S4', 'S4-2.jpg', '2023-12-01 17:44:34', '2023-12-01 17:44:34'),
+('010', 'S4', 'S4-3.jpg', '2023-12-01 17:44:34', '2023-12-01 17:44:34');
 
 -- --------------------------------------------------------
 
@@ -2095,19 +2748,22 @@ CREATE TABLE `souvenir_product` (
   `name` varchar(50) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `souvenir_product`
 --
 
 INSERT INTO `souvenir_product` (`id`, `name`, `created_at`, `updated_at`) VALUES
-('01', 'Batik Nagari Tuo Pariangan', '2024-10-25 03:54:38', '2024-10-25 03:54:42'),
-('02', 'Gantungan Kunci Sendal', '2024-10-25 03:55:22', '2024-10-25 03:55:22'),
-('03', 'Songket Nagari Tuo Pariangan', '2024-10-25 03:55:35', '2024-10-25 03:55:35'),
-('04', 'Topi Batik Khas Pariangan', '2024-10-25 03:56:13', '2024-10-25 03:56:13'),
-('05', 'Kerajinan Tangan Limbah Plastik Tas Tangan', '2024-10-25 03:57:27', '2024-10-25 03:57:27'),
-('06', 'Kerajinan Tangan Tas Kain', '2024-10-25 04:19:39', '2024-10-25 04:19:39');
+('02', 'Baju Piyama Wisata', '2023-11-06 18:19:46', '2023-12-01 16:25:14'),
+('03', 'Gantungan Kunci', '2023-11-06 18:22:31', '2023-12-01 16:25:41'),
+('04', 'Miniatur Rumah Gadang', '2023-11-07 12:03:04', '2023-12-01 16:25:57'),
+('05', 'Baju Kaos Wisata', '2023-11-07 16:45:41', '2023-12-01 16:26:13'),
+('06', 'Tas Rajutan', '2023-12-01 16:26:28', '2023-12-01 16:26:28'),
+('07', 'Gelang Tangan', '2023-12-01 16:26:40', '2023-12-01 16:26:40'),
+('08', 'Pakis Monyet', '2023-12-01 16:27:00', '2023-12-01 16:27:00'),
+('09', 'Topi Pantai', '2023-12-01 17:28:44', '2023-12-01 17:28:44'),
+('10', 'Kacamata Sunglasses', '2023-12-01 17:37:44', '2023-12-01 17:37:44');
 
 -- --------------------------------------------------------
 
@@ -2118,25 +2774,30 @@ INSERT INTO `souvenir_product` (`id`, `name`, `created_at`, `updated_at`) VALUES
 CREATE TABLE `souvenir_product_detail` (
   `souvenir_place_id` varchar(2) NOT NULL,
   `souvenir_product_id` varchar(2) NOT NULL,
-  `price` int UNSIGNED NOT NULL,
-  `image_url` text,
-  `description` text,
+  `price` int(10) UNSIGNED NOT NULL,
+  `image_url` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `souvenir_product_detail`
 --
 
 INSERT INTO `souvenir_product_detail` (`souvenir_place_id`, `souvenir_product_id`, `price`, `image_url`, `description`, `created_at`, `updated_at`) VALUES
-('S1', '01', 200000, '1729872735_9afa37f516ad8beac01e.jpg', 'Batik Khas Nagari Tuo Pariangan\r\n', '2024-10-25 04:12:25', '2024-10-25 04:12:25'),
-('S1', '02', 10000, '1729872762_ec76a4cd974506678e13.jpg', 'Kerajinan Tangan Gantungan Kunci Sendal terbuat dari   karet khusus dan kulit sintetis', '2024-10-25 04:14:16', '2024-10-25 04:14:16'),
-('S1', '03', 350000, '1729872873_f10454f30383ec9bc3f6.jpg', 'Songket khas Nagari Tuo Pariangan dengan motif khas Pariangan', '2024-10-25 04:15:01', '2024-10-25 04:15:01'),
-('S1', '04', 100000, '1729872974_44d689115c64690a6fa3.jpg', 'Bermotif batik khas Pariangan', '2024-10-25 04:16:40', '2024-10-25 04:16:40'),
-('S1', '05', 35000, '1729873140_00df20a5ba32c35f7537.jpg', 'Terbuat dari limbah plastik', '2024-10-25 04:19:20', '2024-10-25 04:19:20'),
-('S1', '06', 50000, '1729873199_826f4040b7787956ef47.jpg', 'Kerajinan tangan tas berbahan dasar kain bermotif\r\n', '2024-10-25 04:20:27', '2024-10-25 04:20:27'),
-('S2', '01', 150000, '1729872687_689a5dc9724284bee54e.jpg', 'Batik Khas Nagari Tuo Pariangan', '2024-10-25 04:11:40', '2024-10-25 04:11:40');
+('S1', '03', 2000, 'S1P-1.jpg', NULL, '2023-12-01 16:38:30', '2023-12-01 16:38:30'),
+('S1', '05', 30000, 'S1P-2.jpg', 'Setiap baju kaos ini adalah potongan fesyen yang menceritakan cerita destinasi yang memikat. Dibuat dengan perhatian terhadap detail, kaos ini menjadi pilihan sempurna untuk mereka yang ingin merayakan dan mengenang setiap perjalanan mereka. Desainnya yang cerdas dan nyaman memastikan bahwa Anda tidak hanya terlihat modis, tetapi juga merasa nyaman sepanjang hari.', '2023-12-01 16:37:01', '2023-12-01 16:37:01'),
+('S1', '06', 35000, 'S1P-3.jpg', 'Tas rajutan ini bukan sekadar aksesori, melainkan cerminan seni dan dedikasi pengrajinnya. Terbuat dari serat alami yang lembut dan tahan lama, setiap tas menjadi sebuah karya seni yang menggabungkan keanggunan fungsionalitas dengan daya tarik estetika.', '2023-12-01 16:29:17', '2023-12-01 16:29:17'),
+('S1', '07', 4000, 'S1P-4.jpg', 'Gelang ini adalah perwujudan sempurna dari seni kerajinan tangan yang menggabungkan kehalusan dan keindahan. Dibuat dengan hati-hati oleh tangan ahli pengrajin, gelang ini bukan hanya sebuah aksesori, melainkan simbol dari keterampilan tinggi dan dedikasi terhadap seni.', '2023-12-01 16:34:31', '2023-12-01 16:39:09'),
+('S2', '02', 35000, 'S2P-1.jpg', 'Setiap baju piyama ini adalah penggabungan harmonis antara kenyamanan dan inspirasi perjalanan. Terbuat dari bahan lembut yang memeluk tubuh dengan lembut, setiap sentuhan kain seperti memeluk kehangatan kasih sayang. Desainnya yang cerdas dan ergonomis memastikan tidur Anda menjadi pengalaman yang mewah, seolah-olah Anda berada dalam perjalanan indah di malam hari.', '2023-12-01 16:47:41', '2023-12-01 16:47:41'),
+('S2', '03', 2000, 'S2P-2.jpg', NULL, '2023-12-01 16:49:25', '2023-12-01 16:49:25'),
+('S2', '04', 120000, 'S2P-3.jpg', 'Setiap miniatur rumah gadang adalah pameran keahlian tinggi pengrajin yang mengabadikan kecantikan dan keunikannya. Dengan cermat dan teliti, setiap goresan menggambarkan keindahan arsitektur khas, dari atap bergonjong hingga hiasan-hiasan artistik yang menghiasi dindingnya. Setiap detail mengandung pesan sejarah dan nilai-nilai kultural yang diwariskan dari generasi ke generasi.', '2023-12-01 16:50:55', '2023-12-01 16:50:55'),
+('S3', '02', 35000, 'S3P-1.jpg', NULL, '2023-12-01 17:26:19', '2023-12-01 17:26:19'),
+('S3', '05', 30000, 'S3P-2.jpg', NULL, '2023-12-01 17:26:57', '2023-12-01 17:26:57'),
+('S3', '09', 40000, 'S3P-3.jpg', NULL, '2023-12-01 17:30:59', '2023-12-01 17:30:59'),
+('S3', '10', 35000, 'S3P-4.jpg', NULL, '2023-12-01 17:38:27', '2023-12-01 17:38:27'),
+('S4', '08', 25000, 'S4P-1.jpg', NULL, '2023-12-01 17:46:48', '2023-12-01 17:46:48');
 
 -- --------------------------------------------------------
 
@@ -2145,9 +2806,9 @@ INSERT INTO `souvenir_product_detail` (`souvenir_place_id`, `souvenir_product_id
 --
 
 CREATE TABLE `subdistrict` (
-  `id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `geom` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+  `id` varchar(3) NOT NULL,
+  `name` varchar(25) NOT NULL,
+  `geom` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -2172,33 +2833,89 @@ INSERT INTO `subdistrict` (`id`, `name`, `geom`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tourist_area`
+--
+
+CREATE TABLE `tourist_area` (
+  `id` varchar(2) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `address` text NOT NULL,
+  `open` time NOT NULL,
+  `close` time NOT NULL,
+  `ticket_price` int(11) NOT NULL,
+  `contact_person` varchar(13) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `video_url` text DEFAULT NULL,
+  `geom` geometry DEFAULT NULL,
+  `lat` decimal(10,8) DEFAULT NULL,
+  `lng` decimal(11,8) DEFAULT NULL,
+  `facebook` varchar(50) DEFAULT NULL,
+  `instagram` varchar(50) DEFAULT NULL,
+  `youtube` varchar(50) DEFAULT NULL,
+  `tiktok` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tourist_area`
+--
+
+INSERT INTO `tourist_area` (`id`, `name`, `address`, `open`, `close`, `ticket_price`, `contact_person`, `description`, `video_url`, `geom`, `lat`, `lng`, `facebook`, `instagram`, `youtube`, `tiktok`) VALUES
+('1', 'Lembah Harau', 'Lembah Harau Street, Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia, 25156', '08:00:00', '05:00:00', 5000, '081261499095', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ex lectus, malesuada ut feugiat id, scelerisque ac dui. Phasellus egestas posuere vestibulum. Proin ac elementum erat. Nunc gravida sollicitudin gravida. Sed quis diam non nisl imperdiet porttitor. Vivamus molestie arcu non mauris finibus gravida non eu erat. In eget enim a nisi dapibus elementum vitae id leo. Nunc sit amet neque non lacus molestie varius. Cras gravida ornare nisl, sed imperdiet augue efficitur id. Sed ac felis blandit, blandit nisl ac, mollis nisl. Nam nibh dolor, laoreet vel justo sed, aliquet maximus massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', NULL, 0xe610000001030000000100000035000000c33bc741202a5940476a4554f3c7bebf4681caf2242a594087d1d3ee53d0bebfacc1814e322a5940d55c11a635e1bebfabc1814a452a5940dc9b9ca315f2bebfadc1818c5d2a5940c32725a1f502bfbfacc1812e702a594048431da0fd09bfbfacc1817e892a5940a3e8149f0511bfbfacc18190a42a5940ae07ab9ed513bfbfabc1819ab82a59407d0cd79d7519bfbfacc1817ac92a5940d7a99797a543bfbfacc18152d32a5940f8876e907573bfbfacc1812add2a5940e3c38a887da7bfbfabc181b6e72a59406cdce57fbddfbfbf6576822df52a59400a25a73ccd02c0bf6376828ffc2a594066468f3a2910c0bf647682171a2b594072fe478892a4bfbf64768295232b594088620b8e9a7ebfbf647682b3322b594087d5dd9ad228bfbf64768257522b5940ef9f4ac04223bebf637682975d2b594004eb06cc7acdbdbf6476823f6a2b5940a823fde31218bdbf6576828d762b5940eba688fc9a54bcbf647682b38c2b5940f85ac3203b1fbbbf637682479e2b59400ab08f34d369babf6476827dc22b59401d5a7e4d8b76b9bf647682cbce2b59400246155bebe9b8bf64768217ce2b5940f897ac5c0bd9b8bf6476825fb32b59402c3473675364b8bf64768231962b594069191f6b8b3bb8bf64768229622b5940ec9e7f6b5337b8bfac001d8a0c2b5940e40735321e66b8bfab001d76e42a59400c010830067eb8bfab001dc4c32a594056505e2ba6b0b8bf45d34089b02a59403bf82e9681efb8bf45d3408d9d2a5940f1bb2a8c9157b9bf45d3404b852a59405580f88011c8b9bf45d340fb6b2a5940700abc771122babf46d340e1492a5940a1321a69e1abbabf45d34045312a5940818be36569c9babf45d340ad052a5940d84ecf66f9c0babf45d34033e92959409ea5cb6d4980babf45d340abcb2959403aed4b6f3972babf44d340d9bb2959400d33ff6e0975babf45d340ef96295940456c706cf18cbabf45d3403dd0295940b67c5a41a108bcbf46d3408ff62959401ceb1a2669e5bcbf45d3408b092a5940e21265175157bdbf45d340d9152a5940c5bb810a59b8bdbf45d340791b2a5940f79e890171fabdbf44d340b11f2a594057a725fbd828bebf45d34043242a59406d1b20f09877bebf45d340e9232a5940b77e86e900a6bebfc33bc741202a5940476a4554f3c7bebf, '-0.11004370', '100.66716704', NULL, NULL, NULL, NULL),
+('L1', 'Lembah Harau', 'Lembah Harau Street, Tarantang village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province, Indonesia, 25156', '08:00:00', '17:00:00', 5000, '081261499095', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ex lectus, malesuada ut feugiat id, scelerisque ac dui. Phasellus egestas posuere vestibulum. Proin ac elementum erat. Nunc gravida sollicitudin gravida. Sed quis diam non nisl imperdiet porttitor. Vivamus molestie arcu non mauris finibus gravida non eu erat. In eget enim a nisi dapibus elementum vitae id leo. Nunc sit amet neque non lacus molestie varius. Cras gravida ornare nisl, sed imperdiet augue efficitur id. Sed ac felis blandit, blandit nisl ac, mollis nisl. Nam nibh dolor, laoreet vel justo sed, aliquet maximus massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', NULL, 0xe610000001030000000100000040000000639fc0741f2a5940645edea446cebebf639fc06b282a59408ad093a218debebf639f40bf362a5940f3ed749f8af3bebf639f4080482a5940dd0bfa9a2012bfbf649f40ec632a5940327eda988a20bfbf649fc0aa702a5940ffebbf983e21bfbf639fc068852a5940255148986824bfbf909b1e3ca22a5940dc94a1406d2bbfbf909b1e8cbb2a59406157cc3f0d31bfbf919b1ed4cd2a5940f247ef396d58bfbf909b1e14d92a594098914f320d8bbfbfb4cd0881e72a594093fb5f2a15bfbfbfb4cd0807f82a59404f1ec6224df0bfbfb4cd0877002b59407dd0318f3606c0bfb4cd0837222b5940fbfdcc333581bfbfb3cd089e332b594024f881a07523bfbfb4cd084e472b5940d656c489557abebf912010cd5c2b59407a32b3a15dcdbdbf912010186c2b5940659b5b543bfbbcbf90201085772b594082ec3faff936bcbf902010a3862b5940e9a4f5c6e16dbbbf2dcace028c2b5940b2ce39e5a11fbbbf2ccace42972b59401957b6f091b7babf2dcacefe9e2b59403273ba26356dbabf8205c07bb02b5940bc3f2251fdf1b9bff253197dc32b5940963e245e9d70b9bfde8dee69cf2b5940b96ef66bdfeeb8bfdf8deed4cd2b5940a71ae36d7bdab8bfbf26ec6bb32b5940952c745ceb5eb8bfbe26ec10962b59402c897d5f2b3db8bfc026ecb9652b5940011dde5ff338b8bfc026ec783d2b59401bad985d4352b8bfc026ec09252b5940f203a55ccf5cb8bfc026ec67122b59409d1a025cd763b8bfc026ec4be32a59407e596259ab80b8bf8a6705edc32a594053f31b5513afb8bf8ad46348b02a594068ca7dd52deeb8bf8ad4631ca02a59401f4fc8cce148b9bf89d463ed922a59408b668fc62988b9bf8953cd08822a5940092302ec6ed3b9bf8953cd74702a594049e5a9e54e11babfd8fd95d9682a5940cd3e0fc09f2dbabfd7fd9537562a5940f78131b82778babf24e727e9482a594054590d6b45abbabf24e727a7302a594003d6d667cdc8babf24e727b2072a594083cbe968f5bebabf25e7273be8295940e34ff86f917dbabf24e727cfcc295940ff708b71cd6ebabf89e8dd45bb29594092410571b973babf89e8dd0f97295940956b636e558cbabf89e8dd2da62959409669e061f1febabf88e8dd0fc429594005708f4b69c2bbbf89e8dd5dd0295940b2cf0b429112bcbf89e8ddade929594064a3d530319fbcbfa9d73197f4295940ff17677932d8bcbfaad731dc092a59405c232e690e56bdbf1f1056df0f2a59406723df435286bdbf1f10562a1f2a5940df0b022f4e20bebf2e8e046d222a5940b00c143dbd57bebf308e0402242a594069939f386177bebf2e8e04d5232a5940edc16e34e994bebf2e8e0421232a5940ad3f85314da9bebf2f8e0432212a59407cdd972eb1bdbebf639fc0741f2a5940645edea446cebebf, '-0.10990430', '100.66718981', NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tourist_area_gallery`
+--
+
+CREATE TABLE `tourist_area_gallery` (
+  `id` varchar(2) NOT NULL,
+  `tourist_area_id` varchar(1) NOT NULL,
+  `url` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tourist_area_gallery`
+--
+
+INSERT INTO `tourist_area_gallery` (`id`, `tourist_area_id`, `url`) VALUES
+('1', '1', 'L01.jpg'),
+('2', '1', 'L02.jpg'),
+('3', '1', 'L03.png'),
+('4', '1', 'L04.jpg'),
+('5', '1', 'L05.JPG');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `email` varchar(50) NOT NULL,
   `username` varchar(30) DEFAULT NULL,
   `first_name` varchar(30) DEFAULT NULL,
   `last_name` varchar(30) DEFAULT NULL,
-  `address` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `phone` varchar(13) DEFAULT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT 'default.jpg',
-  `total_coin` int DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT 'default.jpg',
+  `total_coin` int(11) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
   `reset_hash` varchar(255) DEFAULT NULL,
   `reset_at` datetime DEFAULT NULL,
   `reset_expires` datetime DEFAULT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `status_message` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '0',
-  `activate_hash` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `status_message` varchar(255) DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 0,
+  `activate_hash` varchar(255) DEFAULT NULL,
   `activate_expires` datetime DEFAULT NULL,
-  `force_pass_reset` tinyint(1) NOT NULL DEFAULT '0',
+  `force_pass_reset` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `users`
@@ -2230,8 +2947,9 @@ INSERT INTO `users` (`id`, `email`, `username`, `first_name`, `last_name`, `addr
 (25, 'nabilahomestay@gmail.com', 'nabilahomestay', 'Owner Nabila', 'Homestay', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', '082249063128', 'default.jpg', NULL, '$2y$10$hb.4auiFDNFb8uPEePqiauI2jyTKKm47b.4WXfMdB5hxSc6iWmTgq', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2024-10-10 03:16:39', '2024-10-10 03:16:39', NULL),
 (29, 'homestayowner@gmail.com', 'homestayowner', NULL, NULL, NULL, NULL, 'default.jpg', NULL, '$2y$10$pQSYrqO.4NziX/HbFzn3peJJ77P2UBUQos4Bag7W/v/kUXrIzpjDS', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2025-01-25 07:14:31', '2025-01-25 07:14:31', NULL),
 (32, 'asdasd@gmail.com', 'asdasd', NULL, NULL, NULL, NULL, 'default.jpg', NULL, '$2y$10$Z1GR4njHo2Kue0T7vLgJ7.QQyJVKBqyW6OplFpLzTkoumdpkniTC6', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2025-02-27 06:15:53', '2025-02-27 06:15:53', NULL),
-(48, 'nightbaron.369@gmail.com', 'nightbaron.369', NULL, NULL, NULL, NULL, '8be33a9bba6bc612cbb3b0f90b880ef3c397a8a6.jpg', NULL, '$2y$10$VccF2VDE3ro/QDOYsokVyuS2Hh7JcS5WPZc6RiOsFCVZndI7qaREq', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2025-07-26 01:33:27', '2025-11-23 00:09:33', NULL),
-(49, 'lukmanjunedd@gmail.com', 'lukmanjunedd', NULL, NULL, NULL, NULL, '26bdb3a2f303ebe71c80139b76a44dc5925d9636.jpg', NULL, '$2y$10$NhweBKCH8GNTLZelxB5qD.Z3QF1V0jA3OD9NutKcavX2quRplUfFu', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2025-07-26 01:48:41', '2025-07-29 00:40:16', NULL);
+(48, 'nightbaron.369@gmail.com', 'nightbaron.369', NULL, NULL, NULL, NULL, 'f68254bf1e3971a8db7372a8cf572916663bbfe2.jpg', NULL, '$2y$10$VccF2VDE3ro/QDOYsokVyuS2Hh7JcS5WPZc6RiOsFCVZndI7qaREq', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2025-07-26 01:33:27', '2026-07-15 03:18:54', NULL),
+(49, 'lukmanjunedd@gmail.com', 'lukmanjunedd', NULL, NULL, NULL, NULL, '26bdb3a2f303ebe71c80139b76a44dc5925d9636.jpg', NULL, '$2y$10$NhweBKCH8GNTLZelxB5qD.Z3QF1V0jA3OD9NutKcavX2quRplUfFu', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2025-07-26 01:48:41', '2025-07-29 00:40:16', NULL),
+(50, 'dragon4feast@gmail.com', 'Dragon', NULL, NULL, NULL, NULL, 'default.jpg', NULL, '$2y$10$BUxPur3AaShsuS9e.HehjO5DLZSslyY3va/NPu0NyN/W06maZVwBi', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, '2026-01-11 23:05:45', '2026-01-11 23:15:09', NULL);
 
 -- --------------------------------------------------------
 
@@ -2240,21 +2958,21 @@ INSERT INTO `users` (`id`, `email`, `username`, `first_name`, `last_name`, `addr
 --
 
 CREATE TABLE `village` (
-  `id` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `geom_file` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `selected` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
-  `description` text,
-  `ticket_price` int DEFAULT NULL,
+  `id` varchar(3) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `geom_file` varchar(100) NOT NULL,
+  `selected` char(1) NOT NULL DEFAULT '0',
+  `description` text DEFAULT NULL,
+  `ticket_price` int(11) DEFAULT NULL,
   `open` time DEFAULT NULL,
   `close` time DEFAULT NULL,
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `address` text DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `facebook` varchar(50) DEFAULT NULL,
   `instagram` varchar(50) DEFAULT NULL,
   `youtube` varchar(50) DEFAULT NULL,
   `tiktok` varchar(50) DEFAULT NULL,
-  `video_url` text,
+  `video_url` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -2274,7 +2992,7 @@ INSERT INTO `village` (`id`, `name`, `geom_file`, `selected`, `description`, `ti
 ('6', 'Koto Tuo', 'V06.geojson', '0', NULL, NULL, '00:00:00', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('7', 'Lubuak Batingkok\r\n', 'V07.geojson', '0', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('8', 'Pilubang', 'V08.geojson', '0', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('9', 'Tabek Talang Babungo', 'V09.geojson', '0', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+('9', 'Sarilamak', 'V09.geojson', '0', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2286,7 +3004,7 @@ CREATE TABLE `village_gallery` (
   `id` varchar(3) NOT NULL,
   `village_id` varchar(3) NOT NULL,
   `url` text NOT NULL,
-  `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+  `description` varchar(5000) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -2294,10 +3012,12 @@ CREATE TABLE `village_gallery` (
 --
 
 INSERT INTO `village_gallery` (`id`, `village_id`, `url`, `description`) VALUES
-('001', '1', '1.jpg', 'q'),
-('002', '1', '111.jpg', 'w'),
-('003', '1', '1111.jpg', 'r'),
-('004', '1', '11111.jpg', 't');
+('001', '1', '1.jpg', 'Discover the breathtaking beauty of Lembah Harau, a stunning natural canyon located in the Lima Puluh Kota district of West Sumatra. This fertile valley is famous for being flanked by colossal, sheer rock cliffs that create a dramatic and unforgettable landscape. The spectacular scenery, with its towering vertical walls, has earned Lembah Harau the nickname the \"Indonesian Yosemite,\" drawing comparisons to the famous national park in the United States.\r\n\r\nWhat makes Lembah Harau truly unique is its immense geological scale and history. You will find yourself surrounded by massive reddish-brown sandstone and granite cliffs that soar between 100 to 500 meters into the sky. Incredibly, geologists believe this entire area was once an ancient sea floor, a theory supported by the types of 40-million-year-old rocks found here. The valley is also adorned with numerous enchanting waterfalls that cascade down the cliff faces, including the beautiful falls found right here in Desa Wisata Tarantang.\r\n\r\nBecause of its exceptional geological significance, tectonic origins, and spectacular natural beauty, Lembah Harau is currently being proposed to become a UNESCO Global Geopark. A visit to Desa Wisata Tarantang is the perfect way to experience this aspiring world-class destination. Whether you are trekking along the base of the cliffs, cooling off in a fresh waterfall pool, or capturing photos of the magnificent rock walls, you are exploring one of Indonesia\'s most awe-inspiring natural wonders.'),
+('002', '1', 'Air Terjun Sarasah Aie Luluih.png', 'Immerse yourself in the natural beauty of Sarasah Aie Luluh Waterfall, a stunning natural treasure tucked away in Desa Wisata Lembah Harau, Tarantang.\n\nThis captivating image captures the magnificent cascade of the waterfall as it tumbles down a rugged, jungle-draped cliff face. The refreshing water forms a large, inviting pool below, perfect for a cool swim or a relaxing float. As seen here, visitors can enjoy the refreshing water, even floating on a tire for added fun!\n\nSurrounded by lush green trees and the dramatic rock formations of the Harau Valley, Sarasah Aie Luluh offers a peaceful escape and a true connection with nature. It\'s a must-visit destination for adventure seekers and nature lovers alike.\n\nPlan your visit to Desa Wisata Lembah Harau and experience the magic of Sarasah Aie Luluh for yourself!'),
+('003', '1', 'Air Terjun Sarasah Bunta.png', 'Experience the refreshing energy of Air Terjun Sarasah Bunta, one of the most beloved icons of Lembah Harau. Known for its wide, tiered cascade (\'Bunta\' implies tiered or multi-stream), this waterfall pours fresh, clear mountain water straight into a spacious natural pool, making it the perfect natural waterpark for visitors of all ages.\r\n\r\nSurrounded by the towering canyon walls of Tarantang, Sarasah Bunta is steeped in history and natural beauty. The pool is shallow enough for children to play safely and wide enough for adults to float on tubes and soak up the jungle atmosphere. Whether you are looking for a fun family picnic spot or a revitalizing swim in pure mountain water, Sarasah Bunta is an unmissable stop in our tourism village.'),
+('004', '1', 'Harau Dream Park.png', 'Step into a world of color and culture at Harau Dream Park, a unique and vibrant attraction located right in the heart of Desa Wisata Lembah Harau. This park offers a delightful contrast to the natural ruggedness of the surrounding cliffs, featuring beautifully designed areas inspired by Japanese and Korean culture. You\'ll find iconic structures like a long row of bright orange torii gates, a charming red arched bridge over a peaceful pond, and traditional-style buildings with colorful green and blue roofs.\r\n\r\nHarau Dream Park is a photographer\'s paradise and a fantastic destination for families and friends. The meticulously landscaped gardens and themed architecture provide countless opportunities for fun. It’s a cheerful and relaxing spot where you can stroll through the manicured grounds, enjoy the cultural ambiance, and create lasting memories. The park\'s playful atmosphere makes it a hit with visitors of all ages, offering a different kind of adventure alongside the valley\'s natural wonders.\r\n\r\nLocated conveniently within Desa Wisata Tarantang, Harau Dream Park is an easily accessible stop on your Lembah Harau journey. It perfectly complements the area\'s stunning waterfalls and cliffs, offering a diverse and enjoyable experience for your entire group. Whether you\'re looking for a fun photo session or a leisurely walk in a beautiful setting, Harau Dream Park adds a touch of whimsy and wonder to your visit.'),
+('005', '1', 'Harau Sky Dream World.png', 'Get ready for a day of excitement and refreshing fun at Harau Sky Dream World, a vibrant waterpark located in the beautiful Desa Wisata Tarantang, Lembah Harau. This colorful attraction is a perfect escape for families and friends, offering a cheerful contrast to the majestic natural surroundings. The waterpark features a large pool with a variety of thrilling water slides, playful fountains, and splash areas designed for children and adults alike. The bright, castle-themed architecture adds a touch of whimsy, making it a fantastic backdrop for your holiday photos.\r\n\r\nWhy is it a must-visit? Harau Sky Dream World provides a unique opportunity to enjoy modern water park fun while being completely immersed in the breathtaking scenery of Lembah Harau. Imagine sliding down a water slide with the colossal, reddish-brown cliffs towering right behind you! It’s an unforgettable experience that combines the thrill of a waterpark with the awe-inspiring beauty of nature.\r\n\r\nWhether you\'re looking to cool off on a hot day, keep the kids entertained for hours, or simply relax by the pool with a stunning view, Harau Sky Dream World has something for everyone. It’s an easily accessible and enjoyable addition to your Lembah Harau itinerary, ensuring a day filled with laughter, splashes, and incredible memories in the heart of West Sumatra\'s most spectacular valley.'),
+('006', '1', 'Panorama Aka Barayun.png', 'Experience the awe-inspiring scale of Lembah Harau at Panorama aka Barayun, one of the most iconic viewpoints in Desa Wisata Lembah Harau. This site offers a front-row seat to the valley\'s legendary landscape, where massive, 500-meter-tall granite cliffs stand like ancient guardians over a sea of tropical greenery. It is the perfect place to witness the sheer verticality of the \"Indonesian Yosemite\" and understand why this area is an aspiring UNESCO Global Geopark.\n\nThe uniqueness of Barayun lies in the stunning combination of nature and local life. Right at the base of these colossal reddish-brown walls, you’ll find a thin, graceful waterfall cascading down the rock face, providing a refreshing mist to the air. Below the cliffs, a row of charming local stalls offers traditional Minangkabau snacks and refreshments, allowing you to enjoy a meal or a coffee while soaking in one of the most dramatic views in West Sumatra.\n\nA visit to Panorama aka Barayun is essential for any traveler seeking the perfect photo or a moment of quiet reflection. Whether you are marvelling at the geological history of the 40-million-year-old sandstone or simply watching the clouds roll over the cliff tops, Barayun captures the true soul of Lembah Harau. It is easily accessible and serves as the perfect starting point for your adventure through the hidden gems of Desa Wisata Lembah Harau.');
 
 -- --------------------------------------------------------
 
@@ -2311,24 +3031,22 @@ CREATE TABLE `worship_place` (
   `name` varchar(50) NOT NULL,
   `worship_place_category` varchar(2) NOT NULL,
   `address` varchar(100) DEFAULT NULL,
-  `capacity` int DEFAULT NULL,
+  `capacity` int(11) DEFAULT NULL,
   `geom` geometry DEFAULT NULL,
   `lat` decimal(10,8) NOT NULL,
   `lng` decimal(11,8) NOT NULL,
-  `description` text,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `worship_place`
 --
 
 INSERT INTO `worship_place` (`id`, `village_id`, `name`, `worship_place_category`, `address`, `capacity`, `geom`, `lat`, `lng`, `description`, `created_at`, `updated_at`) VALUES
-('W1', '1', 'Masjid Ishlah', '01', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 300, 0xe610000001030000000100000008000000aa28c5e6801f59402eac9f117654ddbfaa28c505801f59408abbe06cb956ddbfa928451c801f59406dbc2fcc0d57ddbfaa284535851f59400dbaae48b958ddbfaa28a510861f59400e89b1eccf56ddbfaa284535851f594043481f8e2156ddbfaa284519831f5940707855901355ddbfaa28c5e6801f59402eac9f117654ddbf, -0.45841019, 100.49237328, 'Masjid Islah Nagari Tuo Pariangan is a historic mosque located in Nagari Pariangan, Tanah Datar Regency, West Sumatra. This mosque is known as one of the oldest religious buildings in Minangkabau, with traditional architecture that reflects strong cultural and religious values. Built with a dominant Minangkabau architectural style, this mosque has a gonjong-shaped roof, similar to the Minangkabau traditional house (rumah gadang), which gives a magnificent and distinctive impression. This building uses natural materials such as wood and stone, which makes it in line with the surrounding natural environment which is beautiful and beautiful.', '2024-10-25 03:42:41', '2025-01-09 05:05:57'),
-('W2', '1', 'Mesjid AT TAQWA Pariangan', '01', 'Pariangan, Kec. Pariangan, Kabupaten Tanah Datar, Sumatera Barat ', 250, 0xe6100000010300000001000000080000004f5e6bf6051f594064b19c518078dcbf505e4bcc041f594030bbb3cf7779dcbf505e4b45041f5940519666eda17adcbf4f5e6be8041f59406c4e670a267cdcbf505e0b18081f59409e13f8495e7cdcbf505ecb39081f59400d9f508c2e7bdcbf515e4b9c071f594069200111cf78dcbf4f5e6bf6051f594064b19c518078dcbf, -0.44497283, 100.48475636, 'At-Taqwa Pariangan Mosque is an iconic mosque located in Nagari Pariangan, Tanah Datar Regency, West Sumatra. The mosque is located in an area known as one of the oldest villages in Minangkabau, making it a spiritual and social center for the local community. Although not as old as the Islah Mosque, the At-Taqwa Mosque still has an important value in the history of the development of Islam in Pariangan. The architecture of this mosque is a blend of modern and traditional Minangkabau designs. The pyramid-shaped roof of the mosque is combined with local ornaments, providing a balance between contemporary aesthetics and local cultural values. The structure of this building was built using strong and durable materials, and was designed to accommodate a large number of worshipers, especially during the celebration of Islamic holidays.', '2024-10-25 03:44:16', '2025-01-09 05:06:32'),
-('W3', NULL, 'Masjid Raya Al-Muttaqin', '01', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 100, 0xe610000001030000000100000005000000f5a554ee772a5940ba53f3e79f3abcbff5a59437762a594043365666e547bcbff5a514ff792a59408f7588e57c4ebcbff4a554727b2a5940ad453167dd40bcbff5a554ee772a5940ba53f3e79f3abcbf, -0.11042109, 100.66362499, 'Masjid Raya Al-Muttaqin adalah sebuah tempat ibadah Islam yang menakjubkan dan penuh makna, terletak di tengah Nagari Tarantang. Dibangun dengan arsitektur yang megah dan indah, masjid ini menjadi ikon keagamaan di Nagari Tarantang.', '2023-12-02 10:11:28', '2023-12-02 10:11:28'),
-('W4', NULL, 'Mushalla Nurul Ikhlas', '02', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 50, 0xe61000000103000000010000000900000061c9dd3b7d2a594028bbc2bcab9ebcbf60c91d557e2a5940d015e93d7195bcbf62c95df87c2a5940b7dc313e2893bcbf61c9fda37c2a59407049cabd6896bcbf62c93d557c2a5940334bd83df895bcbf61c9dd2d7c2a5940b9779dbdd097bcbf60c95d717c2a5940a440843d9b98bcbf61c99df57b2a59409db00bbd629cbcbf61c9dd3b7d2a594028bbc2bcab9ebcbf, -0.11170828, 100.66388830, NULL, '2023-12-02 10:16:46', '2023-12-02 10:17:48');
+('W1', NULL, 'Masjid Raya Al-Muttaqin', '01', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 100, 0xe610000001030000000100000005000000f5a554ee772a5940ba53f3e79f3abcbff5a59437762a594043365666e547bcbff5a514ff792a59408f7588e57c4ebcbff4a554727b2a5940ad453167dd40bcbff5a554ee772a5940ba53f3e79f3abcbf, '-0.11042109', '100.66362499', 'Masjid Raya Al-Muttaqin adalah sebuah tempat ibadah Islam yang menakjubkan dan penuh makna, terletak di tengah Nagari Tarantang. Dibangun dengan arsitektur yang megah dan indah, masjid ini menjadi ikon keagamaan di Nagari Tarantang.', '2023-12-02 10:11:28', '2023-12-02 10:11:28'),
+('W2', NULL, 'Mushalla Nurul Ikhlas', '02', 'Tarantang Village, Harau Subdistrict, Lima Puluh Kota Regency, West Sumatra Province', 50, 0xe61000000103000000010000000900000061c9dd3b7d2a594028bbc2bcab9ebcbf60c91d557e2a5940d015e93d7195bcbf62c95df87c2a5940b7dc313e2893bcbf61c9fda37c2a59407049cabd6896bcbf62c93d557c2a5940334bd83df895bcbf61c9dd2d7c2a5940b9779dbdd097bcbf60c95d717c2a5940a440843d9b98bcbf61c99df57b2a59409db00bbd629cbcbf61c9dd3b7d2a594028bbc2bcab9ebcbf, '-0.11170828', '100.66388830', NULL, '2023-12-02 10:16:46', '2023-12-02 10:17:48');
 
 -- --------------------------------------------------------
 
@@ -2341,7 +3059,7 @@ CREATE TABLE `worship_place_category` (
   `name` varchar(25) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `worship_place_category`
@@ -2380,7 +3098,7 @@ INSERT INTO `worship_place_facility` (`id`, `name`, `created_at`, `updated_at`) 
 
 CREATE TABLE `worship_place_facility_detail` (
   `worship_place_id` varchar(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `worship_place_facility_id` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+  `worship_place_facility_id` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -2402,21 +3120,18 @@ INSERT INTO `worship_place_facility_detail` (`worship_place_id`, `worship_place_
 CREATE TABLE `worship_place_gallery` (
   `id` varchar(3) NOT NULL,
   `worship_place_id` varchar(2) NOT NULL,
-  `url` text,
+  `url` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Dumping data for table `worship_place_gallery`
 --
 
 INSERT INTO `worship_place_gallery` (`id`, `worship_place_id`, `url`, `created_at`, `updated_at`) VALUES
-('011', 'W1', '1736445951_679bee11bc1fd3cbee48.jpg', '2025-01-09 05:05:57', '2025-01-09 05:05:57'),
-('012', 'W1', '1736445951_dd38efdf3c742e1eaecc.jpeg', '2025-01-09 05:05:57', '2025-01-09 05:05:57'),
-('013', 'W1', '1736445953_f6bb3edfbab20a02ade9.webp', '2025-01-09 05:05:57', '2025-01-09 05:05:57'),
-('014', 'W2', '1736445968_22c16b663b1a218fdb9f.jpg', '2025-01-09 05:06:32', '2025-01-09 05:06:32'),
-('015', 'W2', '1736445968_252999ada11aa831c1bb.jpg', '2025-01-09 05:06:32', '2025-01-09 05:06:32');
+('001', 'W1', 'W1-1.jpg', '2023-12-02 10:11:28', '2023-12-02 10:11:28'),
+('002', 'W2', 'W2-1.jpg', '2023-12-02 10:17:48', '2023-12-02 10:17:48');
 
 --
 -- Indexes for dumped tables
@@ -2461,6 +3176,13 @@ ALTER TABLE `attraction_facility_detail`
 ALTER TABLE `attraction_gallery`
   ADD PRIMARY KEY (`id`),
   ADD KEY `attraction_id` (`attraction_id`);
+
+--
+-- Indexes for table `attraction_ticket_price`
+--
+ALTER TABLE `attraction_ticket_price`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `attraction_ticket_price_attraction_id_foreign` (`attraction_id`);
 
 --
 -- Indexes for table `auth_activation_attempts`
@@ -2577,6 +3299,26 @@ ALTER TABLE `culinary_product_detail`
   ADD KEY `culinary_product_detail_culinary_place_id_foreign` (`culinary_place_id`);
 
 --
+-- Indexes for table `event`
+--
+ALTER TABLE `event`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `event_date`
+--
+ALTER TABLE `event_date`
+  ADD PRIMARY KEY (`event_id`,`date`),
+  ADD KEY `event_date_ibfk_1` (`event_id`);
+
+--
+-- Indexes for table `event_gallery`
+--
+ALTER TABLE `event_gallery`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `event_gallery_ibfk_1` (`event_id`);
+
+--
 -- Indexes for table `homestay`
 --
 ALTER TABLE `homestay`
@@ -2661,10 +3403,52 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `package`
+--
+ALTER TABLE `package`
+  ADD PRIMARY KEY (`homestay_id`,`package_id`),
+  ADD KEY `package_ibfk_1` (`homestay_id`);
+
+--
+-- Indexes for table `package_day`
+--
+ALTER TABLE `package_day`
+  ADD PRIMARY KEY (`homestay_id`,`package_id`,`day`),
+  ADD KEY `package_day_ibfk_1` (`homestay_id`,`package_id`);
+
+--
+-- Indexes for table `package_detail`
+--
+ALTER TABLE `package_detail`
+  ADD PRIMARY KEY (`homestay_id`,`package_id`,`day`,`activity`),
+  ADD KEY `package_detail_ibfk_1` (`homestay_id`,`package_id`,`day`);
+
+--
+-- Indexes for table `package_service`
+--
+ALTER TABLE `package_service`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `package_service_detail`
+--
+ALTER TABLE `package_service_detail`
+  ADD PRIMARY KEY (`homestay_id`,`package_id`,`package_service_id`),
+  ADD KEY `package_service_detail_ibfk_2` (`package_service_id`),
+  ADD KEY `package_service_detail_ibfk_1` (`homestay_id`,`package_id`);
+
+--
 -- Indexes for table `province`
 --
 ALTER TABLE `province`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `recommendation`
+--
+ALTER TABLE `recommendation`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
 
 --
 -- Indexes for table `reservation`
@@ -2696,6 +3480,34 @@ ALTER TABLE `reservation_homestay_unit_detail_backup`
   ADD PRIMARY KEY (`homestay_id`,`unit_type`,`unit_number`,`date`,`reservation_id`),
   ADD KEY `reservation_homestay_unit_detail_backup_ibfk_2` (`reservation_id`),
   ADD KEY `reservation_homestay_unit_detail_backup_ibfk_1` (`homestay_id`,`unit_type`,`unit_number`);
+
+--
+-- Indexes for table `reservation_package_detail`
+--
+ALTER TABLE `reservation_package_detail`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reservation_id` (`reservation_id`),
+  ADD KEY `package_id` (`package_id`);
+
+--
+-- Indexes for table `service`
+--
+ALTER TABLE `service`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `service_service_provider_id_foreign` (`service_provider_id`);
+
+--
+-- Indexes for table `service_provider`
+--
+ALTER TABLE `service_provider`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `service_provider_gallery`
+--
+ALTER TABLE `service_provider_gallery`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `service_provider_gallery_service_provider_id_foreign` (`service_provider_id`);
 
 --
 -- Indexes for table `souvenir_place`
@@ -2743,6 +3555,19 @@ ALTER TABLE `souvenir_product_detail`
 --
 ALTER TABLE `subdistrict`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tourist_area`
+--
+ALTER TABLE `tourist_area`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tourist_area_gallery`
+--
+ALTER TABLE `tourist_area_gallery`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tourist_area_id` (`tourist_area_id`);
 
 --
 -- Indexes for table `users`
@@ -2807,49 +3632,55 @@ ALTER TABLE `worship_place_gallery`
 -- AUTO_INCREMENT for table `auth_activation_attempts`
 --
 ALTER TABLE `auth_activation_attempts`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `auth_groups`
 --
 ALTER TABLE `auth_groups`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `auth_logins`
 --
 ALTER TABLE `auth_logins`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=825;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=906;
 
 --
 -- AUTO_INCREMENT for table `auth_permissions`
 --
 ALTER TABLE `auth_permissions`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `auth_reset_attempts`
 --
 ALTER TABLE `auth_reset_attempts`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `auth_tokens`
 --
 ALTER TABLE `auth_tokens`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+
+--
+-- AUTO_INCREMENT for table `reservation_package_detail`
+--
+ALTER TABLE `reservation_package_detail`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- Constraints for dumped tables
@@ -2934,6 +3765,18 @@ ALTER TABLE `culinary_product_detail`
   ADD CONSTRAINT `culinary_product_detail_culinary_product_id_foreign` FOREIGN KEY (`culinary_product_id`) REFERENCES `culinary_product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `event_date`
+--
+ALTER TABLE `event_date`
+  ADD CONSTRAINT `event_date_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `event_gallery`
+--
+ALTER TABLE `event_gallery`
+  ADD CONSTRAINT `event_gallery_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `homestay`
 --
 ALTER TABLE `homestay`
@@ -2969,20 +3812,45 @@ ALTER TABLE `homestay_gallery`
 --
 ALTER TABLE `homestay_unit`
   ADD CONSTRAINT `homestay_unit_homestay_id_foreign` FOREIGN KEY (`homestay_id`) REFERENCES `homestay` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `homestay_unit_unit_type_foreign` FOREIGN KEY (`unit_type`) REFERENCES `homestay_unit_type` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `homestay_unit_unit_type_foreign` FOREIGN KEY (`unit_type`) REFERENCES `homestay_unit_type` (`id`);
 
 --
 -- Constraints for table `homestay_unit_facility_detail`
 --
 ALTER TABLE `homestay_unit_facility_detail`
   ADD CONSTRAINT `homestay_unit_facility_detail_ibfk_1` FOREIGN KEY (`homestay_id`,`unit_type`,`unit_number`) REFERENCES `homestay_unit` (`homestay_id`, `unit_type`, `unit_number`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `homestay_unit_facility_detail_ibfk_2` FOREIGN KEY (`facility_id`) REFERENCES `homestay_unit_facility` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `homestay_unit_facility_detail_ibfk_2` FOREIGN KEY (`facility_id`) REFERENCES `homestay_unit_facility` (`id`);
 
 --
 -- Constraints for table `homestay_unit_gallery`
 --
 ALTER TABLE `homestay_unit_gallery`
   ADD CONSTRAINT `homestay_unit_gallery_ibfk_1` FOREIGN KEY (`homestay_id`,`unit_type`,`unit_number`) REFERENCES `homestay_unit` (`homestay_id`, `unit_type`, `unit_number`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `package`
+--
+ALTER TABLE `package`
+  ADD CONSTRAINT `package_ibfk_1` FOREIGN KEY (`homestay_id`) REFERENCES `homestay` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `package_day`
+--
+ALTER TABLE `package_day`
+  ADD CONSTRAINT `package_day_ibfk_1` FOREIGN KEY (`homestay_id`,`package_id`) REFERENCES `package` (`homestay_id`, `package_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `package_detail`
+--
+ALTER TABLE `package_detail`
+  ADD CONSTRAINT `package_detail_ibfk_1` FOREIGN KEY (`homestay_id`,`package_id`,`day`) REFERENCES `package_day` (`homestay_id`, `package_id`, `day`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `package_service_detail`
+--
+ALTER TABLE `package_service_detail`
+  ADD CONSTRAINT `package_service_detail_ibfk_1` FOREIGN KEY (`homestay_id`,`package_id`) REFERENCES `package` (`homestay_id`, `package_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `package_service_detail_ibfk_2` FOREIGN KEY (`package_service_id`) REFERENCES `package_service` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `reservation_homestay_additional_amenities_detail`
@@ -3004,6 +3872,12 @@ ALTER TABLE `reservation_homestay_unit_detail`
 ALTER TABLE `reservation_homestay_unit_detail_backup`
   ADD CONSTRAINT `reservation_homestay_unit_detail_backup_ibfk_1` FOREIGN KEY (`homestay_id`,`unit_type`,`unit_number`) REFERENCES `homestay_unit` (`homestay_id`, `unit_type`, `unit_number`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `reservation_homestay_unit_detail_backup_ibfk_2` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `service_provider_gallery`
+--
+ALTER TABLE `service_provider_gallery`
+  ADD CONSTRAINT `service_provider_gallery_service_provider_id_foreign` FOREIGN KEY (`service_provider_id`) REFERENCES `service_provider` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `souvenir_place`
@@ -3030,6 +3904,12 @@ ALTER TABLE `souvenir_place_gallery`
 ALTER TABLE `souvenir_product_detail`
   ADD CONSTRAINT `souvenir_product_detail_souvenir_place_id_foreign` FOREIGN KEY (`souvenir_place_id`) REFERENCES `souvenir_place` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `souvenir_product_detail_souvenir_product_id_foreign` FOREIGN KEY (`souvenir_product_id`) REFERENCES `souvenir_product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tourist_area_gallery`
+--
+ALTER TABLE `tourist_area_gallery`
+  ADD CONSTRAINT `tourist_area_gallery_ibfk_1` FOREIGN KEY (`tourist_area_id`) REFERENCES `tourist_area` (`id`);
 
 --
 -- Constraints for table `village_gallery`

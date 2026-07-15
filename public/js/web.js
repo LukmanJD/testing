@@ -34,8 +34,7 @@ let customDirectionsRenderer;
 let customPolyline;
 let confirmRouteControlDiv;
 
-let selectedShape,
-  drawingManager = new google.maps.drawing.DrawingManager();
+let selectedShape;
 let customStyled = [
   {
     elementType: "labels",
@@ -3044,99 +3043,11 @@ function deleteSelectedShape() {
  * How it works: Sets up DrawingManager options and event listeners for overlaycomplete, click, etc.
  */
 function initDrawingManager(edit = false) {
-  const drawingManagerOpts = {
-    drawingMode: google.maps.drawing.OverlayType.POLYGON,
-    drawingControl: true,
-    drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_CENTER,
-      drawingModes: [google.maps.drawing.OverlayType.POLYGON],
-    },
-    polygonOptions: {
-      fillColor: "blue",
-      strokeColor: "blue",
-      editable: true,
-    },
-    map: map,
-  };
-  drawingManager.setOptions(drawingManagerOpts);
-  let newShape;
-
-  if (!edit) {
-    google.maps.event.addListener(
-      drawingManager,
-      "overlaycomplete",
-      function (event) {
-        drawingManager.setOptions({
-          drawingControl: false,
-          drawingMode: null,
-        });
-        newShape = event.overlay;
-        newShape.type = event.type;
-        setSelection(newShape);
-        saveSelection(newShape);
-
-        google.maps.event.addListener(newShape, "click", function () {
-          setSelection(newShape);
-        });
-        google.maps.event.addListener(newShape.getPath(), "insert_at", () => {
-          saveSelection(newShape);
-        });
-        google.maps.event.addListener(newShape.getPath(), "remove_at", () => {
-          saveSelection(newShape);
-        });
-        google.maps.event.addListener(newShape.getPath(), "set_at", () => {
-          saveSelection(newShape);
-        });
-      }
-    );
-  } else {
-    drawingManager.setOptions({
-      drawingControl: false,
-      drawingMode: null,
-    });
-
-    newShape = drawGeom();
-    newShape.type = "polygon";
-    setSelection(newShape);
-
-    const paths = newShape.getPath().getArray();
-    let bounds = new google.maps.LatLngBounds();
-    for (let i = 0; i < paths.length; i++) {
-      bounds.extend(paths[i]);
-    }
-    let pos = bounds.getCenter();
-    map.panTo(pos);
-
-    clearMarker();
-    let marker = new google.maps.Marker();
-    markerOption = {
-      position: pos,
-      animation: google.maps.Animation.DROP,
-      map: map,
-    };
-    marker.setOptions(markerOption);
-    markerArray["newRG"] = marker;
-
-    google.maps.event.addListener(newShape, "click", function () {
-      setSelection(newShape);
-    });
-    google.maps.event.addListener(newShape.getPath(), "insert_at", () => {
-      saveSelection(newShape);
-    });
-    google.maps.event.addListener(newShape.getPath(), "remove_at", () => {
-      saveSelection(newShape);
-    });
-    google.maps.event.addListener(newShape.getPath(), "set_at", () => {
-      saveSelection(newShape);
-    });
-  }
-
-  google.maps.event.addListener(map, "click", clearSelection);
-  google.maps.event.addDomListener(
-    document.getElementById("clear-drawing"),
-    "click",
-    deleteSelectedShape
-  );
+  // The DrawingManager is deprecated. We are commenting out this function
+  // to prevent fatal JavaScript errors.
+  console.warn("DrawingManager is deprecated and has been disabled.");
+  // If you need drawing functionality, you must implement it manually
+  // using google.maps.Polygon and map click events.
 }
 
 /**

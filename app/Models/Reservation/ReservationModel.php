@@ -11,11 +11,7 @@ class ReservationModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'reservation';
     protected $returnType       = 'array';
-<<<<<<< Updated upstream
-    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_pepole', 'package_id', 'review', 'rating', 'total_price', 'deposit', 'status'];
-=======
-    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at', 'is_rejected', 'payment_token', 'account_refund'];
->>>>>>> Stashed changes
+    protected $allowedFields    = ['id', 'customer_id', 'request_date', 'check_in', 'total_people', 'review', 'rating', 'total_price', 'deposit', 'status', 'reservation_type', 'coin_use', 'confirmed_at', 'is_rejected', 'payment_token', 'account_refund', 'package_id'];
 
     // Dates
     protected $useTimestamps = true;

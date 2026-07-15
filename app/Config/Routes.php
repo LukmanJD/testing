@@ -119,6 +119,8 @@ $routes->group('web', ['namespace' => 'App\Controllers\Web'], function ($routes)
     $routes->get('reservation/detail/(:segment)', 'Reservation::detailReservation/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->delete('reservation/delete/(:segment)', 'Reservation::delete/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->post('reservation/addAmenities', 'Reservation::addAmenities', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
+    $routes->post('reservation/amenities/update', 'Reservation::updateAmenities', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
+    $routes->delete('reservation/amenities/delete/(:segment)/(:segment)/(:segment)', 'Reservation::deleteAmenities/$1/$2/$3', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/extend/(:segment)', 'Reservation::extendReservation/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->post('reservation/extend/(:segment)', 'Reservation::processExtendReservation/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->post('reservation/addActivity', 'Reservation::addActivity', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
@@ -127,7 +129,7 @@ $routes->group('web', ['namespace' => 'App\Controllers\Web'], function ($routes)
     $routes->get('reservation/unit/(:segment)/(:segment)/(:segment)/(:segment)', 'Reservation::getUnit/$1/$2/$3/$4', ['namespace' => 'App\Controllers\Web\Reservation']);
     $routes->get('reservation/finish/(:segment)/(:segment)/(:segment)/(:segment)', 'Reservation::finishReservation/$1/$2/$3/$4', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/package/price/confirm/(:segment)/(:segment)', 'Reservation::confirmPackagePrice/$1/$2', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
-    $routes->get('reservation/package/delete/(:segment)', 'Reservation::deletePackage/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
+    $routes->delete('reservation/package/delete/(:segment)', 'Reservation::deletePackage/$1', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/package/extendPackage/(:segment)/(:segment)/(:segment)', 'Reservation::customPackage/$1/$2/$3', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/package/customPackage/(:segment)/(:segment)/(:segment)', 'Reservation::customPackage/$1/$2/$3', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);
     $routes->get('reservation/package/(:segment)/(:segment)', 'Reservation::getPackage/$1/$2', ['namespace' => 'App\Controllers\Web\Reservation', 'filter' => 'role:user']);

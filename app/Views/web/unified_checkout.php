@@ -195,15 +195,9 @@
                     }
 
                     if (orderData.status === 'success') {
-                        alert('Transaction completed!');
-                        if (window.opener) {
-                            window.opener.location.reload();
-                            window.close();
-                        } else if (window.parent && window.parent !== window) {
-                            window.parent.location.reload();
-                        } else {
-                            window.location.href = '<?= site_url('web/reservation/detail/') ?>' + orderData.reservation_id;
-                        }
+                        // Send a success message to the parent window instead of reloading directly
+                        // The parent window will listen for this message and handle the reload.
+                        window.parent.postMessage('paymentSuccess', '<?= base_url() ?>');
                     } else {
                         alert('Something went wrong with the payment.');
                     }

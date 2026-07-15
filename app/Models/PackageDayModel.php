@@ -76,4 +76,14 @@ class PackageDayModel extends Model
             ->delete();
         return $query;
     }
+
+    public function get_total_day_by_package_id($homestay_id = null, $package_id = null)
+    {
+        $query = $this->db->table($this->table)
+            ->select("MAX(day) as total_day")
+            ->where('homestay_id', $homestay_id)
+            ->where('package_id', $package_id)
+            ->get();
+        return $query;
+    }
 }
